@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No tests specified yet\" && exit 0",
+    "clean": "rm -rf .next out dist",
+    "preview": "npm run build && npm run start"
   },
   "dependencies": {
     "react": "19.1.0",
