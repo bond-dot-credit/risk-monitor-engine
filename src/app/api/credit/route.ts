@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreditVault, VaultStatus, LTVCalculation, RiskMetrics } from '@/types/credit';
-import { Agent, CredibilityTier } from '@/types/agent';
-import { calculateLTV, calculateRiskMetrics } from '@/lib/scoring';
+import { CreditVault, VaultStatus } from '@/types/credit';
+import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
+import { calculateLTV } from '@/lib/scoring';
 
 // Mock credit vaults data
 const mockVaults: CreditVault[] = [
@@ -57,7 +57,7 @@ const mockAgent: Agent = {
     lastUpdated: new Date()
   },
   credibilityTier: CredibilityTier.PLATINUM,
-  status: 'active' as any,
+  status: AgentStatus.ACTIVE,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date()
 };

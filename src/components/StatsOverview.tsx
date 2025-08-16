@@ -27,7 +27,6 @@ export function StatsOverview({ agents }: StatsOverviewProps) {
 
   // Mock additional stats
   const totalValueLocked = 24567890;
-  const dailyVolume = 1234567;
 
   function getBaseLTVForTier(tier: CredibilityTier): number {
     switch (tier) {
