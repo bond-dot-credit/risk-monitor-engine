@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bond-credit-app
+  namespace: bond-credit
+  labels:
+    app: bond-credit
+    version: v1
+    component: web
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: bond-credit
+      component: web
+  template:
+    metadata:
+      labels:
+        app: bond-credit
+        component: web
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/api/metrics"
+    spec:
+      serviceAccountName: bond-credit-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: bond-credit-app
+        image: ghcr.io/bond-dot-credit/risk-monitor-engine:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: NEXT_TELEMETRY_DISABLED
+          value: "1"
+        - name: PORT
+          value: "3000"
+        - name: HOSTNAME
+          value: "0.0.0.0"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: bond-credit-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: bond-credit-secrets
+              key: redis-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: bond-credit-secrets
+              key: jwt-secret
+        - name: NEXT_PUBLIC_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bond-credit-config
+              key: api-url
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - bond-credit
+              topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bond-credit-sa
+  namespace: bond-credit
+  labels:
+    app: bond-credit
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bond-credit-config
+  namespace: bond-credit
+  labels:
+    app: bond-credit
+data:
+  api-url: "https://api.bond.credit"
+  environment: "production"
+  log-level: "info"
+  max-upload-size: "10mb"
+  session-timeout: "1h"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bond-credit-secrets
+  namespace: bond-credit
+  labels:
+    app: bond-credit
+type: Opaque
+data:
+  # These should be base64 encoded and set by your deployment pipeline
+  database-url: ""
+  redis-url: ""
+  jwt-secret: ""
