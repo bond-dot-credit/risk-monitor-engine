@@ -39,9 +39,11 @@ export async function GET(request: NextRequest) {
         controller.close();
       };
 
-      // Close on client disconnect
-      // @ts-expect-error - web standard not typed here
-      request.signal?.addEventListener('abort', close);
+      // Close on client disconnect (standard Request has an AbortSignal in Edge/Node runtimes)
+      const anyReq: any = request as any;
+      if (anyReq?.signal?.addEventListener) {
+        anyReq.signal.addEventListener('abort', close);
+      }
     }
   });
 
