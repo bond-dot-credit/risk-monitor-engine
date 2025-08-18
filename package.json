@@ -11,8 +11,6 @@
   "type-check": "tsc --noEmit",
   "test": "jest --passWithNoTests",
   "test:ci": "jest --ci --coverage --coverageDirectory=./test-results/coverage --reporters=default --reporters=jest-junit",
-  "test:e2e": "playwright test",
-  "test:e2e:ci": "playwright test --reporter=dot --reporter=html --output=e2e-results",
     "clean": "rm -rf .next out dist",
     "preview": "npm run build && npm run start"
   },
@@ -39,8 +37,5 @@
     "jest-junit": "^13.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/jest-dom": "^6.0.0"
-  ,
-  "@playwright/test": "^1.35.0",
-  "playwright": "^1.35.0"
   }
 }
