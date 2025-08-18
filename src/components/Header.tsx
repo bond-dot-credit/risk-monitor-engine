@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export function Header() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -24,12 +25,12 @@ export function Header() {
             </div>
             
             <nav className="hidden md:flex space-x-6">
-              <a href="/" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+              <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Dashboard
-              </a>
-              <a href="/agents" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+              </Link>
+              <Link href="/agents" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Agents
-              </a>
+              </Link>
               <a href="#credit" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Credit Vaults
               </a>

@@ -40,7 +40,7 @@ export default function AgentsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [selectedAgentId]);
 
   useEffect(() => {
     let cancelled = false;
