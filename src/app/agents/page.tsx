@@ -30,7 +30,6 @@ export default function AgentsPage() {
         const json = await res.json();
         if (!cancelled && json?.success) {
           setAgents(json.data);
-          if (json.data.length && !selectedAgentId) setSelectedAgentId(json.data[0].id);
         }
       } finally {
         if (!cancelled) setLoadingAgents(false);
@@ -40,7 +39,13 @@ export default function AgentsPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedAgentId]);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedAgentId && agents.length) {
+      setSelectedAgentId(agents[0].id);
+    }
+  }, [agents, selectedAgentId]);
 
   useEffect(() => {
     let cancelled = false;
