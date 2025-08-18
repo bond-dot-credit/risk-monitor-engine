@@ -1,4 +1,6 @@
 import { Agent, AgentScore, CredibilityTier } from '@/types/agent';
+import { ReputationEvent, ReputationEventType, ReputationSummary } from '@/types/reputation';
+import { store } from './store';
 import { LTVCalculation, LTVAdjustment, RiskMetrics } from '@/types/credit';
 
 /**
@@ -152,3 +154,107 @@ function getMarketExposureByTier(tier: CredibilityTier): number {
     default: return 100;
   }
 }
+
+/**
+ * AgentBeat reputation: fold events into a running breakdown and overall score
+ * This is a naive deterministic mapper for MVP; can be replaced with ML later.
+ */
+export function applyReputationEventToBreakdown(
+  current: { provenance: number; performance: number; perception: number },
+  event: ReputationEvent
+): { provenance: number; performance: number; perception: number } {
+  const weight = event.weight ?? 1;
+  const impact = event.impact * weight; // -100..+100 scaled by weight
+
+  const clamp = (v: number) => Math.max(0, Math.min(100, v));
+
+  switch (event.type) {
+    case ReputationEventType.VERIFICATION:
+    case ReputationEventType.SECURITY_AUDIT:
+    case ReputationEventType.BUG_BOUNTY:
+      return {
+        provenance: clamp(current.provenance + impact * 0.6),
+        performance: clamp(current.performance + impact * 0.2),
+        perception: clamp(current.perception + impact * 0.2)
+      };
+    case ReputationEventType.PERFORMANCE:
+    case ReputationEventType.UPTIME:
+    case ReputationEventType.ONCHAIN_TX:
+      return {
+        provenance: clamp(current.provenance + impact * 0.2),
+        performance: clamp(current.performance + impact * 0.6),
+        perception: clamp(current.perception + impact * 0.2)
+      };
+    case ReputationEventType.PEER_FEEDBACK:
+      return {
+        provenance: clamp(current.provenance + impact * 0.2),
+        performance: clamp(current.performance + impact * 0.2),
+        perception: clamp(current.perception + impact * 0.6)
+      };
+    case ReputationEventType.INCIDENT:
+    case ReputationEventType.SLASH:
+      return {
+        provenance: clamp(current.provenance + impact * 0.4),
+        performance: clamp(current.performance + impact * 0.4),
+        perception: clamp(current.perception + impact * 0.2)
+      };
+    default:
+      return {
+        provenance: clamp(current.provenance),
+        performance: clamp(current.performance),
+        perception: clamp(current.perception)
+      };
+  }
+}
+
+export function buildReputationSummary(agentId: string): ReputationSummary | null {
+  const agent = store.getAgent(agentId);
+  if (!agent) return null;
+
+  const events = store.getReputationEvents(agentId).sort(
+    (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+  );
+
+  // Start from the current score breakdown
+  let breakdown = {
+    provenance: agent.score.provenance,
+    performance: agent.score.performance,
+    perception: agent.score.perception
+  };
+
+  const totalsByType: Record<string, number> = {};
+  const now = Date.now();
+  let past24hOverall: number | null = null;
+
+  for (const ev of events) {
+    breakdown = applyReputationEventToBreakdown(breakdown, ev);
+    totalsByType[ev.type] = (totalsByType[ev.type] ?? 0) + ev.impact * (ev.weight ?? 1);
+
+    const overallAtEvent = Math.round(
+      breakdown.provenance * 0.4 +
+      breakdown.performance * 0.4 +
+      breakdown.perception * 0.2
+    );
+    // Track the overall as of ~24h ago by nearest event before threshold
+    if (past24hOverall === null && ev.timestamp.getTime() > now - 24 * 60 * 60 * 1000) {
+      past24hOverall = overallAtEvent;
+    }
+  }
+
+  const currentOverall = Math.round(
+    breakdown.provenance * 0.4 +
+    breakdown.performance * 0.4 +
+    breakdown.perception * 0.2
+  );
+
+  return {
+    agentId,
+    currentOverall,
+    trend24h: past24hOverall === null ? 0 : currentOverall - past24hOverall,
+    lastUpdated: new Date(),
+    breakdown,
+    totalsByType,
+    eventsCount: events.length
+  };
+}
+

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
 import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
+import { store } from '@/lib/store';
 
-// Mock database - in production this would be a real database
-const mockAgents: Agent[] = [
+// Seed initial agents into the in-memory store (MVP)
+const seededAgents: Agent[] = [
   {
     id: '1',
     name: 'TradingBot Alpha',
@@ -64,6 +65,11 @@ const mockAgents: Agent[] = [
   }
 ];
 
+// One-time seed
+for (const a of seededAgents) {
+  store.upsertAgent(a);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -71,7 +77,7 @@ export async function GET(request: NextRequest) {
     const tier = searchParams.get('tier');
     const status = searchParams.get('status');
 
-    let filteredAgents = [...mockAgents];
+    let filteredAgents = store.listAgents();
 
     // Apply filters
     if (category && category !== 'all') {
@@ -92,11 +98,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: filteredAgents,
-      total: filteredAgents.length
-    });
+    return NextResponse.json({ success: true, data: filteredAgents, total: filteredAgents.length });
   } catch (error) {
     console.error('Error fetching agents:', error);
     return NextResponse.json(
@@ -142,8 +144,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date()
     };
 
-    // In production, save to database
-    mockAgents.push(newAgent);
+    store.upsertAgent(newAgent);
 
     return NextResponse.json({
       success: true,
