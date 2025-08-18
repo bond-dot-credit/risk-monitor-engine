@@ -30,8 +30,8 @@ export function Header() {
               <a href="#agents" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Agents
               </a>
-              <a href="#credit" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
-                Credit Vaults
+              <a href="/risk" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+                Risk Monitor
               </a>
               <a href="#analytics" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Analytics
