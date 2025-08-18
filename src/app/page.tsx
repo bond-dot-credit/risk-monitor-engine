@@ -1,7 +1,8 @@
-import { AgentDashboard } from '@/components/AgentDashboard';
-import { Header } from '@/components/Header';
+import { AgentDashboard } from "@/components/AgentDashboard";
+import { Header } from "@/components/Header";
 
 export default function Home() {
+  console.log("Testing");
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900">
       <Header />
@@ -17,7 +18,7 @@ export default function Home() {
             Agent scoring, reputation tracking, and dynamic credit lines
           </p>
         </div>
-        
+
         <AgentDashboard />
       </main>
     </div>
