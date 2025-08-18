@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="17" failures="0" errors="0" time="1.287">
+  <testsuite name="coverage boost tests for scoring" errors="0" failures="0" skipped="0" timestamp="2025-08-18T12:12:28" time="0.333" tests="5">
+    <testcase classname="coverage boost tests for scoring performance premium adjustment applied when performance &gt;&gt; overall" name="coverage boost tests for scoring performance premium adjustment applied when performance &gt;&gt; overall" time="0.001">
+    </testcase>
+    <testcase classname="coverage boost tests for scoring default tier fallback in base LTV and market exposure when tier unknown" name="coverage boost tests for scoring default tier fallback in base LTV and market exposure when tier unknown" time="0.001">
+    </testcase>
+    <testcase classname="coverage boost tests for scoring calculateAgentScore with extremes produces bounded overall and confidence" name="coverage boost tests for scoring calculateAgentScore with extremes produces bounded overall and confidence" time="0.002">
+    </testcase>
+    <testcase classname="route error branches GET handles invalid request object and returns error" name="route error branches GET handles invalid request object and returns error" time="0.02">
+    </testcase>
+    <testcase classname="route error branches POST handles json() throwing and returns error" name="route error branches POST handles json() throwing and returns error" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="scoring edge cases" errors="0" failures="0" skipped="0" timestamp="2025-08-18T12:12:29" time="0.08" tests="4">
+    <testcase classname="scoring edge cases calculateConfidence handles identical scores (low variance =&gt; high confidence)" name="scoring edge cases calculateConfidence handles identical scores (low variance =&gt; high confidence)" time="0.001">
+    </testcase>
+    <testcase classname="scoring edge cases calculateConfidence handles divergent scores (high variance =&gt; lower confidence)" name="scoring edge cases calculateConfidence handles divergent scores (high variance =&gt; lower confidence)" time="0.001">
+    </testcase>
+    <testcase classname="scoring edge cases getBaseLTV and adjustments for different tiers and caps" name="scoring edge cases getBaseLTV and adjustments for different tiers and caps" time="0.001">
+    </testcase>
+    <testcase classname="scoring edge cases calculateRiskMetrics boundaries for volatility and liquidationRisk" name="scoring edge cases calculateRiskMetrics boundaries for volatility and liquidationRisk" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="agents API route" errors="0" failures="0" skipped="0" timestamp="2025-08-18T12:12:29" time="0.103" tests="4">
+    <testcase classname="agents API route GET returns all agents without filters" name="agents API route GET returns all agents without filters" time="0.002">
+    </testcase>
+    <testcase classname="agents API route GET applies category filter" name="agents API route GET applies category filter" time="0.002">
+    </testcase>
+    <testcase classname="agents API route POST returns 400 for missing fields" name="agents API route POST returns 400 for missing fields" time="0.001">
+    </testcase>
+    <testcase classname="agents API route POST creates an agent with valid payload" name="agents API route POST creates an agent with valid payload" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="scoring utilities" errors="0" failures="0" skipped="0" timestamp="2025-08-18T12:12:29" time="0.084" tests="4">
+    <testcase classname="scoring utilities calculateAgentScore returns expected structure and values" name="scoring utilities calculateAgentScore returns expected structure and values" time="0.001">
+    </testcase>
+    <testcase classname="scoring utilities determineCredibilityTier maps scores correctly" name="scoring utilities determineCredibilityTier maps scores correctly" time="0.001">
+    </testcase>
+    <testcase classname="scoring utilities calculateLTV applies adjustments and caps" name="scoring utilities calculateLTV applies adjustments and caps" time="0.001">
+    </testcase>
+    <testcase classname="scoring utilities calculateRiskMetrics returns bounded metrics" name="scoring utilities calculateRiskMetrics returns bounded metrics" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
