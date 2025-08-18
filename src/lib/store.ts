@@ -1,9 +1,7 @@
 import { Agent } from '@/types/agent';
-import { ReputationEvent } from '@/types/reputation';
 
 class InMemoryStore {
   private agents: Map<string, Agent> = new Map();
-  private reputationEvents: Map<string, ReputationEvent[]> = new Map();
 
   upsertAgent(agent: Agent) {
     this.agents.set(agent.id, agent);
@@ -15,16 +13,6 @@ class InMemoryStore {
 
   listAgents(): Agent[] {
     return Array.from(this.agents.values());
-  }
-
-  addReputationEvent(event: ReputationEvent) {
-    const list = this.reputationEvents.get(event.agentId) ?? [];
-    list.push(event);
-    this.reputationEvents.set(event.agentId, list);
-  }
-
-  getReputationEvents(agentId: string): ReputationEvent[] {
-    return this.reputationEvents.get(agentId) ?? [];
   }
 }
 
