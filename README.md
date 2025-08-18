@@ -102,6 +102,7 @@ src/
 
 3. **Run the development server**
    ```bash
+   # Turbopack can be unstable locally with some Node/Next combos
    npm run dev
    ```
 
@@ -113,6 +114,11 @@ src/
 ### Agents API
 - `GET /api/agents` - Fetch all agents with optional filters
 - `POST /api/agents` - Register a new agent
+
+### AgentBeat API
+- `GET /api/agentbeat?agentId=1` - Reputation summary for an agent
+- `POST /api/agentbeat` - Ingest a reputation event
+  - Body: `{ agentId, type, impact, weight?, metadata?, timestamp? }`
 
 ### Credit API  
 - `GET /api/credit` - Fetch credit vaults with optional filters
