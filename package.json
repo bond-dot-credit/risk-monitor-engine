@@ -2,6 +2,7 @@
   "name": "risk-monitor-engine",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
-    "test": "echo \"No tests specified yet\" && exit 0",
+    "test": "tsx --test src/tests/scoring.test.ts",
     "clean": "rm -rf .next out dist",
     "preview": "npm run build && npm run start"
   },
@@ -27,6 +28,7 @@
     "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
-    "@eslint/eslintrc": "^3"
+    "@eslint/eslintrc": "^3",
+    "tsx": "^4.19.2"
   }
 }
