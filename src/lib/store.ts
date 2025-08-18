@@ -32,7 +32,7 @@ class InMemoryStore {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
+  // Using var to attach to global scope across route modules
   var __riskMonitorStore: InMemoryStore | undefined;
 }
 

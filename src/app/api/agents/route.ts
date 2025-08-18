@@ -4,8 +4,9 @@ import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
 
-// Seed initial agents into the in-memory store (MVP)
-const seededAgents: Agent[] = [
+// (kept for docs context only)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _seededAgentsDocExample: Agent[] = [
   {
     id: '1',
     name: 'TradingBot Alpha',
