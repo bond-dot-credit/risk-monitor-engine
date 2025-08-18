@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "type-check": "tsc --noEmit",
-    "test": "echo \"No tests specified yet\" && exit 0",
+  "type-check": "tsc --noEmit",
+  "test": "jest --passWithNoTests",
+  "test:ci": "jest --ci --coverage --coverageDirectory=./test-results/coverage --reporters=default --reporters=jest-junit",
     "clean": "rm -rf .next out dist",
     "preview": "npm run build && npm run start"
   },
@@ -28,5 +29,13 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "@eslint/eslintrc": "^3"
+  ,
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "@types/jest": "^29.5.3",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-junit": "^13.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0"
   }
 }
