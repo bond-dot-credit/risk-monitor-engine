@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { store } from '@/lib/store';
+import { ensureSeeded } from '@/lib/seed';
 import { buildReputationSummary } from '@/lib/scoring';
 import { ReputationEvent, ReputationEventType } from '@/types/reputation';
 
 export async function GET(request: NextRequest) {
   try {
+    ensureSeeded();
     const { searchParams } = new URL(request.url);
     const agentId = searchParams.get('agentId');
     if (!agentId) {
@@ -24,6 +26,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    ensureSeeded();
     const body = await request.json();
     const { agentId, type, impact, weight, metadata, timestamp } = body as {
       agentId: string;

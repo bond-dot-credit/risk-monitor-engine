@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
 import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
 import { store } from '@/lib/store';
+import { ensureSeeded } from '@/lib/seed';
 
 // Seed initial agents into the in-memory store (MVP)
 const seededAgents: Agent[] = [
@@ -65,10 +66,8 @@ const seededAgents: Agent[] = [
   }
 ];
 
-// One-time seed
-for (const a of seededAgents) {
-  store.upsertAgent(a);
-}
+// Ensure seed on first import
+ensureSeeded();
 
 export async function GET(request: NextRequest) {
   try {
