@@ -26,12 +26,15 @@ export default function RiskMonitorPage() {
       const json = await res.json();
       if (!cancelled && json?.success) {
         setAgents(json.data);
-        if (!selectedAgentId && json.data?.length) setSelectedAgentId(json.data[0].id);
       }
     }
     loadAgents();
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    if (!selectedAgentId && agents.length) setSelectedAgentId(agents[0].id);
+  }, [agents, selectedAgentId]);
 
   useEffect(() => {
     let cancelled = false;
