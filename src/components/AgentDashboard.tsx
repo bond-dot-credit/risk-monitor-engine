@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
 import { AgentCard } from './AgentCard';
 import { StatsOverview } from './StatsOverview';
@@ -96,6 +96,8 @@ const mockAgents: Agent[] = [
 ];
 
 export function AgentDashboard() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [agents] = useState<Agent[]>(mockAgents);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTier, setSelectedTier] = useState<string>('all');
@@ -108,6 +110,8 @@ export function AgentDashboard() {
 
   const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category.toLowerCase()))];
   const tiers = ['all', ...Object.values(CredibilityTier)];
+
+  if (!mounted) return null;
 
   return (
     <div className="space-y-8">

@@ -1,6 +1,7 @@
 'use client';
 
 import { Agent, CredibilityTier } from '@/types/agent';
+import { useEffect, useState } from 'react';
 import { calculateLTV } from '@/lib/scoring';
 
 interface AgentCardProps {
@@ -8,6 +9,8 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const ltvCalculation = calculateLTV(agent);
   
   const getTierColor = (tier: CredibilityTier) => {
@@ -41,6 +44,8 @@ export function AgentCard({ agent }: AgentCardProps) {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
