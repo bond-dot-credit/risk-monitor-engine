@@ -31,6 +31,14 @@ class InMemoryStore {
   }
 }
 
-export const store = new InMemoryStore();
+declare global {
+  // eslint-disable-next-line no-var
+  var __riskMonitorStore: InMemoryStore | undefined;
+}
+
+export const store: InMemoryStore = globalThis.__riskMonitorStore ?? new InMemoryStore();
+if (!globalThis.__riskMonitorStore) {
+  globalThis.__riskMonitorStore = store;
+}
 
 
