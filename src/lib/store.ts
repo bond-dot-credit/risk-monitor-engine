@@ -2,10 +2,9 @@ import { Agent } from '@/types/agent';
 import { ReputationEvent } from '@/types/reputation';
 
 class InMemoryStore {
-  private agents: Map<string, Agent> = new Map();
-  private reputationEvents: Map<string, ReputationEvent> = new Map();
+  private agents = new Map<string, Agent>();
+  private reputationEvents = new Map<string, ReputationEvent>();
 
-  // Agent methods
   addAgent(agent: Agent) {
     this.agents.set(agent.id, agent);
   }
@@ -18,7 +17,6 @@ class InMemoryStore {
     return Array.from(this.agents.values());
   }
 
-  // Reputation event methods
   addReputationEvent(event: ReputationEvent) {
     this.reputationEvents.set(event.id, event);
   }
@@ -33,7 +31,6 @@ class InMemoryStore {
     return Array.from(this.reputationEvents.values());
   }
 
-  // Singleton pattern
   private static instance: InMemoryStore;
 
   static getInstance(): InMemoryStore {
@@ -44,7 +41,6 @@ class InMemoryStore {
   }
 }
 
-// For backward compatibility
 export const store = InMemoryStore.getInstance();
 
 
