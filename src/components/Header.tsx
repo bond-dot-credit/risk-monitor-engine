@@ -24,10 +24,10 @@ export function Header() {
             </div>
             
             <nav className="hidden md:flex space-x-6">
-              <a href="#dashboard" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+              <a href="/" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Dashboard
               </a>
-              <a href="#agents" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+              <a href="/agents" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
                 Agents
               </a>
               <a href="/risk" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">

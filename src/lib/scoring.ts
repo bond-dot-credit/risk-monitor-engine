@@ -1,5 +1,6 @@
 import { Agent, AgentScore, CredibilityTier } from '@/types/agent';
 import { LTVCalculation, LTVAdjustment, RiskMetrics } from '@/types/credit';
+import { ReputationEvent, ReputationSummary, ReputationSummaryBreakdown } from '@/types/reputation';
 
 /**
  * Calculate overall agent score based on provenance, performance, and perception
@@ -151,4 +152,127 @@ function getMarketExposureByTier(tier: CredibilityTier): number {
     case CredibilityTier.BRONZE: return 80;
     default: return 100;
   }
+}
+
+/**
+ * Process reputation events and build reputation summary
+ */
+export function buildReputationSummary(
+  agentId: string,
+  events: ReputationEvent[]
+): ReputationSummary {
+  if (events.length === 0) {
+    return {
+      agentId,
+      lastUpdated: new Date(),
+      totalEvents: 0,
+      positiveEvents: 0,
+      negativeEvents: 0,
+      breakdown: {
+        performance: 50,
+        credit: 50,
+        risk: 50,
+        compliance: 50,
+        overall: 50
+      },
+      recentEvents: [],
+      trend: 'stable'
+    };
+  }
+
+  const positiveEvents = events.filter(e => e.impact > 0);
+  const negativeEvents = events.filter(e => e.impact < 0);
+  
+  // Calculate breakdown scores based on event types
+  const breakdown = calculateReputationBreakdown(events);
+  
+  // Determine trend based on recent events
+  const recentEvents = events.slice(0, 10); // Last 10 events
+  const trend = determineReputationTrend(recentEvents);
+  
+  return {
+    agentId,
+    lastUpdated: new Date(),
+    totalEvents: events.length,
+    positiveEvents: positiveEvents.length,
+    negativeEvents: negativeEvents.length,
+    breakdown,
+    recentEvents,
+    trend
+  };
+}
+
+/**
+ * Calculate reputation breakdown scores
+ */
+function calculateReputationBreakdown(events: ReputationEvent[]): ReputationSummaryBreakdown {
+  const scores = {
+    performance: 0,
+    credit: 0,
+    risk: 0,
+    compliance: 0
+  };
+  
+  let totalImpact = 0;
+  
+  events.forEach(event => {
+    const impact = event.impact;
+    totalImpact += impact;
+    
+    // Categorize events and accumulate scores
+    switch (event.type) {
+      case 'performance_improvement':
+      case 'performance_decline':
+        scores.performance += impact;
+        break;
+      case 'credit_line_increase':
+      case 'credit_line_decrease':
+      case 'apr_improvement':
+      case 'apr_decline':
+      case 'ltv_optimization':
+        scores.credit += impact;
+        break;
+      case 'risk_management':
+        scores.risk += impact;
+        break;
+      case 'compliance_violation':
+      case 'compliance_improvement':
+        scores.compliance += impact;
+        break;
+      case 'aum_change':
+        // AUM changes affect multiple categories
+        scores.performance += impact * 0.5;
+        scores.risk += impact * 0.5;
+        break;
+    }
+  });
+  
+  // Normalize scores to 0-100 range
+  const normalizeScore = (score: number) => {
+    const normalized = 50 + (score / Math.max(1, Math.abs(totalImpact))) * 50;
+    return Math.max(0, Math.min(100, normalized));
+  };
+  
+  return {
+    performance: normalizeScore(scores.performance),
+    credit: normalizeScore(scores.credit),
+    risk: normalizeScore(scores.risk),
+    compliance: normalizeScore(scores.compliance),
+    overall: normalizeScore(totalImpact)
+  };
+}
+
+/**
+ * Determine reputation trend based on recent events
+ */
+function determineReputationTrend(events: ReputationEvent[]): 'improving' | 'stable' | 'declining' {
+  if (events.length === 0) return 'stable';
+  
+  const recentImpact = events
+    .slice(0, 5) // Last 5 events
+    .reduce((sum, event) => sum + event.impact, 0);
+  
+  if (recentImpact > 10) return 'improving';
+  if (recentImpact < -10) return 'declining';
+  return 'stable';
 }

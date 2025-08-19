@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
 import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
+import { store } from '@/lib/store';
+import { ensureSeeded } from '@/lib/seed';
 
 // Mock database - in production this would be a real database
 const mockAgents: Agent[] = [
@@ -66,12 +68,15 @@ const mockAgents: Agent[] = [
 
 export async function GET(request: NextRequest) {
   try {
+    // Ensure store is seeded with initial data
+    ensureSeeded();
+    
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const tier = searchParams.get('tier');
     const status = searchParams.get('status');
 
-    let filteredAgents = [...mockAgents];
+    let filteredAgents = store.getAgents();
 
     // Apply filters
     if (category && category !== 'all') {
@@ -142,8 +147,8 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date()
     };
 
-    // In production, save to database
-    mockAgents.push(newAgent);
+    // Save to store
+    store.addAgent(newAgent);
 
     return NextResponse.json({
       success: true,
