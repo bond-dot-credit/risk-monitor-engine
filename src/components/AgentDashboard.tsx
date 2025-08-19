@@ -96,8 +96,27 @@ const mockAgents: Agent[] = [
 ];
 
 export function AgentDashboard() {
-  const [agents] = useState<Agent[]>(mockAgents);
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchAgents();
+  }, []);
+
+  const fetchAgents = async () => {
+    try {
+      const response = await fetch('/api/agents');
+      const data = await response.json();
+      if (data.success) {
+        setAgents(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+    }
+  };
+
   const [selectedTier, setSelectedTier] = useState<string>('all');
 
   const filteredAgents = agents.filter(agent => {
@@ -108,6 +127,10 @@ export function AgentDashboard() {
 
   const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category.toLowerCase()))];
   const tiers = ['all', ...Object.values(CredibilityTier)];
+
+  if (!isMounted) {
+    return <div className="text-center py-12">Loading...</div>;
+  }
 
   return (
     <div className="space-y-8">
