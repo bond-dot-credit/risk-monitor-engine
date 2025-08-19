@@ -15,22 +15,34 @@ export default function AgentsPage() {
     try {
       const response = await fetch('/api/agents');
       const data = await response.json();
-      setAgents(data);
-      if (data.length > 0 && !selectedAgentId) {
-        setSelectedAgentId(data[0].id);
+      if (data.success && data.data) {
+        setAgents(data.data);
+        if (data.data.length > 0 && !selectedAgentId) {
+          setSelectedAgentId(data.data[0].id);
+        }
+      } else {
+        console.error('Failed to fetch agents:', data.error);
+        setAgents([]);
       }
     } catch (error) {
       console.error('Error fetching agents:', error);
+      setAgents([]);
     }
   };
 
   const fetchReputationSummary = async (agentId: string) => {
     try {
       const response = await fetch(`/api/agentbeat?agentId=${agentId}`);
-      const data = await response.json();
-      setReputationSummary(data);
+      if (response.ok) {
+        const data = await response.json();
+        setReputationSummary(data);
+      } else {
+        console.error('Failed to fetch reputation summary');
+        setReputationSummary(null);
+      }
     } catch (error) {
       console.error('Error fetching reputation summary:', error);
+      setReputationSummary(null);
     }
   };
 
