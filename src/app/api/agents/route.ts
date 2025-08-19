@@ -67,9 +67,7 @@ const mockAgents: Agent[] = [
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Agents API: Starting request');
     ensureSeeded();
-    console.log('Agents API: Seeding completed');
     
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
@@ -77,7 +75,6 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
 
     let filteredAgents = store.getAgents();
-    console.log('Agents API: Retrieved agents from store:', filteredAgents.length);
     
     if (category && category !== 'all') {
       filteredAgents = filteredAgents.filter(
@@ -97,13 +94,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log('Agents API: Returning filtered agents:', filteredAgents.length);
     return NextResponse.json({
       success: true,
       data: filteredAgents
     });
   } catch (error) {
-    console.error('Agents API: Error occurred:', error);
+    console.error('Error fetching agents:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch agents' },
       { status: 500 }
