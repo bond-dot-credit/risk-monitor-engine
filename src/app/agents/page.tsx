@@ -11,17 +11,6 @@ export default function AgentsPage() {
   const [reputationSummary, setReputationSummary] = useState<ReputationSummary | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-    fetchAgents();
-  }, []);
-
-  useEffect(() => {
-    if (selectedAgentId) {
-      fetchReputationSummary(selectedAgentId);
-    }
-  }, [selectedAgentId, fetchReputationSummary]);
-
   const fetchAgents = async () => {
     try {
       const response = await fetch('/api/agents');
@@ -44,6 +33,17 @@ export default function AgentsPage() {
       console.error('Error fetching reputation summary:', error);
     }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchAgents();
+  }, []);
+
+  useEffect(() => {
+    if (selectedAgentId) {
+      fetchReputationSummary(selectedAgentId);
+    }
+  }, [selectedAgentId]);
 
   const postReputationEvent = async (event: Omit<ReputationEvent, 'id' | 'timestamp'>) => {
     try {

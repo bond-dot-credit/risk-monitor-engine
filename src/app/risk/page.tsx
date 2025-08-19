@@ -10,17 +10,6 @@ export default function RiskPage() {
   const [riskMetrics, setRiskMetrics] = useState<RiskMetrics | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-    fetchAgents();
-  }, []);
-
-  useEffect(() => {
-    if (selectedAgentId) {
-      fetchRiskMetrics(selectedAgentId);
-    }
-  }, [selectedAgentId, fetchRiskMetrics]);
-
   const fetchAgents = async () => {
     try {
       const response = await fetch('/api/agents');
@@ -47,6 +36,17 @@ export default function RiskPage() {
       console.error('Error fetching risk metrics:', error);
     }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchAgents();
+  }, []);
+
+  useEffect(() => {
+    if (selectedAgentId) {
+      fetchRiskMetrics(selectedAgentId);
+    }
+  }, [selectedAgentId]);
 
   if (!isMounted) {
     return <div className="p-6">Loading...</div>;

@@ -10,12 +10,8 @@ import { StatsOverview } from './StatsOverview';
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedTier, setSelectedTier] = useState<string>('all');
   const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    fetchAgents();
-  }, [fetchAgents]);
 
   const fetchAgents = async () => {
     try {
@@ -29,7 +25,10 @@ export function AgentDashboard() {
     }
   };
 
-  const [selectedTier, setSelectedTier] = useState<string>('all');
+  useEffect(() => {
+    setIsMounted(true);
+    fetchAgents();
+  }, []);
 
   const filteredAgents = agents.filter(agent => {
     const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
