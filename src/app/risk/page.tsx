@@ -10,6 +10,17 @@ export default function RiskPage() {
   const [riskMetrics, setRiskMetrics] = useState<RiskMetrics | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+    fetchAgents();
+  }, []);
+
+  useEffect(() => {
+    if (selectedAgentId) {
+      fetchRiskMetrics(selectedAgentId);
+    }
+  }, [selectedAgentId]);
+
   const fetchAgents = async () => {
     try {
       const response = await fetch('/api/agents');
@@ -37,17 +48,6 @@ export default function RiskPage() {
     }
   };
 
-  useEffect(() => {
-    setIsMounted(true);
-    fetchAgents();
-  }, []);
-
-  useEffect(() => {
-    if (selectedAgentId) {
-      fetchRiskMetrics(selectedAgentId);
-    }
-  }, [selectedAgentId]);
-
   if (!isMounted) {
     return <div className="p-6">Loading...</div>;
   }
@@ -56,10 +56,9 @@ export default function RiskPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Risk Monitor: AI Agent Performance & Risk Assessment</h1>
+      <h1 className="text-3xl font-bold mb-8">Risk Monitor: Agent Performance & Risk Assessment</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Agent Selection */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Select Agent</h2>
@@ -75,7 +74,7 @@ export default function RiskPage() {
                   }`}
                 >
                   <div className="font-medium">{agent.name}</div>
-                  <div className="text-sm text-gray-600">{agent.description}</div>
+                  <div className="text-sm text-gray-600">{agent.metadata.description}</div>
                   <div className="text-xs text-gray-500 mt-1">
                     Status: {agent.status} • Tier: {agent.credibilityTier}
                   </div>
@@ -85,11 +84,9 @@ export default function RiskPage() {
           </div>
         </div>
 
-        {/* Risk Metrics & Performance */}
         <div className="lg:col-span-2">
           {selectedAgent && riskMetrics ? (
             <div className="space-y-6">
-              {/* Agent Overview */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-4">
                   Performance Overview: {selectedAgent.name}
@@ -115,7 +112,6 @@ export default function RiskPage() {
                 </div>
               </div>
 
-              {/* LTV & Credit Metrics */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-4">LTV & Credit Analysis</h3>
                 
@@ -181,7 +177,6 @@ export default function RiskPage() {
                 </div>
               </div>
 
-              {/* Asset Management */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-4">Asset Management & Performance</h3>
                 
@@ -237,7 +232,6 @@ export default function RiskPage() {
                 </div>
               </div>
 
-              {/* Risk Alerts */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-4">Risk Alerts & Recommendations</h3>
                 

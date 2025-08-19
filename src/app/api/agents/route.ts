@@ -4,20 +4,19 @@ import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
 
-// Mock database - in production this would be a real database
 const mockAgents: Agent[] = [
   {
     id: '1',
     name: 'TradingBot Alpha',
     operator: '0x742d35Cc6640C178fFfbDD5B5e3d6480',
     metadata: {
-      description: 'High-frequency trading agent for DeFi protocols',
+      description: 'High-frequency trading bot for DeFi protocols',
       category: 'Trading',
       version: '2.1.0',
       tags: ['defi', 'trading', 'arbitrage'],
       provenance: {
         sourceCode: 'https://github.com/agent-dev/trading-alpha',
-        verificationHash: '0xa1b2c3d4e5f6...',
+        verificationHash: '0x1234567890abcdef...',
         deploymentChain: 'Ethereum',
         lastAudit: new Date('2024-01-15')
       }
@@ -46,7 +45,7 @@ const mockAgents: Agent[] = [
       tags: ['oracle', 'price-feed', 'ml'],
       provenance: {
         sourceCode: 'https://github.com/oracle-labs/sentinel',
-        verificationHash: '0xb2c3d4e5f6a7...',
+        verificationHash: '0xabcdef1234567890...',
         deploymentChain: 'Arbitrum',
         lastAudit: new Date('2024-02-01')
       }
@@ -68,7 +67,6 @@ const mockAgents: Agent[] = [
 
 export async function GET(request: NextRequest) {
   try {
-    // Ensure store is seeded with initial data
     ensureSeeded();
     
     const { searchParams } = new URL(request.url);
@@ -77,8 +75,6 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
 
     let filteredAgents = store.getAgents();
-
-    // Apply filters
     if (category && category !== 'all') {
       filteredAgents = filteredAgents.filter(
         agent => agent.metadata.category.toLowerCase() === category.toLowerCase()
@@ -99,8 +95,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: filteredAgents,
-      total: filteredAgents.length
+      data: filteredAgents
     });
   } catch (error) {
     console.error('Error fetching agents:', error);
@@ -116,7 +111,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, operator, metadata, scores } = body;
 
-    // Validate required fields
     if (!name || !operator || !metadata || !scores) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
@@ -124,17 +118,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate agent score
     const agentScore = calculateAgentScore(
       scores.provenance,
       scores.performance,
       scores.perception
     );
 
-    // Determine credibility tier
     const credibilityTier = determineCredibilityTier(agentScore.overall);
 
-    // Create new agent
     const newAgent: Agent = {
       id: `agent_${Date.now()}`,
       name,
@@ -147,7 +138,6 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date()
     };
 
-    // Save to store
     store.addAgent(newAgent);
 
     return NextResponse.json({

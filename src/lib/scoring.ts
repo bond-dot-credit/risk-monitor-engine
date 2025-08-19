@@ -2,20 +2,15 @@ import { Agent, AgentScore, CredibilityTier } from '@/types/agent';
 import { LTVCalculation, LTVAdjustment, RiskMetrics } from '@/types/credit';
 import { ReputationEvent, ReputationSummary, ReputationSummaryBreakdown } from '@/types/reputation';
 
-/**
- * Calculate overall agent score based on provenance, performance, and perception
- */
 export function calculateAgentScore(
   provenance: number,
   performance: number,
   perception: number
 ): AgentScore {
-  // Weighted scoring: provenance (40%), performance (40%), perception (20%)
   const overall = Math.round(
     provenance * 0.4 + performance * 0.4 + perception * 0.2
   );
   
-  // Confidence based on data consistency and completeness
   const confidence = calculateConfidence(provenance, performance, perception);
   
   return {
@@ -28,92 +23,91 @@ export function calculateAgentScore(
   };
 }
 
-/**
- * Calculate confidence score based on score consistency
- */
 function calculateConfidence(
   provenance: number,
   performance: number,
   perception: number
 ): number {
   const scores = [provenance, performance, perception];
-  const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-  const variance = scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / scores.length;
-  const standardDeviation = Math.sqrt(variance);
+  const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
   
-  // Lower variance = higher confidence (inverse relationship)
-  const confidenceFromVariance = Math.max(0, 100 - (standardDeviation * 2));
+  const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
+  const confidenceFromVariance = Math.max(0, 100 - variance * 0.5);
   
-  // Factor in absolute score levels (higher scores = more confidence in general)
   const confidenceFromLevel = mean * 0.8;
   
   return Math.round((confidenceFromVariance + confidenceFromLevel) / 2);
 }
 
-/**
- * Determine credibility tier based on overall score
- */
-export function determineCredibilityTier(score: number): CredibilityTier {
-  if (score >= 90) return CredibilityTier.DIAMOND;
-  if (score >= 80) return CredibilityTier.PLATINUM;
-  if (score >= 70) return CredibilityTier.GOLD;
-  if (score >= 60) return CredibilityTier.SILVER;
+export function determineCredibilityTier(overallScore: number): CredibilityTier {
+  if (overallScore >= 90) return CredibilityTier.DIAMOND;
+  if (overallScore >= 80) return CredibilityTier.PLATINUM;
+  if (overallScore >= 70) return CredibilityTier.GOLD;
+  if (overallScore >= 60) return CredibilityTier.SILVER;
   return CredibilityTier.BRONZE;
 }
 
-/**
- * Calculate LTV (Loan-to-Value) ratio based on agent score and tier
- */
-export function calculateLTV(agent: Agent): LTVCalculation {
-  const baseLTV = getBaseLTVForTier(agent.credibilityTier);
-  const adjustments: LTVAdjustment[] = [];
+export function calculateLTV(
+  baseLTV: number,
+  agentScore: AgentScore,
+  adjustments: LTVAdjustment[] = []
+): LTVCalculation {
+  let finalLTV = baseLTV;
   
-  // Score-based adjustment
-  if (agent.score.overall > 85) {
-    adjustments.push({
-      factor: 'high_score',
-      description: 'High overall score bonus',
-      impact: 5,
-      reason: `Score of ${agent.score.overall} exceeds 85`
-    });
-  }
-  
-  // Confidence adjustment
-  if (agent.score.confidence > 80) {
-    adjustments.push({
-      factor: 'high_confidence',
-      description: 'High confidence bonus',
-      impact: 3,
-      reason: `Confidence of ${agent.score.confidence}% exceeds 80%`
-    });
-  }
-  
-  // Performance consistency
-  if (agent.score.performance > agent.score.overall + 10) {
-    adjustments.push({
-      factor: 'performance_premium',
-      description: 'Performance exceeds overall score',
-      impact: 2,
-      reason: 'Strong performance track record'
-    });
-  }
-  
-  const totalAdjustment = adjustments.reduce((sum, adj) => sum + adj.impact, 0);
-  const finalLTV = Math.min(baseLTV + totalAdjustment, 95); // Cap at 95%
+  adjustments.forEach(adjustment => {
+    switch (adjustment.type) {
+      case 'score_bonus':
+        if (agentScore.overall >= 90) finalLTV += 5;
+        else if (agentScore.overall >= 80) finalLTV += 3;
+        else if (agentScore.overall >= 70) finalLTV += 1;
+        break;
+      case 'confidence_bonus':
+        if (agentScore.confidence >= 90) finalLTV += 2;
+        break;
+      case 'performance_bonus':
+        if (agentScore.performance >= 85) finalLTV += 2;
+        break;
+      case 'provenance_bonus':
+        if (agentScore.provenance >= 90) finalLTV += 1;
+        break;
+    }
+  });
   
   return {
-    agentScore: agent.score.overall,
-    tier: agent.credibilityTier,
-    baseLTV,
-    adjustments,
-    finalLTV,
-    confidence: agent.score.confidence
+    base: baseLTV,
+    adjustments: adjustments,
+    final: Math.min(95, Math.max(0, finalLTV)),
+    maxAllowed: 95
   };
 }
 
-/**
- * Get base LTV for credibility tier
- */
+export function calculateRiskMetrics(agent: Agent): RiskMetrics {
+  const baseLTV = getBaseLTVForTier(agent.credibilityTier);
+  const ltvCalculation = calculateLTV(baseLTV, agent.score);
+  
+  return {
+    ltv: {
+      current: Math.round(ltvCalculation.final * 0.8),
+      maximum: ltvCalculation.final,
+      utilization: Math.round((ltvCalculation.final * 0.8 / ltvCalculation.final) * 100)
+    },
+    creditLine: {
+      total: 1000000,
+      used: 800000,
+      available: 200000,
+      apr: 8.5
+    },
+    assetManagement: {
+      aum: 2500000,
+      diversityScore: 85,
+      liquidationRisk: 35
+    },
+    performanceVariance: 12.5,
+    tierStability: 92,
+    marketExposure: 45
+  };
+}
+
 function getBaseLTVForTier(tier: CredibilityTier): number {
   switch (tier) {
     case CredibilityTier.DIAMOND: return 80;
@@ -121,42 +115,10 @@ function getBaseLTVForTier(tier: CredibilityTier): number {
     case CredibilityTier.GOLD: return 60;
     case CredibilityTier.SILVER: return 50;
     case CredibilityTier.BRONZE: return 40;
-    default: return 30;
-  }
-}
-
-/**
- * Calculate risk metrics for an agent
- */
-export function calculateRiskMetrics(agent: Agent): RiskMetrics {
-  const scoreDelta = Math.abs(agent.score.performance - agent.score.overall);
-  
-  return {
-    volatility: Math.min(scoreDelta * 2, 100),
-    liquidationRisk: Math.max(0, 100 - agent.score.overall),
-    performanceVariance: scoreDelta,
-    tierStability: agent.score.confidence,
-    marketExposure: getMarketExposureByTier(agent.credibilityTier)
-  };
-}
-
-/**
- * Get market exposure level by tier
- */
-function getMarketExposureByTier(tier: CredibilityTier): number {
-  switch (tier) {
-    case CredibilityTier.DIAMOND: return 20;
-    case CredibilityTier.PLATINUM: return 30;
-    case CredibilityTier.GOLD: return 40;
-    case CredibilityTier.SILVER: return 60;
-    case CredibilityTier.BRONZE: return 80;
     default: return 100;
   }
 }
 
-/**
- * Process reputation events and build reputation summary
- */
 export function buildReputationSummary(
   agentId: string,
   events: ReputationEvent[]
@@ -183,11 +145,8 @@ export function buildReputationSummary(
   const positiveEvents = events.filter(e => e.impact > 0);
   const negativeEvents = events.filter(e => e.impact < 0);
   
-  // Calculate breakdown scores based on event types
   const breakdown = calculateReputationBreakdown(events);
-  
-  // Determine trend based on recent events
-  const recentEvents = events.slice(0, 10); // Last 10 events
+  const recentEvents = events.slice(0, 10);
   const trend = determineReputationTrend(recentEvents);
   
   return {
@@ -202,9 +161,6 @@ export function buildReputationSummary(
   };
 }
 
-/**
- * Calculate reputation breakdown scores
- */
 function calculateReputationBreakdown(events: ReputationEvent[]): ReputationSummaryBreakdown {
   const scores = {
     performance: 0,
@@ -219,7 +175,6 @@ function calculateReputationBreakdown(events: ReputationEvent[]): ReputationSumm
     const impact = event.impact;
     totalImpact += impact;
     
-    // Categorize events and accumulate scores
     switch (event.type) {
       case 'performance_improvement':
       case 'performance_decline':
@@ -240,14 +195,12 @@ function calculateReputationBreakdown(events: ReputationEvent[]): ReputationSumm
         scores.compliance += impact;
         break;
       case 'aum_change':
-        // AUM changes affect multiple categories
         scores.performance += impact * 0.5;
         scores.risk += impact * 0.5;
         break;
     }
   });
   
-  // Normalize scores to 0-100 range
   const normalizeScore = (score: number) => {
     const normalized = 50 + (score / Math.max(1, Math.abs(totalImpact))) * 50;
     return Math.max(0, Math.min(100, normalized));
@@ -262,14 +215,11 @@ function calculateReputationBreakdown(events: ReputationEvent[]): ReputationSumm
   };
 }
 
-/**
- * Determine reputation trend based on recent events
- */
 function determineReputationTrend(events: ReputationEvent[]): 'improving' | 'stable' | 'declining' {
   if (events.length === 0) return 'stable';
   
   const recentImpact = events
-    .slice(0, 5) // Last 5 events
+    .slice(0, 5)
     .reduce((sum, event) => sum + event.impact, 0);
   
   if (recentImpact > 10) return 'improving';

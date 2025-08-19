@@ -4,14 +4,14 @@ Building the credit layer for the agentic economy.
 
 This repo contains our MVP implementation of AgentBeat with credibility verification, risk monitoring, and dynamic credit lines for autonomous agents.
 
-## 🎯 Overview
+## Overview
 
 - **AgentBeat**: Agent scoring and reputation tracking system
 - **Risk Monitor**: Real-time risk assessment and monitoring
 - **Credit Vaults**: Dynamic LTV credit lines for agents
 - **Credibility Verification**: Multi-factor agent verification and scoring
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -28,7 +28,7 @@ This repo contains our MVP implementation of AgentBeat with credibility verifica
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
-## 🚀 Features
+## Features
 
 ### Agent Scoring System
 - **Provenance Scoring**: Code verification, audit history, deployment provenance
@@ -49,7 +49,7 @@ This repo contains our MVP implementation of AgentBeat with credibility verifica
 - Automated liquidation protection
 - Multi-chain support (Ethereum, Arbitrum, Polygon)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: Next.js 15, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes
@@ -57,7 +57,7 @@ This repo contains our MVP implementation of AgentBeat with credibility verifica
 - **Database**: Ready for integration (PostgreSQL/MongoDB)
 - **Blockchain**: Multi-chain ready (Ethereum, Arbitrum, Polygon, etc.)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -79,7 +79,7 @@ src/
     └── credit.ts            # Credit system types
 ```
 
-## 🚦 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -108,7 +108,7 @@ src/
 4. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Agents API
 - `GET /api/agents` - Fetch all agents with optional filters
@@ -118,7 +118,7 @@ src/
 - `GET /api/credit` - Fetch credit vaults with optional filters
 - `POST /api/credit` - Create a new credit vault
 
-## 📊 Scoring Algorithm
+## Scoring Algorithm
 
 The scoring system uses a weighted approach:
 
@@ -136,7 +136,7 @@ Overall Score = (Provenance × 40%) + (Performance × 40%) + (Perception × 20%)
 - Adjustments for high scores, confidence levels, and performance
 - Maximum LTV capped at 95% for safety
 
-## 🔒 Risk Management
+## Risk Management
 
 ### Health Factor Monitoring
 ```typescript
@@ -149,7 +149,7 @@ Health Factor = Collateral Value / Debt Value
 - **High Risk**: Health Factor 1.2-1.5
 - **Critical Risk**: Health Factor < 1.2
 
-## 🛣️ Roadmap
+## Roadmap
 
 ### Phase 1 - MVP (Current)
 - [x] Agent registration and scoring
@@ -175,7 +175,7 @@ Health Factor = Collateral Value / Debt Value
 - [ ] Institutional partnerships
 - [ ] Full decentralization
 
-## 🤝 Contributing
+## Contributing
 
 We welcome partnerships with chains, allocators, and agent operators.
 
@@ -185,18 +185,18 @@ We welcome partnerships with chains, allocators, and agent operators.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+## Links
 
 - [Documentation](docs/)
 - [API Reference](docs/api.md)
 - [Contributing Guide](CONTRIBUTING.md)
 - [Discord Community](https://discord.gg/bondcredit)
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This is experimental software. Use at your own risk. Smart contracts have not been audited. Do not use with real funds without proper security audits.
 

@@ -5,20 +5,19 @@ import { calculateAgentScore, determineCredibilityTier } from './scoring';
 
 export function ensureSeeded() {
   if (store.getAgents().length === 0) {
-    // Seed with mock agents
-    const mockAgents: Agent[] = [
+    const agents: Agent[] = [
       {
         id: '1',
         name: 'Alpha Trading Bot',
         operator: '0x742d35Cc6640C178fFfbDD5B5e3d6480',
         metadata: {
-          description: 'High-frequency trading algorithm specializing in DeFi protocols',
+          description: 'High-frequency trading bot for DeFi protocols',
           category: 'Trading',
           version: '2.1.0',
           tags: ['defi', 'trading', 'arbitrage'],
           provenance: {
             sourceCode: 'https://github.com/agent-dev/trading-alpha',
-            verificationHash: '0xa1b2c3d4e5f6...',
+            verificationHash: '0x1234567890abcdef...',
             deploymentChain: 'Ethereum',
             lastAudit: new Date('2024-01-15')
           }
@@ -40,7 +39,7 @@ export function ensureSeeded() {
           tags: ['yield', 'farming', 'optimization'],
           provenance: {
             sourceCode: 'https://github.com/yield-protocol/optimizer',
-            verificationHash: '0xb2c3d4e5f6a7...',
+            verificationHash: '0xabcdef1234567890...',
             deploymentChain: 'Polygon',
             lastAudit: new Date('2024-01-10')
           }
@@ -62,7 +61,7 @@ export function ensureSeeded() {
           tags: ['arbitrage', 'trading', 'cross-exchange'],
           provenance: {
             sourceCode: 'https://github.com/arbitrage-labs/hunter',
-            verificationHash: '0xc3d4e5f6a7b8...',
+            verificationHash: '0x7890abcdef123456...',
             deploymentChain: 'Arbitrum',
             lastAudit: new Date('2024-01-20')
           }
@@ -75,17 +74,15 @@ export function ensureSeeded() {
       }
     ];
 
-    // Add agents to store
-    mockAgents.forEach(agent => store.addAgent(agent));
+    agents.forEach(agent => store.addAgent(agent));
 
-    // Seed with reputation events
-    const mockEvents: ReputationEvent[] = [
+    const events: ReputationEvent[] = [
       {
         id: 'evt_1',
         agentId: '1',
         type: ReputationEventType.PERFORMANCE_IMPROVEMENT,
         timestamp: new Date('2024-01-25T10:30:00Z'),
-        description: 'Improved trading algorithm resulted in 15% better returns',
+        description: 'Trading algorithm update resulted in 15% better returns',
         impact: 25,
         metadata: {
           previousValue: 141.2,
@@ -111,7 +108,7 @@ export function ensureSeeded() {
         agentId: '2',
         type: ReputationEventType.APR_IMPROVEMENT,
         timestamp: new Date('2024-01-23T09:45:00Z'),
-        description: 'APR improved from 8.2% to 9.1% through strategy optimization',
+        description: 'APR improved from 8.2% to 9.1% through strategy updates',
         impact: 15,
         metadata: {
           previousValue: 8.2,
@@ -124,7 +121,7 @@ export function ensureSeeded() {
         agentId: '3',
         type: ReputationEventType.LTV_OPTIMIZATION,
         timestamp: new Date('2024-01-22T16:20:00Z'),
-        description: 'LTV ratio optimized from 65% to 72% while maintaining risk profile',
+        description: 'LTV ratio updated from 65% to 72% while maintaining risk profile',
         impact: 18,
         metadata: {
           previousValue: 65,
@@ -134,7 +131,6 @@ export function ensureSeeded() {
       }
     ];
 
-    // Add events to store
-    mockEvents.forEach(event => store.addReputationEvent(event));
+    events.forEach(event => store.addReputationEvent(event));
   }
 }
