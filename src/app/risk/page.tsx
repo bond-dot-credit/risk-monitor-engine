@@ -77,7 +77,7 @@ export default function RiskPage() {
                   <div className="font-medium">{agent.name}</div>
                   <div className="text-sm text-gray-600">{agent.description}</div>
                   <div className="text-xs text-gray-500 mt-1">
-                    Status: {agent.status} • Uptime: {agent.metadata.uptime}%
+                    Status: {agent.status} • Tier: {agent.credibilityTier}
                   </div>
                 </button>
               ))}
@@ -97,20 +97,20 @@ export default function RiskPage() {
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{selectedAgent.performance.totalReturn}%</div>
-                    <div className="text-sm text-gray-600">Total Return</div>
+                    <div className="text-2xl font-bold text-blue-600">{selectedAgent.score.overall}</div>
+                    <div className="text-sm text-gray-600">Overall Score</div>
                   </div>
                   <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{selectedAgent.performance.sharpeRatio}</div>
-                    <div className="text-sm text-gray-600">Sharpe Ratio</div>
+                    <div className="text-2xl font-bold text-green-600">{selectedAgent.score.performance}</div>
+                    <div className="text-sm text-gray-600">Performance Score</div>
                   </div>
                   <div className="text-center p-3 bg-yellow-50 rounded-lg">
-                    <div className="text-2xl font-bold text-yellow-600">{selectedAgent.performance.maxDrawdown}%</div>
-                    <div className="text-sm text-gray-600">Max Drawdown</div>
+                    <div className="text-2xl font-bold text-yellow-600">{selectedAgent.score.provenance}</div>
+                    <div className="text-sm text-gray-600">Provenance Score</div>
                   </div>
                   <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">{selectedAgent.performance.volatility}%</div>
-                    <div className="text-sm text-gray-600">Volatility</div>
+                    <div className="text-2xl font-bold text-purple-600">{selectedAgent.score.perception}</div>
+                    <div className="text-sm text-gray-600">Perception Score</div>
                   </div>
                 </div>
               </div>

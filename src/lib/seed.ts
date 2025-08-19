@@ -1,6 +1,7 @@
 import { InMemoryStore } from './store';
 import { Agent, AgentStatus, CredibilityTier } from '../types/agent';
 import { ReputationEvent, ReputationEventType } from '../types/reputation';
+import { calculateAgentScore, determineCredibilityTier } from './scoring';
 
 export function ensureSeeded() {
   const store = InMemoryStore.getInstance();
@@ -11,92 +12,68 @@ export function ensureSeeded() {
       {
         id: '1',
         name: 'Alpha Trading Bot',
-        description: 'High-frequency trading algorithm specializing in DeFi protocols',
-        status: AgentStatus.ACTIVE,
+        operator: '0x742d35Cc6640C178fFfbDD5B5e3d6480',
         metadata: {
+          description: 'High-frequency trading algorithm specializing in DeFi protocols',
+          category: 'Trading',
           version: '2.1.0',
-          lastDeployment: new Date('2024-01-15'),
-          uptime: 99.8,
-          totalTrades: 15420,
-          successRate: 94.2
+          tags: ['defi', 'trading', 'arbitrage'],
+          provenance: {
+            sourceCode: 'https://github.com/agent-dev/trading-alpha',
+            verificationHash: '0xa1b2c3d4e5f6...',
+            deploymentChain: 'Ethereum',
+            lastAudit: new Date('2024-01-15')
+          }
         },
-        provenance: {
-          developer: 'DeFi Labs',
-          auditStatus: 'audited',
-          securityScore: 95,
-          complianceScore: 88
-        },
-        performance: {
-          totalReturn: 156.7,
-          sharpeRatio: 2.1,
-          maxDrawdown: -8.3,
-          volatility: 12.4
-        },
-        perception: {
-          communityRating: 4.6,
-          expertRating: 4.8,
-          riskTolerance: 'moderate'
-        }
+        score: calculateAgentScore(95, 85, 83),
+        credibilityTier: CredibilityTier.PLATINUM,
+        status: AgentStatus.ACTIVE,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date()
       },
       {
         id: '2',
         name: 'Yield Optimizer Pro',
-        description: 'Automated yield farming across multiple chains',
-        status: AgentStatus.ACTIVE,
+        operator: '0x123e4567e89b12d3a456426614174000',
         metadata: {
+          description: 'Automated yield farming across multiple chains',
+          category: 'DeFi',
           version: '1.8.3',
-          lastDeployment: new Date('2024-01-10'),
-          uptime: 98.9,
-          totalTrades: 8920,
-          successRate: 97.1
+          tags: ['yield', 'farming', 'optimization'],
+          provenance: {
+            sourceCode: 'https://github.com/yield-protocol/optimizer',
+            verificationHash: '0xb2c3d4e5f6a7...',
+            deploymentChain: 'Polygon',
+            lastAudit: new Date('2024-01-10')
+          }
         },
-        provenance: {
-          developer: 'YieldMax Solutions',
-          auditStatus: 'audited',
-          securityScore: 92,
-          complianceScore: 95
-        },
-        performance: {
-          totalReturn: 89.3,
-          sharpeRatio: 1.8,
-          maxDrawdown: -5.7,
-          volatility: 8.9
-        },
-        perception: {
-          communityRating: 4.4,
-          expertRating: 4.6,
-          riskTolerance: 'conservative'
-        }
+        score: calculateAgentScore(92, 72, 68),
+        credibilityTier: CredibilityTier.GOLD,
+        status: AgentStatus.ACTIVE,
+        createdAt: new Date('2024-01-15'),
+        updatedAt: new Date()
       },
       {
         id: '3',
         name: 'Arbitrage Hunter',
-        description: 'Cross-exchange arbitrage detection and execution',
-        status: AgentStatus.ACTIVE,
+        operator: '0x456789abcdef0123456789abcdef0123',
         metadata: {
+          description: 'Cross-exchange arbitrage detection and execution',
+          category: 'Trading',
           version: '3.0.1',
-          lastDeployment: new Date('2024-01-20'),
-          uptime: 99.5,
-          totalTrades: 23450,
-          successRate: 91.8
+          tags: ['arbitrage', 'trading', 'cross-exchange'],
+          provenance: {
+            sourceCode: 'https://github.com/arbitrage-labs/hunter',
+            verificationHash: '0xc3d4e5f6a7b8...',
+            deploymentChain: 'Arbitrum',
+            lastAudit: new Date('2024-01-20')
+          }
         },
-        provenance: {
-          developer: 'Arbitrage Inc',
-          auditStatus: 'audited',
-          securityScore: 89,
-          complianceScore: 82
-        },
-        performance: {
-          totalReturn: 203.4,
-          sharpeRatio: 2.8,
-          maxDrawdown: -12.1,
-          volatility: 18.7
-        },
-        perception: {
-          communityRating: 4.7,
-          expertRating: 4.9,
-          riskTolerance: 'aggressive'
-        }
+        score: calculateAgentScore(89, 78, 76),
+        credibilityTier: CredibilityTier.GOLD,
+        status: AgentStatus.ACTIVE,
+        createdAt: new Date('2024-01-20'),
+        updatedAt: new Date()
       }
     ];
 
