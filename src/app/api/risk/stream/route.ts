@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
       };
 
       // Close on client disconnect (standard Request has an AbortSignal in Edge/Node runtimes)
-      const anyReq: any = request as any;
-      if (anyReq?.signal?.addEventListener) {
-        anyReq.signal.addEventListener('abort', close);
+      const req = request as Request & { signal?: AbortSignal };
+      if (req?.signal?.addEventListener) {
+        req.signal.addEventListener('abort', close);
       }
     }
   });
