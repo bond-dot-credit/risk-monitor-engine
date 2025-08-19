@@ -20,7 +20,7 @@ export default function AgentsPage() {
     if (selectedAgentId) {
       fetchReputationSummary(selectedAgentId);
     }
-  }, [selectedAgentId]);
+  }, [selectedAgentId, fetchReputationSummary]);
 
   const fetchAgents = async () => {
     try {
@@ -94,9 +94,9 @@ export default function AgentsPage() {
                   }`}
                 >
                   <div className="font-medium">{agent.name}</div>
-                  <div className="text-sm text-gray-600">{agent.description}</div>
+                  <div className="text-sm text-gray-600">{agent.metadata.description}</div>
                   <div className="text-xs text-gray-500 mt-1">
-                    Status: {agent.status} • Uptime: {agent.metadata.uptime}%
+                    Status: {agent.status} • Tier: {agent.credibilityTier}
                   </div>
                 </button>
               ))}

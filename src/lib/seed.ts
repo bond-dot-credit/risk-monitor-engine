@@ -1,11 +1,9 @@
-import { InMemoryStore } from './store';
+import { store } from './store';
 import { Agent, AgentStatus, CredibilityTier } from '../types/agent';
 import { ReputationEvent, ReputationEventType } from '../types/reputation';
 import { calculateAgentScore, determineCredibilityTier } from './scoring';
 
 export function ensureSeeded() {
-  const store = InMemoryStore.getInstance();
-  
   if (store.getAgents().length === 0) {
     // Seed with mock agents
     const mockAgents: Agent[] = [

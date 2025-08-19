@@ -19,7 +19,7 @@ export default function RiskPage() {
     if (selectedAgentId) {
       fetchRiskMetrics(selectedAgentId);
     }
-  }, [selectedAgentId]);
+  }, [selectedAgentId, fetchRiskMetrics]);
 
   const fetchAgents = async () => {
     try {

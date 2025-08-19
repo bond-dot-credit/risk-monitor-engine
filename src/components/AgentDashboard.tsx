@@ -103,7 +103,7 @@ export function AgentDashboard() {
   useEffect(() => {
     setIsMounted(true);
     fetchAgents();
-  }, []);
+  }, [fetchAgents]);
 
   const fetchAgents = async () => {
     try {

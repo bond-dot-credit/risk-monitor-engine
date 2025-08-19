@@ -20,8 +20,8 @@ export interface ReputationEvent {
   description: string;
   impact: number; // -100 to +100, negative for negative events
   metadata: {
-    previousValue?: any;
-    newValue?: any;
+    previousValue?: string | number;
+    newValue?: string | number;
     changePercentage?: number;
     assetType?: string;
     creditLine?: number;
