@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
       id: `rep_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       agentId,
       type: normalizedType,
+      description: `Reputation event: ${type}`,
       impact: Math.max(-100, Math.min(100, impact)),
-      weight,
-      metadata,
+      metadata: metadata || {},
       timestamp: timestamp ? new Date(timestamp) : new Date()
     };
 
