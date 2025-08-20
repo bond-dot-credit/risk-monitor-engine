@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Agent, AgentStatus, CredibilityTier } from '@/types/agent';
-import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
+import { CredibilityTier } from '@/types/agent';
+import { calculateLTV } from '@/lib/scoring';
 import { store } from '@/lib/store';
-import { ensureSeeded } from '@/lib/seed';
 import { 
   CreditVault, 
   VaultStatus, 
-  Collateral, 
-  VaultRiskMetrics,
-  CreditLineRequest,
-  CreditLineApproval 
+  Collateral
 } from '@/types/credit';
 
 const mockVaults: CreditVault[] = [

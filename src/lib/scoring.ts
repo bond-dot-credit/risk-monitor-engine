@@ -1,6 +1,7 @@
 import { Agent, AgentScore, CredibilityTier } from '@/types/agent';
 import { LTVCalculation, LTVAdjustment, RiskMetrics } from '@/types/credit';
 import { ReputationEvent, ReputationSummary, ReputationSummaryBreakdown } from '@/types/reputation';
+import { Collateral } from '@/types/credit';
 
 export function calculateAgentScore(
   provenance: number,

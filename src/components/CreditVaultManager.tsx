@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Agent } from '@/types/agent';
-import { Collateral, CreditLineRequest, VaultStatus } from '@/types/credit';
+import { Collateral } from '@/types/credit';
 
 interface CreditVaultManagerProps {
   agents: Agent[];
@@ -29,7 +29,7 @@ export function CreditVaultManager({ agents, onVaultCreated }: CreditVaultManage
     setCollateral([...collateral, newCollateral]);
   };
 
-  const updateCollateral = (index: number, field: keyof Collateral, value: any) => {
+  const updateCollateral = (index: number, field: keyof Collateral, value: string | number) => {
     const updated = [...collateral];
     updated[index] = { ...updated[index], [field]: value };
     setCollateral(updated);

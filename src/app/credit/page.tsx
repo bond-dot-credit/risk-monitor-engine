@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
-import { CreditVault, VaultStatus, Collateral, CreditLineRequest } from '@/types/credit';
+import { CreditVault, VaultStatus } from '@/types/credit';
 import { CreditVaultManager } from '@/components/CreditVaultManager';
 
 export default function CreditVaultsPage() {
