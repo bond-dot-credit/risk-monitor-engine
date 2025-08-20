@@ -8,7 +8,7 @@ interface StatsOverviewProps {
 
 export function StatsOverview({ agents }: StatsOverviewProps) {
   const totalAgents = agents.length;
-  const activeAgents = agents.filter(agent => agent.status === 'active').length;
+  const activeAgents = agents.filter(agent => agent.status === 'ACTIVE').length;
   
   const tierBreakdown = Object.values(CredibilityTier).reduce((acc, tier) => {
     acc[tier] = agents.filter(agent => agent.credibilityTier === tier).length;

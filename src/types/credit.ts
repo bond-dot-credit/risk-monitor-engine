@@ -49,7 +49,7 @@ export interface LTVCalculation {
 }
 
 export interface LTVAdjustment {
-  type: 'score_bonus' | 'confidence_bonus' | 'performance_bonus' | 'provenance_bonus' | 'collateral_bonus' | 'market_bonus';
+  type: 'score_bonus' | 'confidence_bonus' | 'performance_bonus' | 'provenance_bonus' | 'verification_bonus' | 'collateral_bonus' | 'market_bonus';
   factor: string;
   description: string;
   impact: number;

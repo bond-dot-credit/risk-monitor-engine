@@ -4,12 +4,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { ReputationSummary } from '@/types/reputation';
 
+interface PerformanceMetrics {
+  apr?: number;
+  ltv?: number;
+  aum?: number;
+  volatility?: number;
+  sharpeRatio?: number;
+  maxDrawdown?: number;
+  lastUpdated?: Date;
+}
+
 export default function AgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string>('');
   const [reputationSummary, setReputationSummary] = useState<ReputationSummary | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [performanceMetrics, setPerformanceMetrics] = useState<{[key: string]: any}>({});
+  const [performanceMetrics, setPerformanceMetrics] = useState<{[key: string]: PerformanceMetrics}>({});
 
   const fetchAgents = useCallback(async () => {
     try {
