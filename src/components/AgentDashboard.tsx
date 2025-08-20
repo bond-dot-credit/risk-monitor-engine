@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
+import { Agent, CredibilityTier } from '@/types/agent';
 import { AgentCard } from './AgentCard';
 import { StatsOverview } from './StatsOverview';
 

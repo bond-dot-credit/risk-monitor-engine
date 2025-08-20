@@ -19,24 +19,37 @@ export enum VaultStatus {
 }
 
 export interface LTVCalculation {
-  agentScore: number;
-  tier: string;
-  baseLTV: number;
+  base: number;
   adjustments: LTVAdjustment[];
-  finalLTV: number;
-  confidence: number;
+  final: number;
+  maxAllowed: number;
 }
 
 export interface LTVAdjustment {
+  type: 'score_bonus' | 'confidence_bonus' | 'performance_bonus' | 'provenance_bonus';
   factor: string;
   description: string;
-  impact: number; // percentage change
+  impact: number;
   reason: string;
 }
 
 export interface RiskMetrics {
-  volatility: number;
-  liquidationRisk: number;
+  ltv: {
+    current: number;
+    maximum: number;
+    utilization: number;
+  };
+  creditLine: {
+    total: number;
+    used: number;
+    available: number;
+    apr: number;
+  };
+  assetManagement: {
+    aum: number;
+    diversityScore: number;
+    liquidationRisk: number;
+  };
   performanceVariance: number;
   tierStability: number;
   marketExposure: number;

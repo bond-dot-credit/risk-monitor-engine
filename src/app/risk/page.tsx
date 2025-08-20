@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { RiskMetrics } from '@/types/credit';
 
@@ -10,18 +10,7 @@ export default function RiskPage() {
   const [riskMetrics, setRiskMetrics] = useState<RiskMetrics | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-    fetchAgents();
-  }, []);
-
-  useEffect(() => {
-    if (selectedAgentId) {
-      fetchRiskMetrics(selectedAgentId);
-    }
-  }, [selectedAgentId]);
-
-  const fetchAgents = async () => {
+  const fetchAgents = useCallback(async () => {
     try {
       const response = await fetch('/api/agents');
       const data = await response.json();
@@ -32,7 +21,18 @@ export default function RiskPage() {
     } catch (error) {
       console.error('Error fetching agents:', error);
     }
-  };
+  }, [selectedAgentId]);
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchAgents();
+  }, [fetchAgents]);
+
+  useEffect(() => {
+    if (selectedAgentId) {
+      fetchRiskMetrics(selectedAgentId);
+    }
+  }, [selectedAgentId]);
 
   const fetchRiskMetrics = async (agentId: string) => {
     try {
@@ -266,9 +266,9 @@ export default function RiskPage() {
                     </div>
                   )}
                   
-                  {!riskMetrics.ltv.current > riskMetrics.ltv.maximum * 0.8 && 
-                   !riskMetrics.assetManagement.liquidationRisk > 70 && 
-                   !riskMetrics.performanceVariance > 20 && (
+                  {!(riskMetrics.ltv.current > riskMetrics.ltv.maximum * 0.8) && 
+                   !(riskMetrics.assetManagement.liquidationRisk > 70) && 
+                   !(riskMetrics.performanceVariance > 20) && (
                     <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded">
                       <div className="font-medium text-green-800">All Systems Normal</div>
                       <div className="text-sm text-green-600">
