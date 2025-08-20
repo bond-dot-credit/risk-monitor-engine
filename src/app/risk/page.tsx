@@ -266,9 +266,9 @@ export default function RiskPage() {
                     </div>
                   )}
                   
-                  {!riskMetrics.ltv.current > riskMetrics.ltv.maximum * 0.8 && 
-                   !riskMetrics.assetManagement.liquidationRisk > 70 && 
-                   !riskMetrics.performanceVariance > 20 && (
+                  {!(riskMetrics.ltv.current > riskMetrics.ltv.maximum * 0.8) && 
+                   !(riskMetrics.assetManagement.liquidationRisk > 70) && 
+                   !(riskMetrics.performanceVariance > 20) && (
                     <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded">
                       <div className="font-medium text-green-800">All Systems Normal</div>
                       <div className="text-sm text-green-600">

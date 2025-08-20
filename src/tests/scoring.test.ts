@@ -20,22 +20,27 @@ describe('scoring', () => {
 
   it('calculates risk metrics from agent scores', () => {
     const agent: Agent = {
-      id: 't1',
-      name: 'Test',
-      operator: '0x0',
+      id: 'test',
+      name: 'Test Agent',
+      operator: '0x123...',
       metadata: {
-        description: 'x',
+        description: 'Test agent',
         category: 'Test',
-        version: '0',
-        tags: [],
-        provenance: { sourceCode: '', verificationHash: '', deploymentChain: 'local' }
+        version: '1.0.0',
+        tags: ['test'],
+        provenance: {
+          sourceCode: 'https://test.com',
+          verificationHash: '0x123...',
+          deploymentChain: 'Testnet',
+          lastAudit: new Date()
+        }
       },
       score: {
         overall: 80,
         provenance: 85,
-        performance: 70,
-        perception: 75,
-        confidence: 90,
+        performance: 75,
+        perception: 80,
+        confidence: 82,
         lastUpdated: new Date()
       },
       credibilityTier: CredibilityTier.GOLD,
@@ -45,8 +50,12 @@ describe('scoring', () => {
     };
 
     const risk = calculateRiskMetrics(agent);
-    expect(risk.volatility).toBeGreaterThanOrEqual(0);
-    expect(risk.liquidationRisk).toBe(20);
+    expect(risk.ltv.current).toBeGreaterThanOrEqual(0);
+    expect(risk.ltv.maximum).toBeGreaterThan(0);
+    expect(risk.creditLine.total).toBeGreaterThan(0);
+    expect(risk.assetManagement.aum).toBeGreaterThan(0);
+    expect(risk.performanceVariance).toBeGreaterThanOrEqual(0);
+    expect(risk.tierStability).toBeGreaterThan(0);
     expect(risk.marketExposure).toBeGreaterThan(0);
   });
 });

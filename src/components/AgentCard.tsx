@@ -12,20 +12,25 @@ export function AgentCard({ agent }: AgentCardProps) {
   
   const getTierColor = (tier: CredibilityTier) => {
     switch (tier) {
-      case CredibilityTier.DIAMOND:
-        return 'bg-gradient-to-r from-cyan-400 to-blue-400 text-white';
-      case CredibilityTier.PLATINUM:
-        return 'bg-gradient-to-r from-slate-300 to-slate-400 text-slate-900';
-      case CredibilityTier.GOLD:
-        return 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900';
-      case CredibilityTier.SILVER:
-        return 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-900';
-      case CredibilityTier.BRONZE:
-        return 'bg-gradient-to-r from-orange-400 to-orange-500 text-orange-900';
-      default:
-        return 'bg-slate-100 text-slate-600';
+      case CredibilityTier.DIAMOND: return 'text-cyan-600 bg-cyan-50';
+      case CredibilityTier.PLATINUM: return 'text-slate-600 bg-slate-50';
+      case CredibilityTier.GOLD: return 'text-yellow-600 bg-yellow-50';
+      case CredibilityTier.SILVER: return 'text-gray-600 bg-gray-50';
+      case CredibilityTier.BRONZE: return 'text-orange-600 bg-orange-50';
+      default: return 'text-gray-600 bg-gray-50';
     }
   };
+
+  function getBaseLTVForTier(tier: CredibilityTier): number {
+    switch (tier) {
+      case CredibilityTier.DIAMOND: return 80;
+      case CredibilityTier.PLATINUM: return 70;
+      case CredibilityTier.GOLD: return 60;
+      case CredibilityTier.SILVER: return 50;
+      case CredibilityTier.BRONZE: return 40;
+      default: return 30;
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -79,7 +84,7 @@ export function AgentCard({ agent }: AgentCardProps) {
         </div>
         <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-3">
           <div className="text-2xl font-bold text-blue-600">
-            {ltvCalculation.finalLTV}%
+            Max LTV: {ltvCalculation.final}%
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400">Max LTV</div>
         </div>

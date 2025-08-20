@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
+import { Agent, AgentStatus } from '@/types/agent';
 import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';

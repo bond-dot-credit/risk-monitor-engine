@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
-import { ReputationEvent } from '@/types/reputation';
 import { ReputationSummary } from '@/types/reputation';
 
 export default function AgentsPage() {
