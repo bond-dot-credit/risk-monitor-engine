@@ -1,64 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreditVault, VaultStatus } from '@/types/credit';
-import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
-import { calculateLTV } from '@/lib/scoring';
+import { Agent, AgentStatus, CredibilityTier } from '@/types/agent';
+import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
+import { store } from '@/lib/store';
+import { ensureSeeded } from '@/lib/seed';
+import { 
+  CreditVault, 
+  VaultStatus, 
+  Collateral, 
+  VaultRiskMetrics,
+  CreditLineRequest,
+  CreditLineApproval 
+} from '@/types/credit';
 
 const mockVaults: CreditVault[] = [
   {
-    id: 'vault_1',
+    id: 'vault_001',
     agentId: '1',
-    balance: 15000,
-    creditLimit: 25000,
-    currentLTV: 75,
-    maxLTV: 80,
-    utilization: 60,
+    balance: 500000,
+    creditLimit: 1000000,
+    currentLTV: 65,
+    maxLTV: 75,
+    utilization: 65,
     status: VaultStatus.ACTIVE,
+    collateral: [
+      {
+        id: 'coll_001',
+        assetType: 'ETH',
+        amount: 25,
+        value: 750000,
+        ltvRatio: 70,
+        liquidationThreshold: 80,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'coll_002',
+        assetType: 'USDC',
+        amount: 250000,
+        value: 250000,
+        ltvRatio: 85,
+        liquidationThreshold: 90,
+        lastUpdated: new Date()
+      }
+    ],
+    riskMetrics: {
+      healthFactor: 1.85,
+      liquidationRisk: 25,
+      collateralQuality: 92,
+      marketVolatility: 18,
+      lastCalculated: new Date()
+    },
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date()
   },
   {
-    id: 'vault_2',
+    id: 'vault_002',
     agentId: '2',
-    balance: 8500,
-    creditLimit: 15000,
-    currentLTV: 65,
+    balance: 300000,
+    creditLimit: 600000,
+    currentLTV: 58,
     maxLTV: 70,
-    utilization: 57,
+    utilization: 58,
     status: VaultStatus.ACTIVE,
+    collateral: [
+      {
+        id: 'coll_003',
+        assetType: 'MATIC',
+        amount: 50000,
+        value: 450000,
+        ltvRatio: 65,
+        liquidationThreshold: 75,
+        lastUpdated: new Date()
+      }
+    ],
+    riskMetrics: {
+      healthFactor: 2.1,
+      liquidationRisk: 15,
+      collateralQuality: 88,
+      marketVolatility: 22,
+      lastCalculated: new Date()
+    },
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date()
   }
 ];
-
-const mockAgent: Agent = {
-  id: '1',
-  name: 'TradingBot Alpha',
-  operator: '0x742d35Cc6640C178fFfbDD5B5e3d6480',
-  metadata: {
-    description: 'High-frequency trading bot for DeFi protocols',
-    category: 'Trading',
-    version: '2.1.0',
-    tags: ['defi', 'trading', 'arbitrage'],
-    provenance: {
-      sourceCode: 'https://github.com/agent-dev/trading-alpha',
-      verificationHash: '0x1234567890abcdef...',
-      deploymentChain: 'Ethereum',
-      lastAudit: new Date('2024-01-15')
-    }
-  },
-  score: {
-    overall: 87,
-    provenance: 92,
-    performance: 85,
-    perception: 83,
-    confidence: 89,
-    lastUpdated: new Date()
-  },
-  credibilityTier: CredibilityTier.PLATINUM,
-  status: AgentStatus.ACTIVE,
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date()
-};
 
 export async function GET(request: NextRequest) {
   try {
@@ -82,14 +106,14 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching credit vaults:', error);
-    return NextResponse.json({ success: false, error: 'Failed to calculate risk' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to fetch vaults' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { agentId, balance, creditLimit } = body;
+    const { agentId, balance, creditLimit, collateral } = body;
 
     if (!agentId || typeof balance !== 'number' || typeof creditLimit !== 'number') {
       return NextResponse.json(
@@ -98,7 +122,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const agent = mockAgent;
+    const agent = store.getAgent(agentId);
     if (!agent) {
       return NextResponse.json(
         { success: false, error: 'Agent not found' },
@@ -118,6 +142,14 @@ export async function POST(request: NextRequest) {
       maxLTV: ltvCalculation.final,
       utilization: Math.round((balance / creditLimit) * 100),
       status: VaultStatus.ACTIVE,
+      collateral: collateral || [],
+      riskMetrics: {
+        healthFactor: calculateHealthFactor(ltvCalculation.final, balance, creditLimit),
+        liquidationRisk: calculateLiquidationRisk(ltvCalculation.final, balance, creditLimit),
+        collateralQuality: calculateCollateralQuality(collateral || []),
+        marketVolatility: 20,
+        lastCalculated: new Date()
+      },
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -146,4 +178,32 @@ function getBaseLTVForTier(tier: CredibilityTier): number {
     case CredibilityTier.BRONZE: return 40;
     default: return 30;
   }
+}
+
+function calculateHealthFactor(maxLTV: number, balance: number, creditLimit: number): number {
+  const currentLTV = (balance / creditLimit) * 100;
+  const utilization = currentLTV / maxLTV;
+  return Math.max(0.1, 2 - utilization);
+}
+
+function calculateLiquidationRisk(maxLTV: number, balance: number, creditLimit: number): number {
+  const currentLTV = (balance / creditLimit) * 100;
+  const utilization = currentLTV / maxLTV;
+  if (utilization >= 0.9) return 90;
+  if (utilization >= 0.8) return 70;
+  if (utilization >= 0.7) return 50;
+  if (utilization >= 0.6) return 30;
+  return 15;
+}
+
+function calculateCollateralQuality(collateral: Collateral[]): number {
+  if (collateral.length === 0) return 0;
+  
+  const totalValue = collateral.reduce((sum, col) => sum + col.value, 0);
+  const weightedQuality = collateral.reduce((sum, col) => {
+    const weight = col.value / totalValue;
+    return sum + (col.ltvRatio * weight);
+  }, 0);
+  
+  return Math.round(weightedQuality);
 }
