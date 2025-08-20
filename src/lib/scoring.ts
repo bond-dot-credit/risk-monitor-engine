@@ -1,4 +1,4 @@
-import { Agent, AgentScore, CredibilityTier } from '@/types/agent';
+import { Agent, AgentScore, CredibilityTier, VerificationType, VerificationStatus } from '@/types/agent';
 import { LTVCalculation, LTVAdjustment, RiskMetrics } from '@/types/credit';
 import { ReputationEvent, ReputationSummary, ReputationSummaryBreakdown } from '@/types/reputation';
 import { Collateral } from '@/types/credit';
@@ -6,46 +6,83 @@ import { Collateral } from '@/types/credit';
 export function calculateAgentScore(
   provenance: number,
   performance: number,
-  perception: number
+  perception: number,
+  verification: number = 0
 ): AgentScore {
-  const overall = Math.round(
-    provenance * 0.4 + performance * 0.4 + perception * 0.2
-  );
-  
-  const confidence = calculateConfidence(provenance, performance, perception);
+  const overall = Math.round((provenance * 0.3) + (performance * 0.3) + (perception * 0.2) + (verification * 0.2));
+  const confidence = Math.round((provenance + performance + perception + verification) / 4);
   
   return {
-    overall,
-    provenance,
-    performance,
-    perception,
-    confidence,
+    overall: Math.max(0, Math.min(100, overall)),
+    provenance: Math.max(0, Math.min(100, provenance)),
+    performance: Math.max(0, Math.min(100, performance)),
+    perception: Math.max(0, Math.min(100, perception)),
+    verification: Math.max(0, Math.min(100, verification)),
+    confidence: Math.max(0, Math.min(100, confidence)),
     lastUpdated: new Date()
   };
 }
 
-function calculateConfidence(
-  provenance: number,
-  performance: number,
-  perception: number
-): number {
-  const scores = [provenance, performance, perception];
-  const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  
-  const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
-  const confidenceFromVariance = Math.max(0, 100 - variance * 0.5);
-  
-  const confidenceFromLevel = mean * 0.8;
-  
-  return Math.round((confidenceFromVariance + confidenceFromLevel) / 2);
+export function determineCredibilityTier(score: number): CredibilityTier {
+  if (score >= 90) return CredibilityTier.DIAMOND;
+  if (score >= 80) return CredibilityTier.PLATINUM;
+  if (score >= 70) return CredibilityTier.GOLD;
+  if (score >= 60) return CredibilityTier.SILVER;
+  return CredibilityTier.BRONZE;
 }
 
-export function determineCredibilityTier(overallScore: number): CredibilityTier {
-  if (overallScore >= 90) return CredibilityTier.DIAMOND;
-  if (overallScore >= 80) return CredibilityTier.PLATINUM;
-  if (overallScore >= 70) return CredibilityTier.GOLD;
-  if (overallScore >= 60) return CredibilityTier.SILVER;
-  return CredibilityTier.BRONZE;
+export function calculateVerificationScore(verificationMethods: any[]): number {
+  if (!verificationMethods || verificationMethods.length === 0) {
+    return 0;
+  }
+
+  let totalScore = 0;
+  let totalWeight = 0;
+
+  verificationMethods.forEach(method => {
+    let weight = 1;
+    let score = method.score || 0;
+
+    switch (method.type) {
+      case VerificationType.CODE_AUDIT:
+        weight = 3;
+        break;
+      case VerificationType.SECURITY_ASSESSMENT:
+        weight = 2.5;
+        break;
+      case VerificationType.PENETRATION_TEST:
+        weight = 2.5;
+        break;
+      case VerificationType.COMPLIANCE_CHECK:
+        weight = 2;
+        break;
+      case VerificationType.PERFORMANCE_BENCHMARK:
+        weight = 1.5;
+        break;
+      case VerificationType.ON_CHAIN_ANALYSIS:
+        weight = 1.5;
+        break;
+      case VerificationType.REPUTATION_VERIFICATION:
+        weight = 1;
+        break;
+      case VerificationType.SOCIAL_PROOF:
+        weight = 0.5;
+        break;
+    }
+
+    if (method.status === VerificationStatus.PASSED) {
+      score = Math.min(100, score + 10);
+    } else if (method.status === VerificationStatus.FAILED) {
+      score = Math.max(0, score - 20);
+    } else if (method.status === VerificationStatus.EXPIRED) {
+      score = Math.max(0, score - 15);
+    }
+
+    totalScore += score * weight;
+    totalWeight += weight;
+  });
+
+  return totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
 }
 
 export function calculateLTV(
@@ -88,6 +125,15 @@ export function calculateLTV(
         if (agentScore.provenance >= 90) {
           finalLTV += 1;
           confidence += 0.04;
+        }
+        break;
+      case 'verification_bonus':
+        if (agentScore.verification >= 85) {
+          finalLTV += 3;
+          confidence += 0.07;
+        } else if (agentScore.verification >= 70) {
+          finalLTV += 1;
+          confidence += 0.03;
         }
         break;
       case 'collateral_bonus':

@@ -37,6 +37,9 @@ export function Header() {
               <Link href="/credit" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Credit Vaults
               </Link>
+              <Link href="/verification" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                Verification
+              </Link>
             </nav>
           </div>
 

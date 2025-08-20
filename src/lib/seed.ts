@@ -1,7 +1,7 @@
 import { store } from './store';
-import { Agent, AgentStatus, CredibilityTier } from '../types/agent';
+import { Agent, AgentStatus, CredibilityTier, VerificationStatus, VerificationType, RiskLevel } from '../types/agent';
 import { ReputationEvent, ReputationEventType } from '../types/reputation';
-import { calculateAgentScore } from './scoring';
+import { calculateAgentScore, calculateVerificationScore } from './scoring';
 
 export function ensureSeeded() {
   if (store.getAgents().length === 0) {
@@ -19,12 +19,61 @@ export function ensureSeeded() {
             sourceCode: 'https://github.com/agent-dev/trading-alpha',
             verificationHash: '0x1234567890abcdef...',
             deploymentChain: 'Ethereum',
-            lastAudit: new Date('2024-01-15')
-          }
+            lastAudit: new Date('2024-01-15'),
+            auditScore: 92,
+            auditReport: 'https://audit-reports.com/alpha-trading-bot-v2.1'
+          },
+          verificationMethods: [
+            {
+              id: 'verif_1_1',
+              type: VerificationType.CODE_AUDIT,
+              status: VerificationStatus.PASSED,
+              score: 92,
+              lastVerified: new Date('2024-01-15'),
+              nextVerificationDue: new Date('2024-07-15'),
+              details: {
+                auditor: 'Trail of Bits',
+                methodology: 'Static analysis, manual review, fuzzing',
+                findings: ['Minor gas optimization opportunities', 'No critical vulnerabilities found'],
+                recommendations: ['Implement additional test coverage', 'Consider formal verification'],
+                riskLevel: RiskLevel.LOW,
+                complianceStandards: ['Ethereum Security Best Practices']
+              }
+            },
+            {
+              id: 'verif_1_2',
+              type: VerificationType.SECURITY_ASSESSMENT,
+              status: VerificationStatus.PASSED,
+              score: 88,
+              lastVerified: new Date('2024-01-20'),
+              nextVerificationDue: new Date('2024-07-20'),
+              details: {
+                auditor: 'OpenZeppelin',
+                methodology: 'Security review, threat modeling',
+                findings: ['Robust access control implementation', 'Secure upgrade pattern'],
+                recommendations: ['Add rate limiting', 'Implement circuit breakers'],
+                riskLevel: RiskLevel.LOW
+              }
+            },
+            {
+              id: 'verif_1_3',
+              type: VerificationType.PERFORMANCE_BENCHMARK,
+              status: VerificationStatus.PASSED,
+              score: 95,
+              lastVerified: new Date('2024-01-25'),
+              nextVerificationDue: new Date('2024-04-25'),
+              details: {
+                methodology: 'Gas optimization testing, execution time analysis',
+                findings: ['Efficient gas usage', 'Fast execution times'],
+                recommendations: ['Monitor gas costs in production', 'Optimize for high-frequency scenarios']
+              }
+            }
+          ]
         },
-        score: calculateAgentScore(95, 85, 83),
+        score: calculateAgentScore(95, 85, 83, 92),
         credibilityTier: CredibilityTier.PLATINUM,
         status: AgentStatus.ACTIVE,
+        verification: VerificationStatus.PASSED,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date()
       },
@@ -41,12 +90,46 @@ export function ensureSeeded() {
             sourceCode: 'https://github.com/yield-protocol/optimizer',
             verificationHash: '0xabcdef1234567890...',
             deploymentChain: 'Polygon',
-            lastAudit: new Date('2024-01-10')
-          }
+            lastAudit: new Date('2024-01-10'),
+            auditScore: 78,
+            auditReport: 'https://audit-reports.com/yield-optimizer-v1.8'
+          },
+          verificationMethods: [
+            {
+              id: 'verif_2_1',
+              type: VerificationType.CODE_AUDIT,
+              status: VerificationStatus.PASSED,
+              score: 78,
+              lastVerified: new Date('2024-01-10'),
+              nextVerificationDue: new Date('2024-07-10'),
+              details: {
+                auditor: 'Consensys Diligence',
+                methodology: 'Automated analysis, manual review',
+                findings: ['Some medium-risk findings', 'Good overall architecture'],
+                recommendations: ['Fix medium-risk issues', 'Add more test coverage'],
+                riskLevel: RiskLevel.MEDIUM
+              }
+            },
+            {
+              id: 'verif_2_2',
+              type: VerificationType.COMPLIANCE_CHECK,
+              status: VerificationStatus.IN_PROGRESS,
+              score: 65,
+              lastVerified: new Date('2024-01-15'),
+              nextVerificationDue: new Date('2024-02-15'),
+              details: {
+                methodology: 'Regulatory compliance review',
+                findings: ['Pending regulatory review', 'Basic compliance framework in place'],
+                recommendations: ['Complete regulatory review', 'Implement compliance monitoring'],
+                riskLevel: RiskLevel.MEDIUM
+              }
+            }
+          ]
         },
-        score: calculateAgentScore(92, 72, 68),
+        score: calculateAgentScore(92, 72, 68, 72),
         credibilityTier: CredibilityTier.GOLD,
         status: AgentStatus.ACTIVE,
+        verification: VerificationStatus.IN_PROGRESS,
         createdAt: new Date('2024-01-15'),
         updatedAt: new Date()
       },
@@ -63,12 +146,46 @@ export function ensureSeeded() {
             sourceCode: 'https://github.com/arbitrage-labs/hunter',
             verificationHash: '0x7890abcdef123456...',
             deploymentChain: 'Arbitrum',
-            lastAudit: new Date('2024-01-20')
-          }
+            lastAudit: new Date('2024-01-20'),
+            auditScore: 85,
+            auditReport: 'https://audit-reports.com/arbitrage-hunter-v3.0'
+          },
+          verificationMethods: [
+            {
+              id: 'verif_3_1',
+              type: VerificationType.CODE_AUDIT,
+              status: VerificationStatus.PASSED,
+              score: 85,
+              lastVerified: new Date('2024-01-20'),
+              nextVerificationDue: new Date('2024-07-20'),
+              details: {
+                auditor: 'Quantstamp',
+                methodology: 'Automated analysis, manual review, formal verification',
+                findings: ['Good security practices', 'Minor optimization opportunities'],
+                recommendations: ['Implement additional safety checks', 'Add circuit breakers'],
+                riskLevel: RiskLevel.LOW
+              }
+            },
+            {
+              id: 'verif_3_2',
+              type: VerificationType.PENETRATION_TEST,
+              status: VerificationStatus.PASSED,
+              score: 82,
+              lastVerified: new Date('2024-01-25'),
+              nextVerificationDue: new Date('2024-04-25'),
+              details: {
+                methodology: 'Penetration testing, vulnerability assessment',
+                findings: ['Resistant to common attack vectors', 'Good input validation'],
+                recommendations: ['Implement additional rate limiting', 'Add anomaly detection'],
+                riskLevel: RiskLevel.LOW
+              }
+            }
+          ]
         },
-        score: calculateAgentScore(89, 78, 76),
+        score: calculateAgentScore(89, 78, 76, 84),
         credibilityTier: CredibilityTier.GOLD,
         status: AgentStatus.ACTIVE,
+        verification: VerificationStatus.PASSED,
         createdAt: new Date('2024-01-20'),
         updatedAt: new Date()
       }
