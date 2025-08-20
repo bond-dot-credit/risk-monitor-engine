@@ -8,7 +8,7 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
-  const ltvCalculation = calculateLTV(agent);
+  const ltvCalculation = calculateLTV(getBaseLTVForTier(agent.credibilityTier), agent.score);
   
   const getTierColor = (tier: CredibilityTier) => {
     switch (tier) {

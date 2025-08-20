@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
-import { ReputationEvent, ReputationEventType } from '@/types/reputation';
+import { ReputationEvent } from '@/types/reputation';
 import { ReputationSummary } from '@/types/reputation';
 
 export default function AgentsPage() {
@@ -11,7 +11,7 @@ export default function AgentsPage() {
   const [reputationSummary, setReputationSummary] = useState<ReputationSummary | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  const fetchAgents = async () => {
+  const fetchAgents = useCallback(async () => {
     try {
       const response = await fetch('/api/agents');
       const data = await response.json();
@@ -28,7 +28,7 @@ export default function AgentsPage() {
       console.error('Error fetching agents:', error);
       setAgents([]);
     }
-  };
+  }, [selectedAgentId]);
 
   const fetchReputationSummary = async (agentId: string) => {
     try {
@@ -49,37 +49,13 @@ export default function AgentsPage() {
   useEffect(() => {
     setIsMounted(true);
     fetchAgents();
-  }, []);
+  }, [fetchAgents]);
 
   useEffect(() => {
     if (selectedAgentId) {
       fetchReputationSummary(selectedAgentId);
     }
   }, [selectedAgentId]);
-
-  const postReputationEvent = async (event: Omit<ReputationEvent, 'id' | 'timestamp'>) => {
-    try {
-      const response = await fetch('/api/agentbeat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...event,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-
-      if (response.ok) {
-        // Refresh reputation summary
-        if (selectedAgentId) {
-          fetchReputationSummary(selectedAgentId);
-        }
-      }
-    } catch (error) {
-      console.error('Error posting reputation event:', error);
-    }
-  };
 
   if (!isMounted) {
     return <div className="p-6">Loading...</div>;

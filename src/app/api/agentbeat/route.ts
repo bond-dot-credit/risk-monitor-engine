@@ -26,11 +26,10 @@ export async function POST(request: NextRequest) {
   try {
     ensureSeeded();
     const body = await request.json();
-    const { agentId, type, impact, weight, metadata, timestamp } = body as {
+    const { agentId, type, impact, metadata, timestamp } = body as {
       agentId: string;
       type: ReputationEventType | string;
       impact: number;
-      weight?: number;
       metadata?: Record<string, unknown>;
       timestamp?: string | number | Date;
     };
@@ -47,7 +46,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Agent not found' }, { status: 404 });
     }
 
-    // Normalize type
     const normalizedType = (typeof type === 'string' ? type : String(type)) as ReputationEventType;
 
     const event: ReputationEvent = {
