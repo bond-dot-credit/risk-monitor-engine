@@ -10,6 +10,7 @@
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
+    "test:ci": "vitest run --reporter=verbose --coverage",
     "test:watch": "vitest",
     "clean": "rm -rf .next out dist",
     "preview": "npm run build && npm run start"

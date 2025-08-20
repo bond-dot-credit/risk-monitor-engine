@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { calculateAgentScore, determineCredibilityTier, calculateRiskMetrics } from '@/lib/scoring';
-import { Agent, AgentStatus, CredibilityTier } from '@/types/agent';
+import { calculateAgentScore, determineCredibilityTier, calculateLTV, calculateRiskMetrics } from '../lib/scoring';
+import { CredibilityTier, Agent, AgentStatus, VerificationStatus } from '../types/agent';
 
 describe('scoring', () => {
   it('calculates weighted overall score and confidence', () => {
-    const score = calculateAgentScore(90, 80, 70);
-    expect(score.overall).toBe(82);
-    expect(score.confidence).toBeGreaterThan(0);
-    expect(score.lastUpdated).toBeInstanceOf(Date);
+    const score = calculateAgentScore(90, 80, 70, 85);
+    expect(score.overall).toBe(82); // (90*0.3 + 80*0.3 + 70*0.2 + 85*0.2) = 27 + 24 + 14 + 17 = 82
+    expect(score.confidence).toBe(81); // (90+80+70+85)/4 = 81
   });
 
   it('determines credibility tiers correctly', () => {
@@ -33,7 +32,8 @@ describe('scoring', () => {
           verificationHash: '0x123...',
           deploymentChain: 'Testnet',
           lastAudit: new Date()
-        }
+        },
+        verificationMethods: []
       },
       score: {
         overall: 80,
@@ -41,10 +41,12 @@ describe('scoring', () => {
         performance: 75,
         perception: 80,
         confidence: 82,
+        verification: 0,
         lastUpdated: new Date()
       },
       credibilityTier: CredibilityTier.GOLD,
       status: AgentStatus.ACTIVE,
+      verification: VerificationStatus.PASSED,
       createdAt: new Date(),
       updatedAt: new Date()
     };

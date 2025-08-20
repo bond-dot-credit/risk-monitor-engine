@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   lint-and-type-check:
@@ -56,8 +56,17 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Debug environment
+      run: |
+        node --version
+        npm --version
+        pwd
+        ls -la
+        echo "Node modules size:"
+        du -sh node_modules || echo "No node_modules"
+        
     - name: Run tests
-      run: npm test
+      run: npm run test:ci
       
     - name: Upload test results
       uses: actions/upload-artifact@v3
