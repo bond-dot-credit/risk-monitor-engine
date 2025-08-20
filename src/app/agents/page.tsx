@@ -9,6 +9,7 @@ export default function AgentsPage() {
   const [selectedAgentId, setSelectedAgentId] = useState<string>('');
   const [reputationSummary, setReputationSummary] = useState<ReputationSummary | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [performanceMetrics, setPerformanceMetrics] = useState<{[key: string]: any}>({});
 
   const fetchAgents = useCallback(async () => {
     try {
@@ -45,6 +46,18 @@ export default function AgentsPage() {
     }
   };
 
+  const fetchPerformanceMetrics = async (agentId: string) => {
+    try {
+      const response = await fetch(`/api/performance?agentId=${agentId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPerformanceMetrics(prev => ({ ...prev, [agentId]: data }));
+      }
+    } catch (error) {
+      console.error('Error fetching performance metrics:', error);
+    }
+  };
+
   useEffect(() => {
     setIsMounted(true);
     fetchAgents();
@@ -53,6 +66,7 @@ export default function AgentsPage() {
   useEffect(() => {
     if (selectedAgentId) {
       fetchReputationSummary(selectedAgentId);
+      fetchPerformanceMetrics(selectedAgentId);
     }
   }, [selectedAgentId]);
 
@@ -60,120 +74,164 @@ export default function AgentsPage() {
     return <div className="p-6">Loading...</div>;
   }
 
+  const selectedAgent = agents.find(agent => agent.id === selectedAgentId);
+  const currentMetrics = performanceMetrics[selectedAgentId];
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">AgentBeat: Agent Reputation & Scoring</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Agent Selection */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Select Agent</h2>
-            <div className="space-y-2">
-              {agents.map((agent) => (
-                <button
-                  key={agent.id}
-                  onClick={() => setSelectedAgentId(agent.id)}
-                  className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                    selectedAgentId === agent.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="font-medium">{agent.name}</div>
-                  <div className="text-sm text-gray-600">{agent.metadata.description}</div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    Status: {agent.status} • Tier: {agent.credibilityTier}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Agent Performance & Reputation</h1>
+          <p className="mt-2 text-gray-600">
+            Monitor agent performance metrics and reputation scores
+          </p>
         </div>
 
-        {/* Reputation Summary */}
-        <div className="lg:col-span-2">
-          {reputationSummary ? (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Agent Selection */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Reputation Summary for {agents.find(a => a.id === selectedAgentId)?.name}
-              </h2>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{reputationSummary.totalEvents}</div>
-                  <div className="text-sm text-gray-600">Total Events</div>
-                </div>
-                <div className="text-center p-3 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{reputationSummary.positiveEvents}</div>
-                  <div className="text-sm text-gray-600">Positive</div>
-                </div>
-                <div className="text-center p-3 bg-red-50 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">{reputationSummary.negativeEvents}</div>
-                  <div className="text-sm text-gray-600">Negative</div>
-                </div>
-                <div className="text-center p-3 bg-purple-50 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">{reputationSummary.trend}</div>
-                  <div className="text-sm text-gray-600">Trend</div>
-                </div>
-              </div>
+              <h2 className="text-lg font-semibold mb-4">Select Agent</h2>
+              <select
+                value={selectedAgentId}
+                onChange={(e) => setSelectedAgentId(e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              >
+                {agents.map((agent) => (
+                  <option key={agent.id} value={agent.id}>
+                    {agent.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-              <div className="mb-6">
-                <h3 className="text-lg font-medium mb-3">Score Breakdown</h3>
-                <div className="space-y-3">
-                  {Object.entries(reputationSummary.breakdown).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between">
-                      <span className="capitalize">{key}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-32 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
-                          />
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {selectedAgent && (
+              <div className="space-y-6">
+                {/* Agent Overview */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold">{selectedAgent.name}</h2>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedAgent.credibilityTier === 'PLATINUM' ? 'bg-slate-100 text-slate-800' :
+                      selectedAgent.credibilityTier === 'GOLD' ? 'bg-yellow-100 text-yellow-800' :
+                      selectedAgent.credibilityTier === 'SILVER' ? 'bg-gray-100 text-gray-800' :
+                      'bg-orange-100 text-orange-800'
+                    }`}>
+                      {selectedAgent.credibilityTier}
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-600 mb-4">{selectedAgent.metadata.description}</p>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">{selectedAgent.score.overall}</div>
+                      <div className="text-sm text-gray-500">Overall Score</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">{selectedAgent.score.performance}</div>
+                      <div className="text-sm text-gray-500">Performance</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-600">{selectedAgent.score.provenance}</div>
+                      <div className="text-sm text-gray-500">Provenance</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">{selectedAgent.score.perception}</div>
+                      <div className="text-sm text-gray-500">Perception</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Performance Metrics */}
+                {currentMetrics && (
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold mb-4">Performance Metrics</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {currentMetrics.apr ? `${currentMetrics.apr}%` : 'N/A'}
                         </div>
-                        <span className="text-sm font-medium w-12 text-right">{value.toFixed(1)}</span>
+                        <div className="text-sm text-blue-600">APR</div>
+                      </div>
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <div className="text-2xl font-bold text-green-600">
+                          {currentMetrics.ltv ? `${currentMetrics.ltv}%` : 'N/A'}
+                        </div>
+                        <div className="text-sm text-green-600">LTV</div>
+                      </div>
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {currentMetrics.aum ? `$${currentMetrics.aum.toLocaleString()}` : 'N/A'}
+                        </div>
+                        <div className="text-sm text-purple-600">AUM</div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                )}
 
-              <div>
-                <h3 className="text-lg font-medium mb-3">Recent Events</h3>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {reputationSummary.recentEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className={`p-3 rounded-lg border-l-4 ${
-                        event.impact > 0
-                          ? 'border-l-green-500 bg-green-50'
-                          : 'border-l-red-500 bg-red-50'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="font-medium">{event.type.replace(/_/g, ' ')}</div>
-                          <div className="text-sm text-gray-600">{event.description}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className={`font-bold ${event.impact > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {/* Reputation Summary */}
+                {reputationSummary && (
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold mb-4">Reputation Summary</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-gray-900">{reputationSummary.totalEvents}</div>
+                        <div className="text-sm text-gray-500">Total Events</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">{reputationSummary.positiveEvents}</div>
+                        <div className="text-sm text-gray-500">Positive</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-red-600">{reputationSummary.negativeEvents}</div>
+                        <div className="text-sm text-gray-500">Negative</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">{reputationSummary.breakdown.overall}</div>
+                        <div className="text-sm text-gray-500">Reputation Score</div>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Trend</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          reputationSummary.trend === 'improving' ? 'bg-green-100 text-green-800' :
+                          reputationSummary.trend === 'declining' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {reputationSummary.trend}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-gray-900">Recent Events</h4>
+                      {reputationSummary.recentEvents.slice(0, 3).map((event) => (
+                        <div key={event.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <div className="font-medium text-sm">{event.description}</div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(event.timestamp).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            event.impact > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
                             {event.impact > 0 ? '+' : ''}{event.impact}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(event.timestamp).toLocaleDateString()}
-                          </div>
+                          </span>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
-              Select an agent to view reputation summary
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
