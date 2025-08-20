@@ -24,19 +24,19 @@ export function Header() {
               <span className="font-bold text-xl">bond.credit</span>
             </div>
             
-            <nav className="hidden md:flex space-x-6">
-              <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+            <nav className="flex space-x-8">
+              <Link href="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Dashboard
               </Link>
-              <Link href="/agents" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+              <Link href="/agents" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Agents
               </Link>
-              <Link href="/risk" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
+              <Link href="/risk" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Risk Monitor
               </Link>
-              <a href="#analytics" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors">
-                Analytics
-              </a>
+              <Link href="/credit" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                Credit Vaults
+              </Link>
             </nav>
           </div>
 
