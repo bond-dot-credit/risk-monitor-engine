@@ -31,7 +31,7 @@ export function determineCredibilityTier(score: number): CredibilityTier {
   return CredibilityTier.BRONZE;
 }
 
-export function calculateVerificationScore(verificationMethods: any[]): number {
+export function calculateVerificationScore(verificationMethods: { type: VerificationType; status: VerificationStatus; score: number }[]): number {
   if (!verificationMethods || verificationMethods.length === 0) {
     return 0;
   }

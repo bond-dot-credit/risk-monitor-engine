@@ -1,7 +1,7 @@
 import { store } from './store';
 import { Agent, AgentStatus, CredibilityTier, VerificationStatus, VerificationType, RiskLevel } from '../types/agent';
 import { ReputationEvent, ReputationEventType } from '../types/reputation';
-import { calculateAgentScore, calculateVerificationScore } from './scoring';
+import { calculateAgentScore } from './scoring';
 
 export function ensureSeeded() {
   if (store.getAgents().length === 0) {
