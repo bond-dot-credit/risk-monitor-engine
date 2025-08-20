@@ -1,6 +1,7 @@
 import { Agent, AgentScore, CredibilityTier } from '@/types/agent';
 import { LTVCalculation, LTVAdjustment, RiskMetrics } from '@/types/credit';
 import { ReputationEvent, ReputationSummary, ReputationSummaryBreakdown } from '@/types/reputation';
+import { Collateral } from '@/types/credit';
 
 export function calculateAgentScore(
   provenance: number,
@@ -50,34 +51,89 @@ export function determineCredibilityTier(overallScore: number): CredibilityTier 
 export function calculateLTV(
   baseLTV: number,
   agentScore: AgentScore,
-  adjustments: LTVAdjustment[] = []
+  adjustments: LTVAdjustment[] = [],
+  collateral?: Collateral[],
+  marketConditions?: { volatility: number; trend: 'bull' | 'bear' | 'neutral' }
 ): LTVCalculation {
   let finalLTV = baseLTV;
+  let confidence = 0.8;
+  let riskScore = 0;
   
   adjustments.forEach(adjustment => {
     switch (adjustment.type) {
       case 'score_bonus':
-        if (agentScore.overall >= 90) finalLTV += 5;
-        else if (agentScore.overall >= 80) finalLTV += 3;
-        else if (agentScore.overall >= 70) finalLTV += 1;
+        if (agentScore.overall >= 90) {
+          finalLTV += 5;
+          confidence += 0.1;
+        } else if (agentScore.overall >= 80) {
+          finalLTV += 3;
+          confidence += 0.05;
+        } else if (agentScore.overall >= 70) {
+          finalLTV += 1;
+        }
         break;
       case 'confidence_bonus':
-        if (agentScore.confidence >= 90) finalLTV += 2;
+        if (agentScore.confidence >= 90) {
+          finalLTV += 2;
+          confidence += 0.08;
+        }
         break;
       case 'performance_bonus':
-        if (agentScore.performance >= 85) finalLTV += 2;
+        if (agentScore.performance >= 85) {
+          finalLTV += 2;
+          confidence += 0.06;
+        }
         break;
       case 'provenance_bonus':
-        if (agentScore.provenance >= 90) finalLTV += 1;
+        if (agentScore.provenance >= 90) {
+          finalLTV += 1;
+          confidence += 0.04;
+        }
+        break;
+      case 'collateral_bonus':
+        if (collateral && collateral.length > 0) {
+          const totalValue = collateral.reduce((sum, col) => sum + col.value, 0);
+          const avgLTVRatio = collateral.reduce((sum, col) => sum + col.ltvRatio, 0) / collateral.length;
+          
+          if (totalValue > 1000000) {
+            finalLTV += 3;
+            confidence += 0.05;
+          } else if (totalValue > 500000) {
+            finalLTV += 2;
+            confidence += 0.03;
+          }
+          
+          if (avgLTVRatio > 80) {
+            finalLTV += 1;
+            confidence += 0.02;
+          }
+        }
+        break;
+      case 'market_bonus':
+        if (marketConditions) {
+          if (marketConditions.trend === 'bull' && marketConditions.volatility < 30) {
+            finalLTV += 2;
+            confidence += 0.03;
+          } else if (marketConditions.trend === 'bear' || marketConditions.volatility > 50) {
+            finalLTV -= 3;
+            confidence -= 0.1;
+            riskScore += 20;
+          }
+        }
         break;
     }
   });
+  
+  confidence = Math.min(1, Math.max(0.1, confidence));
+  riskScore = Math.min(100, Math.max(0, riskScore));
   
   return {
     base: baseLTV,
     adjustments: adjustments,
     final: Math.min(95, Math.max(0, finalLTV)),
-    maxAllowed: 95
+    maxAllowed: 95,
+    confidence: confidence,
+    riskScore: riskScore
   };
 }
 

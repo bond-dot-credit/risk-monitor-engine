@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Agent, AgentStatus } from '@/types/agent';
-import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
+import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
 
@@ -58,13 +57,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const agentScore = calculateAgentScore(
-      scores.provenance,
-      scores.performance,
-      scores.perception
-    );
+    const agentScore = {
+      overall: scores.provenance + scores.performance + scores.perception,
+      provenance: scores.provenance,
+      performance: scores.performance,
+      perception: scores.perception,
+      confidence: (scores.provenance + scores.performance + scores.perception) / 3,
+      lastUpdated: new Date()
+    };
 
-    const credibilityTier = determineCredibilityTier(agentScore.overall);
+    const credibilityTier = agentScore.overall >= 80 ? CredibilityTier.PLATINUM : agentScore.overall >= 60 ? CredibilityTier.GOLD : CredibilityTier.SILVER;
 
     const newAgent: Agent = {
       id: `agent_${Date.now()}`,

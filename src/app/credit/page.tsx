@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { CreditVault, VaultStatus } from '@/types/credit';
-
+ 
+import { CreditVaultManager } from '@/components/CreditVaultManager';
+ 
 export default function CreditVaultsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [vaults, setVaults] = useState<CreditVault[]>([]);
@@ -43,7 +45,12 @@ export default function CreditVaultsPage() {
     fetchVaults();
   }, [fetchAgents, fetchVaults]);
 
-  const getStatusColor = (status: VaultStatus) => {
+ 
+  const handleVaultCreated = () => {
+    fetchVaults();
+  };
+
+   const getStatusColor = (status: VaultStatus) => {
     switch (status) {
       case VaultStatus.ACTIVE: return 'bg-green-100 text-green-800';
       case VaultStatus.PAUSED: return 'bg-yellow-100 text-yellow-800';
@@ -148,9 +155,10 @@ export default function CreditVaultsPage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                 <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
                   Create New Vault
                 </button>
+ 
                 <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
                   Request Credit Line
                 </button>
