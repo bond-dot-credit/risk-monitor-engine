@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { CreditVault, VaultStatus, Collateral, CreditLineRequest } from '@/types/credit';
+import { CreditVaultManager } from '@/components/CreditVaultManager';
 
 export default function CreditVaultsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -42,6 +43,10 @@ export default function CreditVaultsPage() {
     fetchAgents();
     fetchVaults();
   }, [fetchAgents, fetchVaults]);
+
+  const handleVaultCreated = () => {
+    fetchVaults();
+  };
 
   const getStatusColor = (status: VaultStatus) => {
     switch (status) {
@@ -148,9 +153,7 @@ export default function CreditVaultsPage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                  Create New Vault
-                </button>
+                <CreditVaultManager agents={agents} onVaultCreated={handleVaultCreated} />
                 <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
                   Request Credit Line
                 </button>
