@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
+ 
 interface Agent {
   id: string;
   name: string;
@@ -72,6 +73,7 @@ function AgentCardSkeleton() {
   );
 }
 
+
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,8 +81,22 @@ export function AgentDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTier, setSelectedTier] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'name' | 'score' | 'tier'>('score');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [isMounted, setIsMounted] = useState(false);
+
+  const fetchAgents = async () => {
+    try {
+      const response = await fetch('/api/agents');
+      const data = await response.json();
+      if (data.success) {
+        setAgents(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+    }
+  }; 
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -111,109 +127,46 @@ export function AgentDashboard() {
     fetchAgents();
   }, []);
 
-  const filteredAgents = agents
-    .filter(agent => {
-      const categoryMatch = selectedCategory === 'all' || 
-        agent.metadata.category.toLowerCase() === selectedCategory.toLowerCase();
-      const tierMatch = selectedTier === 'all' || 
-        agent.credibilityTier === selectedTier;
-      const searchMatch = searchQuery === '' || 
-        agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        agent.metadata.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        agent.metadata.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      return categoryMatch && tierMatch && searchMatch;
-    })
-    .sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
-      
-      switch (sortBy) {
-        case 'name':
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-          break;
-        case 'score':
-          aValue = a.score.overall;
-          bValue = b.score.overall;
-          break;
-        case 'tier':
-          const tierOrder = { 'DIAMOND': 5, 'PLATINUM': 4, 'GOLD': 3, 'SILVER': 2, 'BRONZE': 1 };
-          aValue = tierOrder[a.credibilityTier as keyof typeof tierOrder] || 0;
-          bValue = tierOrder[b.credibilityTier as keyof typeof tierOrder] || 0;
-          break;
-        default:
-          aValue = a.score.overall;
-          bValue = b.score.overall;
-      }
-      
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
 
-  const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category))];
-  const tiers = ['all', ...new Set(agents.map(agent => agent.credibilityTier))];
+  const filteredAgents = agents.filter(agent => {
+    const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
+    const tierMatch = selectedTier === 'all' || agent.credibilityTier === selectedTier;
+    const searchMatch = searchQuery === '' || 
+      agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      agent.metadata.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      agent.metadata.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    return categoryMatch && tierMatch && searchMatch;
+  });
 
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case 'DIAMOND': return 'text-cyan-600 bg-cyan-50 dark:bg-cyan-900/30';
-      case 'PLATINUM': return 'text-slate-600 bg-slate-50 dark:bg-slate-900/30';
-      case 'GOLD': return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/30';
-      case 'SILVER': return 'text-gray-600 bg-gray-50 dark:bg-gray-900/30';
-      case 'BRONZE': return 'text-orange-600 bg-orange-50 dark:bg-orange-900/30';
-      default: return 'text-gray-600 bg-gray-50 dark:bg-gray-900/30';
+  const sortedAgents = [...filteredAgents].sort((a, b) => {
+    let aValue: any, bValue: any;
+    
+    switch (sortBy) {
+      case 'name':
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+        break;
+      case 'overall':
+        aValue = a.score.overall;
+        bValue = b.score.overall;
+        break;
+      case 'tier':
+        const tierOrder = { [CredibilityTier.BRONZE]: 1, [CredibilityTier.SILVER]: 2, [CredibilityTier.GOLD]: 3, [CredibilityTier.PLATINUM]: 4, [CredibilityTier.DIAMOND]: 5 };
+        aValue = tierOrder[a.credibilityTier] || 0;
+        bValue = tierOrder[b.credibilityTier] || 0;
+        break;
+      default:
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
     }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'active': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'inactive': return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'suspended': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'under_review': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    
+    if (sortOrder === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
     }
-  };
-
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-8">
-        {/* Loading Skeleton for Filters */}
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
-          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
-          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i}>
-                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
-                <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Loading Skeleton for Results Summary */}
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
-          <div className="flex items-center justify-between mb-4">
-            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-32"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-40"></div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="text-center p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12 mx-auto mb-1"></div>
-                <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-16 mx-auto"></div>
-              </div>
-            ))}
-          </div>
-        </div>
+  }); 
 
         {/* Loading Skeleton for Agent Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -225,60 +178,87 @@ export function AgentDashboard() {
     );
   }
 
-  if (error) {
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  if (!isMounted) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-8 text-center">
-        <div className="text-red-600 dark:text-red-400 mb-4">
-          <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-          <h3 className="text-xl font-semibold mb-2">Error Loading Dashboard</h3>
-          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-        </div>
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-        >
-          Try Again
-        </button>
+      <div className="space-y-8">
+        {/* Loading Skeleton */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
+          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+            </div>
+            <div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+            </div>
+            <div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+            </div>
+            <div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+            </div>
+          </div>
+        </div> 
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
+
+      {/* Stats Overview */}
+      <StatsOverview agents={agents} />
+
       {/* Search and Filters */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50">
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Search & Filter Agents</h3>
+        <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">Filter & Search Agents</h2>
+ 
         
         {/* Search Bar */}
         <div className="mb-6">
-          <div className="relative">
+          <div className="relative"> 
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
+
             <input
               type="text"
               placeholder="Search agents by name, description, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-slate-400 dark:placeholder-slate-500"
+
+              className="w-full px-4 py-3 pl-12 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
+            <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
         </div>
 
-        {/* Filters and Sort */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        {/* Filters and Sorting */}
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+
               Category
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+ 
             >
               {categories.map(category => (
                 <option key={category} value={category}>
@@ -295,7 +275,9 @@ export function AgentDashboard() {
             <select
               value={selectedTier}
               onChange={(e) => setSelectedTier(e.target.value)}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+
             >
               {tiers.map(tier => (
                 <option key={tier} value={tier}>
@@ -305,174 +287,78 @@ export function AgentDashboard() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+
               Sort By
             </label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'score' | 'tier')}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             >
-              <option value="score">Score</option>
               <option value="name">Name</option>
-              <option value="tier">Tier</option>
+              <option value="overall">Overall Score</option>
+              <option value="tier">Credibility Tier</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Order
-            </label>
-            <button
-              onClick={toggleSortOrder}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-600 transition-all flex items-center justify-center space-x-2"
-            >
-              <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
-              <svg className={`w-4 h-4 transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-              </svg>
-            </button>
-          </div>
+          <button
+            onClick={toggleSortOrder}
+            className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200 flex items-center space-x-2"
+          >
+            <span>{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            <span>Sort Order</span>
+          </button> 
         </div>
-      </div>
 
-      {/* Results Summary */}
-      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Agents ({filteredAgents.length})
-          </h3>
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            Showing {filteredAgents.length} of {agents.length} agents
-          </span>
-        </div>
-        
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {filteredAgents.filter(a => a.credibilityTier === 'PLATINUM' || a.credibilityTier === 'DIAMOND').length}
+        {filteredAgents.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-600">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{filteredAgents.filter(a => a.credibilityTier === CredibilityTier.PLATINUM || a.credibilityTier === CredibilityTier.DIAMOND).length}</div>
+                <div className="text-xs text-blue-600 dark:text-blue-400">Premium</div>
+              </div>
+              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{filteredAgents.filter(a => a.status === 'ACTIVE').length}</div>
+                <div className="text-xs text-green-600 dark:text-green-400">Active</div>
+              </div>
+              <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {filteredAgents.length > 0 ? Math.round(filteredAgents.reduce((sum, a) => sum + a.score.overall, 0) / filteredAgents.length) : 0}
+                </div>
+                <div className="text-xs text-purple-600 dark:text-purple-400">Avg Score</div>
+              </div>
+              <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{filteredAgents.filter(a => a.metadata.category === 'trading').length}</div>
+                <div className="text-xs text-orange-600 dark:text-orange-400">Trading</div>
+              </div>
             </div>
-            <div className="text-xs text-blue-600 dark:text-blue-400">Premium</div>
           </div>
-          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {filteredAgents.filter(a => a.status.toLowerCase() === 'active').length}
-            </div>
-            <div className="text-xs text-green-600 dark:text-green-400">Active</div>
-          </div>
-          <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              {Math.round(filteredAgents.reduce((sum, a) => sum + a.score.overall, 0) / Math.max(filteredAgents.length, 1))}
-            </div>
-            <div className="text-xs text-purple-600 dark:text-purple-400">Avg Score</div>
-          </div>
-          <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-              {filteredAgents.filter(a => a.metadata.category === 'Trading').length}
-            </div>
-            <div className="text-xs text-orange-600 dark:text-orange-400">Trading</div>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Agents Grid */}
-      {filteredAgents.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAgents.map((agent, index) => (
-            <div 
-              key={agent.id} 
-              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h4 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
-                    {agent.name}
-                  </h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                    {agent.metadata.category}
-                  </p>
-                </div>
-                <div className="flex flex-col items-end space-y-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTierColor(agent.credibilityTier)}`}>
-                    {agent.credibilityTier}
-                  </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(agent.status)}`}>
-                    {agent.status.replace('_', ' ')}
-                  </span>
-                </div>
-              </div>
-
-              {/* Description */}
-              <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2">
-                {agent.metadata.description}
-              </p>
-
-              {/* Score */}
-              <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Overall Score</span>
-                  <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                    {agent.score.overall}
-                  </span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${agent.score.overall}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Score Breakdown */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                    {agent.score.provenance}
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Provenance</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    {agent.score.performance}
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Performance</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
-                    {agent.score.perception}
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Perception</div>
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {agent.metadata.tags.slice(0, 3).map(tag => (
-                  <span 
-                    key={tag}
-                    className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-12 text-center border border-slate-200/50 dark:border-slate-700/50">
-          <div className="text-slate-400 dark:text-slate-500 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+       {/* Agents Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedAgents.map((agent, index) => (
+          <div key={agent.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+            <AgentCard agent={agent} />
           </div>
-          <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">No agents found</h3>
-          <p className="text-slate-600 dark:text-slate-400">
-            {searchQuery ? `No agents match "${searchQuery}". Try adjusting your search criteria.` : 'No agents match the selected filters. Try adjusting your search criteria.'}
+        ))}
+      </div>
+
+      {sortedAgents.length === 0 && (
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">🔍</div>
+          <p className="text-slate-500 dark:text-slate-400 text-lg">
+            {searchQuery ? `No agents found matching "${searchQuery}"` : 'No agents found matching the selected filters.'}
+          </p>
+          <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
+            Try adjusting your search criteria or filters.
+ 
           </p>
         </div>
       )}
