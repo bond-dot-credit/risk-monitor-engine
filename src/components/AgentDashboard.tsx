@@ -132,7 +132,7 @@ export function AgentDashboard() {
   // Memoized sorting for performance
   const sortedAgents = useMemo(() => {
     return [...filteredAgents].sort((a, b) => {
-      let aValue: any, bValue: unknown;
+      let aValue: string | number, bValue: string | number;
 
       switch (sortBy) {
         case 'name':
