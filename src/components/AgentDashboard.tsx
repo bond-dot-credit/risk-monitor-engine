@@ -1,112 +1,54 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Agent, CredibilityTier } from '@/types/agent';
 
 export function AgentDashboard() {
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedTier, setSelectedTier] = useState<string>('all');
-  const [isMounted, setIsMounted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchAgents = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      console.log('Fetching agents...');
-      const response = await fetch('/api/agents');
-      const data = await response.json();
-      console.log('Agents API response:', data);
-      if (data.success) {
-        setAgents(data.data);
-        console.log('Agents set:', data.data);
-      } else {
-        console.error('API returned success: false:', data.error);
-        setError(data.error || 'Failed to fetch agents');
-      }
-    } catch (error) {
-      console.error('Error fetching agents:', error);
-      setError('Failed to fetch agents');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('AgentDashboard mounted');
-    setIsMounted(true);
-    fetchAgents();
+    const fetchData = async () => {
+      try {
+        console.log('Fetching data...');
+        const response = await fetch('/api/agents');
+        const result = await response.json();
+        console.log('API result:', result);
+        setData(result);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log('Agents state changed:', agents);
-  }, [agents]);
-
-  useEffect(() => {
-    console.log('Loading state changed:', isLoading);
-  }, [isLoading]);
-
-  useEffect(() => {
-    console.log('Error state changed:', error);
-  }, [error]);
-
-  console.log('AgentDashboard render - agents:', agents.length, 'isLoading:', isLoading, 'isMounted:', isMounted);
-
-  // Simple test version - just show the data
-  if (!isMounted || isLoading) {
-    return <div className="text-center py-12">Loading... (agents: {agents.length})</div>;
+  if (loading) {
+    return <div className="text-center py-12">Loading... Please wait</div>;
   }
 
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-red-600 mb-4">Error: {error}</div>
-        <button 
-          onClick={fetchAgents}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  // Simple display for now
   return (
     <div className="space-y-8">
       <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-        <h2 className="text-xl font-semibold mb-4">Debug Info</h2>
-        <div className="space-y-2">
-          <p>Total Agents: {agents.length}</p>
-          <p>Is Loading: {isLoading.toString()}</p>
-          <p>Is Mounted: {isMounted.toString()}</p>
-          <p>Error: {error || 'None'}</p>
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Raw API Response</h2>
+        <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
+          {JSON.stringify(data, null, 2)}
+        </pre>
       </div>
 
-      {agents.length > 0 && (
+      {data && data.success && data.data && (
         <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-          <h2 className="text-xl font-semibold mb-4">Agents Found</h2>
-          <div className="space-y-2">
-            {agents.map(agent => (
-              <div key={agent.id} className="p-3 bg-gray-50 rounded">
-                <p><strong>Name:</strong> {agent.name}</p>
-                <p><strong>Category:</strong> {agent.metadata.category}</p>
-                <p><strong>Tier:</strong> {agent.credibilityTier}</p>
-                <p><strong>Status:</strong> {agent.status}</p>
+          <h2 className="text-xl font-semibold mb-4">Agents ({data.data.length})</h2>
+          <div className="space-y-4">
+            {data.data.map((agent: any) => (
+              <div key={agent.id} className="p-4 bg-gray-50 rounded border">
+                <h3 className="font-semibold">{agent.name}</h3>
+                <p className="text-sm text-gray-600">{agent.metadata.category}</p>
+                <p className="text-sm text-gray-600">Score: {agent.score.overall}</p>
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {agents.length === 0 && !isLoading && (
-        <div className="text-center py-12">
-          <p className="text-slate-500 dark:text-slate-400">
-            No agents found. This might indicate an issue with data fetching.
-          </p>
         </div>
       )}
     </div>
