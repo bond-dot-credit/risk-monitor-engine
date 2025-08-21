@@ -7,45 +7,46 @@ export default function Home() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
-              <span className="text-white font-bold text-xl sm:text-2xl">B</span>
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 shadow-lg">
+              <span className="text-white font-bold text-lg sm:text-xl lg:text-2xl">B</span>
             </div>
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight px-4">
               bond.credit
             </h1>
           </div>
-          <p className="text-xl sm:text-2xl md:text-3xl text-slate-700 dark:text-slate-200 mb-4 font-medium px-4">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-700 dark:text-slate-200 mb-3 sm:mb-4 font-medium px-4">
             Credit layer for the agentic economy
           </p>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto px-4">
+          <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-6 sm:mb-8 max-w-2xl lg:max-w-3xl mx-auto px-4 leading-relaxed">
             Advanced agent scoring, reputation tracking, and dynamic credit lines powered by AI and blockchain technology
           </p>
  
           {/* Feature Pills */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 px-4">
-            <span className="px-3 sm:px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs sm:text-sm font-medium">
-              🚀 AI-Powered Scoring
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12 px-4">
+            <span className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+              🚀 AI-Powered
             </span>
-            <span className="px-3 sm:px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-medium">
-              🔒 Secure & Transparent
+            <span className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+              🔒 Secure
             </span>
-            <span className="px-3 sm:px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs sm:text-sm font-medium">
-              ⚡ Real-time Monitoring
+            <span className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+              ⚡ Real-time
             </span>
-            <span className="px-3 sm:px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs sm:text-sm font-medium">
-              🌐 Multi-chain Support
+            <span className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+              🌐 Multi-chain
             </span>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-            <button className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 max-w-md sm:max-w-none mx-auto">
+            <button className="px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
               Get Started
             </button>
-            <button className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300">
-              View Documentation
+            <button className="px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-lg sm:rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 text-sm sm:text-base">
+              <span className="hidden sm:inline">View Documentation</span>
+              <span className="sm:hidden">Documentation</span>
             </button>
           </div>
         </div>

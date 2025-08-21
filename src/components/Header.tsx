@@ -45,40 +45,35 @@ export function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">B</span>
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-sm sm:text-lg">B</span>
             </div>
-            <span className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              bond.credit
+            <span className="font-bold text-lg sm:text-xl lg:text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="hidden sm:inline">bond.credit</span>
+              <span className="sm:hidden">bond</span>
             </span>
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-8">
-            <Link href="/" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+          <nav className="hidden lg:flex xl:space-x-8 lg:space-x-6">
+            <Link href="/" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
               Dashboard
             </Link>
-            <Link href="/agents" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+            <Link href="/agents" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
               Agents
             </Link>
-            <Link href="/risk" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
-              Risk Monitor
+            <Link href="/risk" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+              Risk
             </Link>
-            <Link href="/credit" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
-              Credit Vaults
+            <Link href="/credit" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+              Credit
             </Link>
-            <Link href="/verification" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
-              Verification
+            <Link href="/verification" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+              Verify
             </Link>
-            <Link href="/analytics" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+            <Link href="/analytics" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
               Analytics
-            </Link>
-            <Link href="/scoring" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
-              Scoring
-            </Link>
-            <Link href="/performance" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
-              Performance
             </Link>
           </nav>
 
@@ -118,35 +113,28 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-
-          <div className="lg:hidden mt-4 pb-4 border-t border-slate-200 dark:border-slate-700">
-            <nav className="flex flex-col space-y-2 pt-4">
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/">
+          <div className="lg:hidden mt-4 pb-4 border-t border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2 duration-200">
+            <nav className="grid grid-cols-2 gap-2 pt-4">
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center" href="/">
                 Dashboard
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/agents">
+              </Link>
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center" href="/agents">
                 Agents
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/risk">
+              </Link>
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center" href="/risk">
                 Risk Monitor
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/credit">
+              </Link>
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center" href="/credit">
                 Credit Vaults
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/verification">
+              </Link>
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center" href="/verification">
                 Verification
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/analytics">
+              </Link>
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center" href="/analytics">
                 Analytics
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/scoring">
-                Scoring
-              </a>
-              <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/performance">
-                Performance
-              </a>
+              </Link>
             </nav>
-          </div> 
+          </div>
         )}
       </div>
     </header>

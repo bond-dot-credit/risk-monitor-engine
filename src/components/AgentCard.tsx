@@ -77,47 +77,52 @@ export function AgentCard({ agent }: AgentCardProps) {
       </div>
 
       {/* Score Breakdown */}
-      <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
+      <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
         <div className="flex justify-between items-center">
-          <span className="text-xs text-slate-500 dark:text-slate-400">Performance</span>
-          <span className="text-xs font-medium">{agent.score.performance}</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Performance</span>
+          <span className="text-xs font-semibold text-green-600 dark:text-green-400">{agent.score.performance}</span>
         </div>
-        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1">
-          <div 
-            className="bg-green-600 h-1 rounded-full transition-all duration-300" 
+        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 sm:h-2 overflow-hidden">
+          <div
+            className="bg-gradient-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-500 ease-out"
             style={{ width: `${agent.score.performance}%` }}
           ></div>
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="text-xs text-slate-500 dark:text-slate-400">Perception</span>
-          <span className="text-xs font-medium">{agent.score.perception}</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Perception</span>
+          <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{agent.score.perception}</span>
         </div>
-        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1">
-          <div 
-            className="bg-purple-600 h-1 rounded-full transition-all duration-300" 
+        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 sm:h-2 overflow-hidden">
+          <div
+            className="bg-gradient-to-r from-purple-500 to-purple-600 h-full rounded-full transition-all duration-500 ease-out"
             style={{ width: `${agent.score.perception}%` }}
           ></div>
         </div>
       </div>
 
       {/* Metadata */}
-      <div className="border-t border-slate-200 dark:border-slate-600 pt-3 sm:pt-4">
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-          <span>v{agent.metadata.version}</span>
-          <span>Confidence: {agent.score.confidence}%</span>
+      <div className="border-t border-slate-200/70 dark:border-slate-600/70 pt-3 sm:pt-4">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2 sm:mb-3">
+          <span className="font-medium">v{agent.metadata.version}</span>
+          <span className="font-medium">
+            <span className="hidden sm:inline">Confidence: </span>
+            <span className="sm:hidden">Conf: </span>
+            {agent.score.confidence}%
+          </span>
         </div>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5">
           {agent.metadata.tags.slice(0, 2).map(tag => (
-            <span 
+            <span
               key={tag}
-              className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-xs truncate"
+              className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 text-slate-600 dark:text-slate-300 rounded-md text-xs font-medium truncate max-w-[80px] sm:max-w-none"
+              title={tag}
             >
               {tag}
             </span>
           ))}
           {agent.metadata.tags.length > 2 && (
-            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded text-xs">
+            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 rounded-md text-xs font-medium">
               +{agent.metadata.tags.length - 2}
             </span>
           )}
