@@ -2,10 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Agent, CredibilityTier } from '@/types/agent';
-import { AgentCard } from './AgentCard';
-import { StatsOverview } from './StatsOverview';
-
-
 
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
