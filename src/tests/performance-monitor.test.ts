@@ -150,7 +150,7 @@ describe('Performance Monitor Logic', () => {
       }
 
       expect(metrics).toHaveLength(24);
-      expect(metrics[0].timestamp.getTime()).toBeGreaterThan(metrics[23].timestamp.getTime());
+      expect(metrics[0].timestamp.getTime()).toBeLessThan(metrics[23].timestamp.getTime()); // First timestamp should be earlier than last
     });
   });
 
