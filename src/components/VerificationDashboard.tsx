@@ -67,18 +67,18 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
   };
 
   const calculateOverallVerificationScore = (agent: Agent) => {
-    if (!agent.metadata.verificationMethods || agent.metadata.verificationMethods.length === 0) {
+    const methods = agent?.metadata?.verificationMethods || [];
+    if (methods.length === 0) {
       return 0;
     }
 
-    const totalScore = agent.metadata.verificationMethods.reduce((sum, method) => {
-      if (method.status === VerificationStatus.PASSED) {
-        return sum + method.score;
-      }
-      return sum;
-    }, 0);
+    const passedMethods = methods.filter(method => method.status === VerificationStatus.PASSED);
+    if (passedMethods.length === 0) {
+      return 0;
+    }
 
-    return Math.round(totalScore / agent.metadata.verificationMethods.length);
+    const totalScore = passedMethods.reduce((sum, method) => sum + (method.score || 0), 0);
+    return Math.round(totalScore / passedMethods.length);
   };
 
   if (!selectedAgent) {
@@ -95,10 +95,11 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
   }
 
   const overallScore = calculateOverallVerificationScore(selectedAgent);
-  const passedVerifications = selectedAgent.metadata.verificationMethods.filter(
-    m => m.status === VerificationStatus.PASSED
+  const verificationMethods = selectedAgent?.metadata?.verificationMethods || [];
+  const passedVerifications = verificationMethods.filter(
+    m => m?.status === VerificationStatus.PASSED
   ).length;
-  const totalVerifications = selectedAgent.metadata.verificationMethods.length;
+  const totalVerifications = verificationMethods.length;
 
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8">
@@ -142,8 +143,19 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
       {/* Verification Methods */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-5 lg:p-6 xl:p-8">
         <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4 sm:mb-6 text-slate-900 dark:text-slate-100">Verification Methods</h3>
-        <div className="space-y-4 sm:space-y-6">
-          {selectedAgent.metadata.verificationMethods.map((method) => (
+        {verificationMethods.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full mb-4">
+              <svg className="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h4 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">No Verification Methods</h4>
+            <p className="text-slate-500 dark:text-slate-400">This agent has no verification methods configured yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-4 sm:space-y-6">
+            {verificationMethods.map((method) => (
             <div key={method.id} className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg sm:rounded-xl p-4 sm:p-5 lg:p-6 hover:shadow-md transition-all duration-200 hover:scale-[1.01]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4">
                 <div className="flex items-center space-x-3 sm:space-x-4 mb-2 sm:mb-0">
@@ -169,7 +181,7 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
                 </div>
               </div>
 
-              {method.details && (
+              {method?.details && (
                 <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                   {method.details.auditor && (
                     <div className="text-slate-600 dark:text-slate-400">
@@ -181,7 +193,7 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
                       <span className="font-medium text-slate-900 dark:text-slate-100">Methodology:</span> {method.details.methodology}
                     </div>
                   )}
-                  {method.details.findings && method.details.findings.length > 0 && (
+                  {method.details.findings && Array.isArray(method.details.findings) && method.details.findings.length > 0 && (
                     <div className="text-slate-600 dark:text-slate-400">
                       <span className="font-medium text-slate-900 dark:text-slate-100">Findings:</span>
                       <ul className="list-disc list-inside ml-2 mt-1 sm:mt-2 space-y-1">
@@ -191,7 +203,7 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
                       </ul>
                     </div>
                   )}
-                  {method.details.recommendations && method.details.recommendations.length > 0 && (
+                  {method.details.recommendations && Array.isArray(method.details.recommendations) && method.details.recommendations.length > 0 && (
                     <div className="text-slate-600 dark:text-slate-400">
                       <span className="font-medium text-slate-900 dark:text-slate-100">Recommendations:</span>
                       <ul className="list-disc list-inside ml-2 mt-1 sm:mt-2 space-y-1">
@@ -206,13 +218,14 @@ export function VerificationDashboard({ agents, selectedAgentId }: VerificationD
 
               <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-600">
                 <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm text-slate-500 dark:text-slate-400 space-y-1 sm:space-y-0">
-                  <span>Last Verified: <span className="font-medium">{method.lastVerified.toLocaleDateString()}</span></span>
-                  <span>Next Due: <span className="font-medium">{method.nextVerificationDue.toLocaleDateString()}</span></span>
+                  <span>Last Verified: <span className="font-medium">{new Date(method.lastVerified).toLocaleDateString()}</span></span>
+                  <span>Next Due: <span className="font-medium">{new Date(method.nextVerificationDue).toLocaleDateString()}</span></span>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
