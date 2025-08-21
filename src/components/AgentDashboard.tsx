@@ -21,12 +21,66 @@ interface Agent {
   status: string;
 }
 
+// Loading Skeleton Component
+function AgentCardSkeleton() {
+  return (
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-3/4"></div>
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+        </div>
+        <div className="flex flex-col items-end space-y-2">
+          <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+          <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Description Skeleton */}
+      <div className="space-y-2 mb-4">
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+      </div>
+
+      {/* Score Skeleton */}
+      <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-24"></div>
+          <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12"></div>
+        </div>
+        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2"></div>
+      </div>
+
+      {/* Score Breakdown Skeleton */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="text-center">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-8 mx-auto mb-1"></div>
+            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-16 mx-auto"></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tags Skeleton */}
+      <div className="flex gap-2">
+        <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+        <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+        <div className="h-6 w-14 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+      </div>
+    </div>
+  );
+}
+
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTier, setSelectedTier] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'name' | 'score' | 'tier'>('score');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -57,13 +111,48 @@ export function AgentDashboard() {
     fetchAgents();
   }, []);
 
-  const filteredAgents = agents.filter(agent => {
-    const categoryMatch = selectedCategory === 'all' || 
-      agent.metadata.category.toLowerCase() === selectedCategory.toLowerCase();
-    const tierMatch = selectedTier === 'all' || 
-      agent.credibilityTier === selectedTier;
-    return categoryMatch && tierMatch;
-  });
+  const filteredAgents = agents
+    .filter(agent => {
+      const categoryMatch = selectedCategory === 'all' || 
+        agent.metadata.category.toLowerCase() === selectedCategory.toLowerCase();
+      const tierMatch = selectedTier === 'all' || 
+        agent.credibilityTier === selectedTier;
+      const searchMatch = searchQuery === '' || 
+        agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agent.metadata.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agent.metadata.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      return categoryMatch && tierMatch && searchMatch;
+    })
+    .sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+      
+      switch (sortBy) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'score':
+          aValue = a.score.overall;
+          bValue = b.score.overall;
+          break;
+        case 'tier':
+          const tierOrder = { 'DIAMOND': 5, 'PLATINUM': 4, 'GOLD': 3, 'SILVER': 2, 'BRONZE': 1 };
+          aValue = tierOrder[a.credibilityTier as keyof typeof tierOrder] || 0;
+          bValue = tierOrder[b.credibilityTier as keyof typeof tierOrder] || 0;
+          break;
+        default:
+          aValue = a.score.overall;
+          bValue = b.score.overall;
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
 
   const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category))];
   const tiers = ['all', ...new Set(agents.map(agent => agent.credibilityTier))];
@@ -89,12 +178,48 @@ export function AgentDashboard() {
     }
   };
 
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg text-slate-600 dark:text-slate-300">Loading agents...</p>
+      <div className="space-y-8">
+        {/* Loading Skeleton for Filters */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
+          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i}>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+                <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading Skeleton for Results Summary */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-32"></div>
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-40"></div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="text-center p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12 mx-auto mb-1"></div>
+                <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-16 mx-auto"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading Skeleton for Agent Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <AgentCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
@@ -122,11 +247,31 @@ export function AgentDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Filters */}
+      {/* Search and Filters */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50">
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Filter Agents</h3>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Search & Filter Agents</h3>
+        
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search agents by name, description, or tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-slate-400 dark:placeholder-slate-500"
+            />
+          </div>
+        </div>
+
+        {/* Filters and Sort */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Category
             </label>
@@ -143,7 +288,7 @@ export function AgentDashboard() {
             </select>
           </div>
 
-          <div className="flex-1">
+          <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Credibility Tier
             </label>
@@ -159,6 +304,36 @@ export function AgentDashboard() {
               ))}
             </select>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Sort By
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'name' | 'score' | 'tier')}
+              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            >
+              <option value="score">Score</option>
+              <option value="name">Name</option>
+              <option value="tier">Tier</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Order
+            </label>
+            <button
+              onClick={toggleSortOrder}
+              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-600 transition-all flex items-center justify-center space-x-2"
+            >
+              <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
+              <svg className={`w-4 h-4 transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -172,13 +347,45 @@ export function AgentDashboard() {
             Showing {filteredAgents.length} of {agents.length} agents
           </span>
         </div>
+        
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              {filteredAgents.filter(a => a.credibilityTier === 'PLATINUM' || a.credibilityTier === 'DIAMOND').length}
+            </div>
+            <div className="text-xs text-blue-600 dark:text-blue-400">Premium</div>
+          </div>
+          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+              {filteredAgents.filter(a => a.status.toLowerCase() === 'active').length}
+            </div>
+            <div className="text-xs text-green-600 dark:text-green-400">Active</div>
+          </div>
+          <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              {Math.round(filteredAgents.reduce((sum, a) => sum + a.score.overall, 0) / Math.max(filteredAgents.length, 1))}
+            </div>
+            <div className="text-xs text-purple-600 dark:text-purple-400">Avg Score</div>
+          </div>
+          <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              {filteredAgents.filter(a => a.metadata.category === 'Trading').length}
+            </div>
+            <div className="text-xs text-orange-600 dark:text-orange-400">Trading</div>
+          </div>
+        </div>
       </div>
 
       {/* Agents Grid */}
       {filteredAgents.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAgents.map((agent) => (
-            <div key={agent.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+          {filteredAgents.map((agent, index) => (
+            <div 
+              key={agent.id} 
+              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -265,7 +472,7 @@ export function AgentDashboard() {
           </div>
           <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">No agents found</h3>
           <p className="text-slate-600 dark:text-slate-400">
-            No agents match the selected filters. Try adjusting your search criteria.
+            {searchQuery ? `No agents match "${searchQuery}". Try adjusting your search criteria.` : 'No agents match the selected filters. Try adjusting your search criteria.'}
           </p>
         </div>
       )}
