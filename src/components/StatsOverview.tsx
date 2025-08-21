@@ -1,6 +1,6 @@
 'use client';
 
-import { Agent, CredibilityTier } from '@/types/agent';
+import { Agent } from '@/types/agent';
 
 interface StatsOverviewProps {
   agents: Agent[];
@@ -12,28 +12,12 @@ export function StatsOverview({ agents }: StatsOverviewProps) {
     agent.status.toLowerCase() === 'active' || agent.status === 'ACTIVE'
   ).length;
   
-  const tierBreakdown = Object.values(CredibilityTier).reduce((acc, tier) => {
-    acc[tier] = agents.filter(agent => agent.credibilityTier === tier).length;
-    return acc;
-  }, {} as Record<CredibilityTier, number>);
-
-  const totalCreditAvailable = agents.reduce((sum, agent) => {
-    const baseLTV = getBaseLTVForTier(agent.credibilityTier);
-    return sum + (baseLTV * 1000);
-  }, 0);
-
   const avgScore = agents.length > 0 
     ? Math.round(agents.reduce((sum, agent) => sum + agent.score.overall, 0) / agents.length)
     : 0;
 
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `$${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `$${(num / 1000).toFixed(1)}K`;
-    return `$${num.toLocaleString()}`;
-  };
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between">
           <div>
@@ -70,34 +54,8 @@ export function StatsOverview({ agents }: StatsOverviewProps) {
         </div>
         <div className="mt-4">
           <div className="flex items-center text-sm text-slate-600 dark:text-slate-300">
-            <span className="text-green-500 font-medium">{tierBreakdown[CredibilityTier.PLATINUM] + tierBreakdown[CredibilityTier.DIAMOND]}</span>
-            <span className="mx-1">premium</span>
-            <span className="text-slate-400">•</span>
-            <span className="text-slate-400">{tierBreakdown[CredibilityTier.GOLD]} gold</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Credit Available</p>
-            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-              {formatNumber(totalCreditAvailable)}
-            </p>
-          </div>
-          <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-            <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-            </svg>
-          </div>
-        </div>
-        <div className="mt-4">
-          <div className="flex items-center text-sm text-slate-600 dark:text-slate-300">
-            <span className="text-green-500 font-medium">{tierBreakdown[CredibilityTier.SILVER] + tierBreakdown[CredibilityTier.BRONZE]}</span>
-            <span className="mx-1">basic tier</span>
-            <span className="text-slate-400">•</span>
-            <span className="text-slate-400">limited access</span>
+            <span className="text-green-500 font-medium">High Quality</span>
+            <span className="mx-1">agents</span>
           </div>
         </div>
       </div>
@@ -116,24 +74,11 @@ export function StatsOverview({ agents }: StatsOverviewProps) {
         </div>
         <div className="mt-4">
           <div className="flex items-center text-sm text-slate-600 dark:text-slate-300">
-            <span className="text-green-500 font-medium">85%</span>
-            <span className="mx-1">healthy</span>
-            <span className="text-slate-400">•</span>
-            <span className="text-slate-400">15% risk</span>
+            <span className="text-green-500 font-medium">Stable</span>
+            <span className="mx-1">portfolio</span>
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-function getBaseLTVForTier(tier: CredibilityTier): number {
-  switch (tier) {
-    case CredibilityTier.DIAMOND: return 80;
-    case CredibilityTier.PLATINUM: return 70;
-    case CredibilityTier.GOLD: return 60;
-    case CredibilityTier.SILVER: return 50;
-    case CredibilityTier.BRONZE: return 40;
-    default: return 30;
-  }
 }

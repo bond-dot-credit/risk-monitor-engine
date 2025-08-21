@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 export function AgentDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,6 +18,7 @@ export function AgentDashboard() {
         setLoading(false);
       } catch (error) {
         console.error('Error:', error);
+        setError('Failed to fetch agents');
         setLoading(false);
       }
     };
@@ -28,11 +30,29 @@ export function AgentDashboard() {
     return <div className="text-center py-12">Loading... Please wait</div>;
   }
 
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">Error: {error}</div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  console.log('Rendering with data:', data);
+
   return (
     <div className="space-y-8">
       <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-        <h2 className="text-xl font-semibold mb-4">Raw API Response</h2>
-        <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
+        <h2 className="text-xl font-semibold mb-4">Agent Dashboard</h2>
+        <p>Data loaded successfully!</p>
+        <p>Total agents: {data?.data?.length || 0}</p>
+        <pre className="mt-4 p-2 bg-gray-100 rounded text-xs overflow-auto">
           {JSON.stringify(data, null, 2)}
         </pre>
       </div>

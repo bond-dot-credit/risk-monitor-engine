@@ -1,26 +1,12 @@
 'use client';
 
 import { Agent, CredibilityTier } from '@/types/agent';
-import { calculateLTV } from '@/lib/scoring';
 
 interface AgentCardProps {
   agent: Agent;
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
-  const ltvCalculation = calculateLTV(getBaseLTVForTier(agent.credibilityTier), agent.score);
-  
-  function getBaseLTVForTier(tier: CredibilityTier): number {
-    switch (tier) {
-      case CredibilityTier.DIAMOND: return 80;
-      case CredibilityTier.PLATINUM: return 70;
-      case CredibilityTier.GOLD: return 60;
-      case CredibilityTier.SILVER: return 50;
-      case CredibilityTier.BRONZE: return 40;
-      default: return 30;
-    }
-  }
-  
   const getTierColor = (tier: CredibilityTier) => {
     switch (tier) {
       case CredibilityTier.DIAMOND: return 'text-cyan-600 bg-cyan-50';
@@ -84,9 +70,9 @@ export function AgentCard({ agent }: AgentCardProps) {
         </div>
         <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-3">
           <div className="text-2xl font-bold text-blue-600">
-            {ltvCalculation.final}%
+            {agent.score.provenance}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">Max LTV</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">Provenance Score</div>
         </div>
       </div>
 
@@ -143,11 +129,6 @@ export function AgentCard({ agent }: AgentCardProps) {
           ))}
         </div>
       </div>
-
-      {/* Action Button */}
-      <button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-sm">
-        View Details
-      </button>
     </div>
   );
 }
