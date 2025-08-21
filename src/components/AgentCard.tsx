@@ -34,45 +34,45 @@ export function AgentCard({ agent }: AgentCardProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
       {/* Header */}
       <div className="flex items-start justify-between mb-3 sm:mb-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-base sm:text-lg text-slate-900 dark:text-slate-100 truncate">
+        <div className="flex-1 min-w-0 pr-2">
+          <h3 className="font-semibold text-sm sm:text-base lg:text-lg text-slate-900 dark:text-slate-100 truncate leading-tight">
             {agent.name}
           </h3>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate mt-0.5">
             {agent.metadata.category}
           </p>
         </div>
-        <div className="flex flex-col items-end space-y-1 sm:space-y-2 ml-2">
-          <span className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium ${getTierColor(agent.credibilityTier)}`}>
+        <div className="flex flex-col items-end space-y-1 flex-shrink-0">
+          <span className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium whitespace-nowrap ${getTierColor(agent.credibilityTier)}`}>
             {agent.credibilityTier}
           </span>
-          <span className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(agent.status)}`}>
+          <span className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(agent.status)}`}>
             {agent.status.replace('_', ' ')}
           </span>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3 sm:mb-4 line-clamp-2">
+      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
         {agent.metadata.description}
       </p>
 
       {/* Scores */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-4">
-        <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 sm:p-3">
-          <div className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-4">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 rounded-lg p-2 sm:p-3 border border-slate-200/50 dark:border-slate-600/50">
+          <div className="text-base sm:text-lg lg:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-none">
             {agent.score.overall}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">Overall</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Overall</div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 sm:p-3">
-          <div className="text-lg sm:text-2xl font-bold text-blue-600">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg p-2 sm:p-3 border border-blue-200/50 dark:border-blue-600/30">
+          <div className="text-base sm:text-lg lg:text-2xl font-bold text-blue-600 dark:text-blue-400 leading-none">
             {agent.score.provenance}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">Provenance</div>
+          <div className="text-xs text-blue-600/70 dark:text-blue-400/70 mt-1">Provenance</div>
         </div>
       </div>
 
