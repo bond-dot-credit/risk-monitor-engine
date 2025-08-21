@@ -78,15 +78,15 @@ export async function GET(request: NextRequest) {
           const marketData = enhancedRiskMonitor.getMarketData(parsedChainId);
           return NextResponse.json({
             success: true,
-            data: marketData
+            data: marketData || null // Ensure data field is always present
           });
         }
         
         // Return market data for all chains
         const allMarketData = {
-          ethereum: enhancedRiskMonitor.getMarketData(ChainId.ETHEREUM),
-          arbitrum: enhancedRiskMonitor.getMarketData(ChainId.ARBITRUM),
-          polygon: enhancedRiskMonitor.getMarketData(ChainId.POLYGON)
+          ethereum: enhancedRiskMonitor.getMarketData(ChainId.ETHEREUM) || null,
+          arbitrum: enhancedRiskMonitor.getMarketData(ChainId.ARBITRUM) || null,
+          polygon: enhancedRiskMonitor.getMarketData(ChainId.POLYGON) || null
         };
         
         return NextResponse.json({
