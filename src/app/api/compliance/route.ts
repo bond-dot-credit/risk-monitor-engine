@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { store } from '@/lib/store';
+import { VerificationStatus } from '@/types/agent';
 import { ensureSeeded } from '@/lib/seed';
 
 export async function GET(request: NextRequest) {
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (status && status !== 'all') {
-      filteredAgents = filteredAgents.filter(agent => agent.verification === status);
+      // status comes as string; compare to enum name
+      filteredAgents = filteredAgents.filter(agent => String(agent.verification) === status);
     }
 
     // Mock compliance data
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
         nextAudit,
         riskLevel: complianceScore < 60 ? 'high' : complianceScore < 80 ? 'medium' : 'low',
         verificationMethods: agent.metadata.verificationMethods?.length || 0,
-        passedVerifications: agent.metadata.verificationMethods?.filter(m => m.status === 'PASSED').length || 0
+  passedVerifications: agent.metadata.verificationMethods?.filter(m => m.status === VerificationStatus.PASSED).length || 0
       };
     });
 
@@ -102,8 +104,8 @@ export async function POST(request: NextRequest) {
     };
 
     // Update agent verification status if compliance check fails
-    if (status === 'FAILED' && agent.verification === 'PASSED') {
-      agent.verification = 'UNDER_REVIEW';
+    if (status === 'FAILED' && agent.verification === VerificationStatus.PASSED) {
+      agent.verification = VerificationStatus.UNDER_REVIEW;
       agent.updatedAt = new Date();
       store.addAgent(agent);
     }

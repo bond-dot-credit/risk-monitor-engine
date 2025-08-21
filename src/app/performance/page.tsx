@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Agent, VerificationStatus } from '@/types/agent';
-import { VerificationDashboard } from '@/components/VerificationDashboard';
+import { Agent } from '@/types/agent';
+import { PerformanceMonitor } from '@/components/PerformanceMonitor';
 
-export default function VerificationPage() {
+export default function PerformancePage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string>('');
   const [isMounted, setIsMounted] = useState(false);
@@ -39,9 +39,9 @@ export default function VerificationPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Credibility Verification</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Performance Monitoring</h1>
           <p className="mt-2 text-gray-600">
-            Multi-factor agent verification and scoring system
+            Real-time monitoring of agent performance metrics and alerts
           </p>
         </div>
 
@@ -68,12 +68,13 @@ export default function VerificationPage() {
                         Tier: {agent.credibilityTier}
                       </span>
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        agent.verification === VerificationStatus.PASSED ? 'bg-green-100 text-green-800' :
-                          agent.verification === VerificationStatus.IN_PROGRESS ? 'bg-yellow-100 text-yellow-800' :
-                          agent.verification === VerificationStatus.FAILED ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
+                        agent.score.performance >= 90 ? 'bg-green-100 text-green-800' :
+                        agent.score.performance >= 80 ? 'bg-blue-100 text-blue-800' :
+                        agent.score.performance >= 70 ? 'bg-yellow-100 text-yellow-800' :
+                        agent.score.performance >= 60 ? 'bg-orange-100 text-orange-800' :
+                        'bg-red-100 text-red-800'
                       }`}>
-                          {String(agent.verification).replace('_', ' ')}
+                        {agent.score.performance}
                       </span>
                     </div>
                   </button>
@@ -81,31 +82,60 @@ export default function VerificationPage() {
               </div>
             </div>
 
-            {/* Verification Stats */}
+            {/* Performance Overview */}
             <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-              <h3 className="text-lg font-semibold mb-4">Verification Overview</h3>
+              <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Total Agents</span>
                   <span className="font-medium">{agents.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Verified</span>
+                  <span className="text-sm text-gray-600">High Performance (90+)</span>
                   <span className="font-medium text-green-600">
-                    {agents.filter(a => a.verification === VerificationStatus.PASSED).length}
+                    {agents.filter(a => a.score.performance >= 90).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">In Progress</span>
+                  <span className="text-sm text-gray-600">Good Performance (80-89)</span>
+                  <span className="font-medium text-blue-600">
+                    {agents.filter(a => a.score.performance >= 80 && a.score.performance < 90).length}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Average Performance (70-79)</span>
                   <span className="font-medium text-yellow-600">
-                    {agents.filter(a => a.verification === VerificationStatus.IN_PROGRESS).length}
+                    {agents.filter(a => a.score.performance >= 70 && a.score.performance < 80).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Failed</span>
+                  <span className="text-sm text-gray-600">Low Performance (&lt;70)</span>
                   <span className="font-medium text-red-600">
-                    {agents.filter(a => a.verification === VerificationStatus.FAILED).length}
+                    {agents.filter(a => a.score.performance < 70).length}
                   </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Monitoring Info */}
+            <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+              <h3 className="text-lg font-semibold mb-4">Monitoring Features</h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Real-time metrics</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span>Performance alerts</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  <span>Historical data</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                  <span>Health monitoring</span>
                 </div>
               </div>
             </div>
@@ -114,10 +144,10 @@ export default function VerificationPage() {
           {/* Main Content */}
           <div className="lg:col-span-3">
             {selectedAgent ? (
-              <VerificationDashboard agents={agents} />
+              <PerformanceMonitor agents={agents} />
             ) : (
               <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
-                Select an agent to view verification details
+                Select an agent to monitor performance
               </div>
             )}
           </div>

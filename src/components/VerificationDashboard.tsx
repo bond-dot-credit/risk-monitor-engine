@@ -9,13 +9,14 @@ interface VerificationDashboardProps {
 
 export function VerificationDashboard({ agents }: VerificationDashboardProps) {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-  const [verificationResults, setVerificationResults] = useState<{[key: string]: any}>({});
 
   useEffect(() => {
     if (agents.length > 0 && !selectedAgent) {
       setSelectedAgent(agents[0]);
     }
-  }, [agents, selectedAgent]);
+    // intentionally run only when agents change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agents]);
 
   const getVerificationStatusColor = (status: VerificationStatus) => {
     switch (status) {

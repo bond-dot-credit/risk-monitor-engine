@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { CreditVault, VaultStatus } from '@/types/credit';
  
-import { CreditVaultManager } from '@/components/CreditVaultManager';
- 
 export default function CreditVaultsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [vaults, setVaults] = useState<CreditVault[]>([]);
@@ -46,9 +44,7 @@ export default function CreditVaultsPage() {
   }, [fetchAgents, fetchVaults]);
 
  
-  const handleVaultCreated = () => {
-    fetchVaults();
-  };
+  // handleVaultCreated intentionally removed (not used in this view)
 
    const getStatusColor = (status: VaultStatus) => {
     switch (status) {

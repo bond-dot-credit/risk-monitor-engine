@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
-import { VerificationType, VerificationStatus, RiskLevel } from '@/types/agent';
+import { VerificationType, VerificationStatus } from '@/types/agent';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,13 +20,13 @@ export async function GET(request: NextRequest) {
 
     if (type && type !== 'all') {
       filteredAgents = filteredAgents.filter(agent => 
-        agent.metadata.verificationMethods.some(method => method.type === type)
+        agent.metadata.verificationMethods.some(method => String(method.type) === type)
       );
     }
 
     if (status && status !== 'all') {
       filteredAgents = filteredAgents.filter(agent => 
-        agent.metadata.verificationMethods.some(method => method.status === status)
+        agent.metadata.verificationMethods.some(method => String(method.status) === status)
       );
     }
 

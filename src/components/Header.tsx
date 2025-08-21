@@ -46,6 +46,9 @@ export function Header() {
               <Link href="/scoring" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Scoring
               </Link>
+              <Link href="/performance" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                Performance
+              </Link>
             </nav>
           </div>
 
