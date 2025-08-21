@@ -14,7 +14,13 @@ export function AgentDashboard() {
         const response = await fetch('/api/agents');
         const result = await response.json();
         console.log('API result:', result);
-        setData(result);
+        
+        // Validate the data structure
+        if (result && typeof result === 'object') {
+          setData(result);
+        } else {
+          setError('Invalid data format received');
+        }
         setLoading(false);
       } catch (error) {
         console.error('Error:', error);
@@ -44,33 +50,38 @@ export function AgentDashboard() {
     );
   }
 
-  console.log('Rendering with data:', data);
-
-  return (
-    <div className="space-y-8">
-      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-        <h2 className="text-xl font-semibold mb-4">Agent Dashboard</h2>
-        <p>Data loaded successfully!</p>
-        <p>Total agents: {data?.data?.length || 0}</p>
+  // Defensive check for data structure
+  if (!data || !data.success || !Array.isArray(data.data)) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">Invalid data structure</div>
         <pre className="mt-4 p-2 bg-gray-100 rounded text-xs overflow-auto">
           {JSON.stringify(data, null, 2)}
         </pre>
       </div>
+    );
+  }
 
-      {data && data.success && data.data && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-          <h2 className="text-xl font-semibold mb-4">Agents ({data.data.length})</h2>
-          <div className="space-y-4">
-            {data.data.map((agent: any) => (
-              <div key={agent.id} className="p-4 bg-gray-50 rounded border">
-                <h3 className="font-semibold">{agent.name}</h3>
-                <p className="text-sm text-gray-600">{agent.metadata.category}</p>
-                <p className="text-sm text-gray-600">Score: {agent.score.overall}</p>
-              </div>
-            ))}
-          </div>
+  return (
+    <div className="space-y-8">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+        <h2 className="text-xl font-semibold mb-4">Agent Dashboard with Data Fetching</h2>
+        <p>Data loaded successfully!</p>
+        <p>Total agents: {data.data.length}</p>
+      </div>
+
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+        <h2 className="text-xl font-semibold mb-4">Agents ({data.data.length})</h2>
+        <div className="space-y-4">
+          {data.data.map((agent: any, index: number) => (
+            <div key={agent?.id || index} className="p-4 bg-gray-50 rounded border">
+              <h3 className="font-semibold">{agent?.name || 'Unknown Agent'}</h3>
+              <p className="text-sm text-gray-600">{agent?.metadata?.category || 'No Category'}</p>
+              <p className="text-sm text-gray-600">Score: {agent?.score?.overall || 'N/A'}</p>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
