@@ -44,22 +44,23 @@ export function AgentDashboard() {
     fetchAgents();
   }, []);
 
+  useEffect(() => {
+    console.log('Agents state changed:', agents);
+  }, [agents]);
+
+  useEffect(() => {
+    console.log('Loading state changed:', isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    console.log('Error state changed:', error);
+  }, [error]);
+
   console.log('AgentDashboard render - agents:', agents.length, 'isLoading:', isLoading, 'isMounted:', isMounted);
 
-  const filteredAgents = agents.filter(agent => {
-    const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
-    const tierMatch = selectedTier === 'all' || agent.credibilityTier === selectedTier;
-    console.log(`Agent ${agent.name}: categoryMatch=${categoryMatch}, tierMatch=${tierMatch}`);
-    return categoryMatch && tierMatch;
-  });
-
-  console.log('Filtered agents:', filteredAgents);
-
-  const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category.toLowerCase()))];
-  const tiers = ['all', ...Object.values(CredibilityTier)];
-
+  // Simple test version - just show the data
   if (!isMounted || isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12">Loading... (agents: {agents.length})</div>;
   }
 
   if (error) {
@@ -76,62 +77,39 @@ export function AgentDashboard() {
     );
   }
 
+  // Simple display for now
   return (
     <div className="space-y-8">
-      {/* Stats Overview */}
-      <StatsOverview agents={agents} />
-
-      {/* Filters */}
       <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-        <h2 className="text-xl font-semibold mb-4">Filter Agents</h2>
-        <div className="flex flex-wrap gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-              Credibility Tier
-            </label>
-            <select
-              value={selectedTier}
-              onChange={(e) => setSelectedTier(e.target.value)}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-            >
-              {tiers.map(tier => (
-                <option key={tier} value={tier}>
-                  {tier === 'all' ? 'All Tiers' : tier.charAt(0).toUpperCase() + tier.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
+        <h2 className="text-xl font-semibold mb-4">Debug Info</h2>
+        <div className="space-y-2">
+          <p>Total Agents: {agents.length}</p>
+          <p>Is Loading: {isLoading.toString()}</p>
+          <p>Is Mounted: {isMounted.toString()}</p>
+          <p>Error: {error || 'None'}</p>
         </div>
       </div>
 
-      {/* Agents Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredAgents.map(agent => (
-          <AgentCard key={agent.id} agent={agent} />
-        ))}
-      </div>
+      {agents.length > 0 && (
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <h2 className="text-xl font-semibold mb-4">Agents Found</h2>
+          <div className="space-y-2">
+            {agents.map(agent => (
+              <div key={agent.id} className="p-3 bg-gray-50 rounded">
+                <p><strong>Name:</strong> {agent.name}</p>
+                <p><strong>Category:</strong> {agent.metadata.category}</p>
+                <p><strong>Tier:</strong> {agent.credibilityTier}</p>
+                <p><strong>Status:</strong> {agent.status}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {filteredAgents.length === 0 && (
+      {agents.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <p className="text-slate-500 dark:text-slate-400">
-            No agents found matching the selected filters.
+            No agents found. This might indicate an issue with data fetching.
           </p>
         </div>
       )}
