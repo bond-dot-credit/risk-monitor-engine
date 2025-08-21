@@ -21,6 +21,57 @@ interface Agent {
   status: string;
 }
 
+// Loading Skeleton Component
+function AgentCardSkeleton() {
+  return (
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-3/4"></div>
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+        </div>
+        <div className="flex flex-col items-end space-y-2">
+          <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+          <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Description Skeleton */}
+      <div className="space-y-2 mb-4">
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+      </div>
+
+      {/* Score Skeleton */}
+      <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-24"></div>
+          <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12"></div>
+        </div>
+        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2"></div>
+      </div>
+
+      {/* Score Breakdown Skeleton */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="text-center">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-8 mx-auto mb-1"></div>
+            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-16 mx-auto"></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tags Skeleton */}
+      <div className="flex gap-2">
+        <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+        <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+        <div className="h-6 w-14 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+      </div>
+    </div>
+  );
+}
+
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -133,10 +184,42 @@ export function AgentDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg text-slate-600 dark:text-slate-300">Loading agents...</p>
+      <div className="space-y-8">
+        {/* Loading Skeleton for Filters */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
+          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i}>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+                <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading Skeleton for Results Summary */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-32"></div>
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-40"></div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="text-center p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12 mx-auto mb-1"></div>
+                <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-16 mx-auto"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading Skeleton for Agent Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <AgentCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
