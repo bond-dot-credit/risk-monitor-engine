@@ -12,9 +12,13 @@ export function AgentDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTier, setSelectedTier] = useState<string>('all');
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchAgents = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
       console.log('Fetching agents...');
       const response = await fetch('/api/agents');
       const data = await response.json();
@@ -24,16 +28,23 @@ export function AgentDashboard() {
         console.log('Agents set:', data.data);
       } else {
         console.error('API returned success: false:', data.error);
+        setError(data.error || 'Failed to fetch agents');
       }
     } catch (error) {
       console.error('Error fetching agents:', error);
+      setError('Failed to fetch agents');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log('AgentDashboard mounted');
     setIsMounted(true);
     fetchAgents();
   }, []);
+
+  console.log('AgentDashboard render - agents:', agents.length, 'isLoading:', isLoading, 'isMounted:', isMounted);
 
   const filteredAgents = agents.filter(agent => {
     const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
@@ -47,8 +58,22 @@ export function AgentDashboard() {
   const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category.toLowerCase()))];
   const tiers = ['all', ...Object.values(CredibilityTier)];
 
-  if (!isMounted) {
+  if (!isMounted || isLoading) {
     return <div className="text-center py-12">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">Error: {error}</div>
+        <button 
+          onClick={fetchAgents}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
