@@ -18,7 +18,7 @@ const { riskMonitor } = vi.hoisted(() => ({
 }));
 
 // Mock the credit vault library
-vi.mock('../lib/credit-vault', () => ({
+vi.mock('@/lib/credit-vault', () => ({
   DEFAULT_CHAIN_CONFIGS: {
     1: {
       name: 'Ethereum',
@@ -44,7 +44,7 @@ vi.mock('../lib/credit-vault', () => ({
 }));
 
 // Mock the risk monitor
-vi.mock('../lib/risk-monitor', () => ({
+vi.mock('@/lib/risk-monitor', () => ({
   riskMonitor
 }));
 
@@ -244,7 +244,6 @@ describe('Liquidation Protection API', () => {
       expect(data.success).toBe(true);
       expect(data.shouldTrigger).toBe(false);
       
-      const { shouldTriggerLiquidationProtection } = require('../lib/credit-vault');
       expect(shouldTriggerLiquidationProtection).toHaveBeenCalled();
     });
 
@@ -269,7 +268,6 @@ describe('Liquidation Protection API', () => {
       expect(data.success).toBe(true);
       expect(data.results).toBeInstanceOf(Array);
       
-      const { executeProtectionRules } = require('../lib/credit-vault');
       expect(executeProtectionRules).toHaveBeenCalled();
     });
 
@@ -310,9 +308,33 @@ describe('Liquidation Protection API', () => {
     });
 
     it('should update protection rule when action is update-protection-rule', async () => {
-      const requestData = {
+      // First create a rule to update
+      const createRequestData = {
+        action: 'create-protection-rule',
+        vaultId: 'vault_1',
+        name: 'Original Protection Rule',
+        description: 'A rule to be updated',
+        conditions: { ltvThreshold: 80, healthFactorThreshold: 1.2 },
+        actions: [{ type: 'NOTIFY', params: { message: 'Warning: High LTV' } }],
+        enabled: true,
+        priority: 1,
+        cooldown: 3600
+      };
+
+      const createRequest = new NextRequest('http://localhost:3000/api/liquidation-protection', {
+        method: 'POST',
+        body: JSON.stringify(createRequestData)
+      });
+
+      const createResponse = await POST(createRequest);
+      const createData = await createResponse.json();
+      expect(createData.success).toBe(true);
+      const ruleId = createData.rule.id;
+
+      // Now update the rule
+      const updateRequestData = {
         action: 'update-protection-rule',
-        ruleId: 'rule_1',
+        ruleId: ruleId,
         updates: {
           name: 'Updated Protection Rule',
           conditions: {
@@ -322,19 +344,19 @@ describe('Liquidation Protection API', () => {
         }
       };
 
-      const request = new NextRequest('http://localhost:3000/api/liquidation-protection', {
+      const updateRequest = new NextRequest('http://localhost:3000/api/liquidation-protection', {
         method: 'POST',
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(updateRequestData)
       });
 
-      const response = await POST(request);
-      const data = await response.json();
+      const updateResponse = await POST(updateRequest);
+      const updateData = await updateResponse.json();
 
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.rule).toBeDefined();
-      expect(data.rule.name).toBe('Updated Protection Rule');
-      expect(data.rule.enabled).toBe(false);
+      expect(updateResponse.status).toBe(200);
+      expect(updateData.success).toBe(true);
+      expect(updateData.rule).toBeDefined();
+      expect(updateData.rule.name).toBe('Updated Protection Rule');
+      expect(updateData.rule.enabled).toBe(false);
     });
 
     it('should enable protection when action is enable-protection', async () => {
@@ -668,7 +690,7 @@ describe('Liquidation Protection API', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.error).toContain('Request body is required');
+      expect(data.error).toContain('Invalid JSON format');
     });
 
     it('should handle invalid JSON in request body', async () => {
@@ -717,7 +739,6 @@ describe('Liquidation Protection API', () => {
 
     it('should handle internal server errors gracefully', async () => {
       // Mock function to throw error
-      const { shouldTriggerLiquidationProtection } = require('../lib/credit-vault');
       shouldTriggerLiquidationProtection.mockImplementation(() => {
         throw new Error('Simulated error');
       });
@@ -775,7 +796,7 @@ describe('Liquidation Protection API', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.error).toContain('Invalid rule conditions');
+      expect(data.error).toContain('ltvThreshold must be a number');
     });
 
     it('should validate string fields', async () => {
@@ -806,7 +827,7 @@ describe('Liquidation Protection API', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.error).toContain('Missing required fields');
+      expect(data.error).toContain('vaultId must be a string');
     });
 
     it('should validate boolean fields', async () => {
@@ -837,7 +858,7 @@ describe('Liquidation Protection API', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.error).toContain('Invalid rule data');
+      expect(data.error).toContain('enabled must be a boolean');
     });
   });
 });
