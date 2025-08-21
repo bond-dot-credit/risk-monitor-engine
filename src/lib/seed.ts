@@ -7,7 +7,7 @@ export function ensureSeeded() {
   if (store.getAgents().length === 0) {
     const agents: Agent[] = [
       {
-        id: '1',
+        id: 'agent_1',
         name: 'Alpha Trading Bot',
         operator: '0x742d35Cc6640C178fFfbDD5B5e3d6480',
         metadata: {
@@ -78,7 +78,7 @@ export function ensureSeeded() {
         updatedAt: new Date()
       },
       {
-        id: '2',
+        id: 'agent_2',
         name: 'Yield Optimizer Pro',
         operator: '0x123e4567e89b12d3a456426614174000',
         metadata: {
@@ -134,7 +134,7 @@ export function ensureSeeded() {
         updatedAt: new Date()
       },
       {
-        id: '3',
+        id: 'agent_3',
         name: 'Arbitrage Hunter',
         operator: '0x456789abcdef0123456789abcdef0123',
         metadata: {
@@ -196,7 +196,7 @@ export function ensureSeeded() {
     const events: ReputationEvent[] = [
       {
         id: 'evt_1',
-        agentId: '1',
+        agentId: 'agent_1',
         type: ReputationEventType.PERFORMANCE_IMPROVEMENT,
         timestamp: new Date('2024-01-25T10:30:00Z'),
         description: 'Trading algorithm update resulted in 15% better returns',
@@ -209,7 +209,7 @@ export function ensureSeeded() {
       },
       {
         id: 'evt_2',
-        agentId: '1',
+        agentId: 'agent_1',
         type: ReputationEventType.CREDIT_LINE_INCREASE,
         timestamp: new Date('2024-01-24T14:15:00Z'),
         description: 'Credit line increased from $500K to $750K due to performance',
@@ -222,7 +222,7 @@ export function ensureSeeded() {
       },
       {
         id: 'evt_3',
-        agentId: '2',
+        agentId: 'agent_2',
         type: ReputationEventType.APR_IMPROVEMENT,
         timestamp: new Date('2024-01-23T09:45:00Z'),
         description: 'APR improved from 8.2% to 9.1% through strategy updates',
@@ -235,7 +235,7 @@ export function ensureSeeded() {
       },
       {
         id: 'evt_4',
-        agentId: '3',
+        agentId: 'agent_3',
         type: ReputationEventType.LTV_OPTIMIZATION,
         timestamp: new Date('2024-01-22T16:20:00Z'),
         description: 'LTV ratio updated from 65% to 72% while maintaining risk profile',
