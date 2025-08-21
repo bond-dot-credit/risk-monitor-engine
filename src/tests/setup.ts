@@ -1,4 +1,9 @@
-import { vi } from 'vitest';
+import React from 'react';
+import { vi, beforeAll, afterAll } from 'vitest';
+import '@testing-library/jest-dom';
+
+// Make React available globally for JSX
+global.React = React;
 
 // Global test setup
 beforeAll(() => {
