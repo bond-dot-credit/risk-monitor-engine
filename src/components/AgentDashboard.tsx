@@ -8,49 +8,61 @@ import { StatsOverview } from './StatsOverview';
 // Loading Skeleton Component
 function AgentCardSkeleton() {
   return (
-    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
       {/* Header Skeleton */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-3/4"></div>
-          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className="flex-1 min-w-0 pr-2">
+          <div className="h-4 sm:h-5 lg:h-6 bg-slate-200 dark:bg-slate-700 rounded mb-1 sm:mb-2 w-3/4"></div>
+          <div className="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
         </div>
-        <div className="flex flex-col items-end space-y-2">
-          <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-          <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+        <div className="flex flex-col items-end space-y-1 flex-shrink-0">
+          <div className="h-5 sm:h-6 w-12 sm:w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+          <div className="h-5 sm:h-6 w-14 sm:w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
         </div>
       </div>
 
       {/* Description Skeleton */}
-      <div className="space-y-2 mb-4">
-        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+      <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
+        <div className="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+        <div className="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
       </div>
 
       {/* Score Skeleton */}
-      <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-24"></div>
-          <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12"></div>
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-4">
+        <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 sm:p-3">
+          <div className="h-4 sm:h-5 lg:h-6 bg-slate-200 dark:bg-slate-600 rounded w-8 sm:w-12 mb-1"></div>
+          <div className="h-2 sm:h-3 bg-slate-200 dark:bg-slate-600 rounded w-12 sm:w-16"></div>
         </div>
-        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2"></div>
+        <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2 sm:p-3">
+          <div className="h-4 sm:h-5 lg:h-6 bg-slate-200 dark:bg-slate-600 rounded w-8 sm:w-12 mb-1"></div>
+          <div className="h-2 sm:h-3 bg-slate-200 dark:bg-slate-600 rounded w-12 sm:w-16"></div>
+        </div>
       </div>
 
       {/* Score Breakdown Skeleton */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="text-center">
-            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-8 mx-auto mb-1"></div>
-            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-16 mx-auto"></div>
+      <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
+        {[1, 2].map(i => (
+          <div key={i}>
+            <div className="flex justify-between items-center mb-1">
+              <div className="h-2 sm:h-3 bg-slate-200 dark:bg-slate-700 rounded w-16 sm:w-20"></div>
+              <div className="h-2 sm:h-3 bg-slate-200 dark:bg-slate-700 rounded w-6 sm:w-8"></div>
+            </div>
+            <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 sm:h-2"></div>
           </div>
         ))}
       </div>
 
       {/* Tags Skeleton */}
-      <div className="flex gap-2">
-        <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
-        <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
-        <div className="h-6 w-14 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+      <div className="border-t border-slate-200/70 dark:border-slate-600/70 pt-3 sm:pt-4">
+        <div className="flex justify-between mb-2 sm:mb-3">
+          <div className="h-2 sm:h-3 bg-slate-200 dark:bg-slate-700 rounded w-8 sm:w-12"></div>
+          <div className="h-2 sm:h-3 bg-slate-200 dark:bg-slate-700 rounded w-12 sm:w-16"></div>
+        </div>
+        <div className="flex gap-1 sm:gap-1.5">
+          <div className="h-5 sm:h-6 w-12 sm:w-16 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
+          <div className="h-5 sm:h-6 w-14 sm:w-20 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
+          <div className="h-5 sm:h-6 w-8 sm:w-12 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
+        </div>
       </div>
     </div>
   );
@@ -114,7 +126,7 @@ export function AgentDashboard() {
   });
 
   const sortedAgents = [...filteredAgents].sort((a, b) => {
-    let aValue: any, bValue: any;
+    let aValue: any, bValue: unknown;
     
     switch (sortBy) {
       case 'name':
@@ -154,23 +166,41 @@ export function AgentDashboard() {
 
   if (!isMounted) {
     return (
-      <div className="space-y-8">
-        {/* Loading Skeleton */}
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
-          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
-          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-6 sm:space-y-8">
+        {/* Loading Skeleton for Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 sm:w-24 mb-2"></div>
+                  <div className="h-6 sm:h-8 bg-slate-200 dark:bg-slate-700 rounded w-12 sm:w-16"></div>
+                </div>
+                <div className="p-2 sm:p-3 bg-slate-200 dark:bg-slate-700 rounded-lg sm:rounded-xl w-8 h-8 sm:w-12 sm:h-12"></div>
+              </div>
+              <div className="mt-3 sm:mt-4">
+                <div className="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded w-24 sm:w-32"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Loading Skeleton for Filters */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="h-5 sm:h-6 bg-slate-200 dark:bg-slate-700 rounded w-32 sm:w-48 mb-4 sm:mb-6"></div>
+          <div className="h-10 sm:h-12 bg-slate-200 dark:bg-slate-700 rounded-lg sm:rounded-xl w-full mb-4 sm:mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {[1, 2, 3, 4].map(i => (
               <div key={i}>
-                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
-                <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                <div className="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded w-16 sm:w-20 mb-1 sm:mb-2"></div>
+                <div className="h-8 sm:h-10 bg-slate-200 dark:bg-slate-700 rounded-lg w-full"></div>
               </div>
             ))}
           </div>
         </div>
         
         {/* Loading Skeleton for Agent Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
             <AgentCardSkeleton key={i} />
           ))}
@@ -181,10 +211,10 @@ export function AgentDashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* Loading Skeleton for Agent Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map(i => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
             <AgentCardSkeleton key={i} />
           ))}
         </div>
@@ -194,10 +224,24 @@ export function AgentDashboard() {
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">⚠️</div>
-        <p className="text-red-500 text-lg mb-2">Error loading agents</p>
-        <p className="text-slate-500 text-sm">{error}</p>
+      <div className="text-center py-8 sm:py-12 px-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-red-100 dark:bg-red-900/30 rounded-full mb-4 sm:mb-6">
+          <svg className="w-8 h-8 sm:w-10 sm:h-10 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-red-600 dark:text-red-400 mb-2 sm:mb-3">
+          Error Loading Agents
+        </h3>
+        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mb-4 sm:mb-6 max-w-md mx-auto leading-relaxed">
+          {error}
+        </p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 sm:px-6 py-2 sm:py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg sm:rounded-xl transition-colors text-sm sm:text-base"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -337,14 +381,35 @@ export function AgentDashboard() {
       </div>
 
       {sortedAgents.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <p className="text-slate-500 dark:text-slate-400 text-lg">
-            {searchQuery ? `No agents found matching "${searchQuery}"` : 'No agents found matching the selected filters.'}
+        <div className="text-center py-8 sm:py-12 px-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 dark:bg-slate-800 rounded-full mb-4 sm:mb-6">
+            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-700 dark:text-slate-300 mb-2 sm:mb-3">
+            No Agents Found
+          </h3>
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mb-2 sm:mb-3 max-w-md mx-auto leading-relaxed">
+            {searchQuery ? (
+              <>No agents found matching <span className="font-medium text-slate-700 dark:text-slate-300">"{searchQuery}"</span></>
+            ) : (
+              'No agents found matching the selected filters.'
+            )}
           </p>
-          <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
+          <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 mb-4 sm:mb-6">
             Try adjusting your search criteria or filters.
           </p>
+          <button 
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedCategory('all');
+              setSelectedTier('all');
+            }}
+            className="px-4 sm:px-6 py-2 sm:py-3 bg-slate-600 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-medium rounded-lg sm:rounded-xl transition-colors text-sm sm:text-base"
+          >
+            Clear Filters
+          </button>
         </div>
       )}
     </div>
