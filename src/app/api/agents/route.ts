@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Agent, CredibilityTier, AgentStatus } from '@/types/agent';
+import { Agent, CredibilityTier, AgentStatus, VerificationStatus } from '@/types/agent';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
+import { calculateAgentScore } from '@/lib/scoring';
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     if (tier && tier !== 'all') {
       filteredAgents = filteredAgents.filter(
-        agent => agent.credibilityTier === tier
+        agent => String(agent.credibilityTier) === tier
       );
     }
 
@@ -57,14 +58,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const agentScore = {
-      overall: scores.provenance + scores.performance + scores.perception,
-      provenance: scores.provenance,
-      performance: scores.performance,
-      perception: scores.perception,
-      confidence: (scores.provenance + scores.performance + scores.perception) / 3,
-      lastUpdated: new Date()
-    };
+    const agentScore = calculateAgentScore(
+      scores.provenance,
+      scores.performance,
+      scores.perception,
+      0 // Default verification score
+    );
 
     const credibilityTier = agentScore.overall >= 80 ? CredibilityTier.PLATINUM : agentScore.overall >= 60 ? CredibilityTier.GOLD : CredibilityTier.SILVER;
 
@@ -76,6 +75,7 @@ export async function POST(request: NextRequest) {
       score: agentScore,
       credibilityTier,
       status: AgentStatus.UNDER_REVIEW,
+      verification: VerificationStatus.UNDER_REVIEW,
       createdAt: new Date(),
       updatedAt: new Date()
     };

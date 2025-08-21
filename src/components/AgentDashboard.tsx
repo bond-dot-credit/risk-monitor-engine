@@ -1,15 +1,87 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Agent, CredibilityTier } from '@/types/agent';
-import { AgentCard } from './AgentCard';
-import { StatsOverview } from './StatsOverview';
+
+ 
+interface Agent {
+  id: string;
+  name: string;
+  metadata: {
+    category: string;
+    description: string;
+    version: string;
+    tags: string[];
+  };
+  score: {
+    overall: number;
+    provenance: number;
+    performance: number;
+    perception: number;
+  };
+  credibilityTier: string;
+  status: string;
+}
+
+// Loading Skeleton Component
+function AgentCardSkeleton() {
+  return (
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-3/4"></div>
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+        </div>
+        <div className="flex flex-col items-end space-y-2">
+          <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+          <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Description Skeleton */}
+      <div className="space-y-2 mb-4">
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+      </div>
+
+      {/* Score Skeleton */}
+      <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-24"></div>
+          <div className="h-8 bg-slate-200 dark:bg-slate-600 rounded w-12"></div>
+        </div>
+        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2"></div>
+      </div>
+
+      {/* Score Breakdown Skeleton */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="text-center">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-8 mx-auto mb-1"></div>
+            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-16 mx-auto"></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tags Skeleton */}
+      <div className="flex gap-2">
+        <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+        <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+        <div className="h-6 w-14 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+      </div>
+    </div>
+  );
+}
+
 
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTier, setSelectedTier] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [isMounted, setIsMounted] = useState(false);
@@ -24,12 +96,37 @@ export function AgentDashboard() {
     } catch (error) {
       console.error('Error fetching agents:', error);
     }
-  };
+  }; 
 
   useEffect(() => {
-    setIsMounted(true);
+    const fetchAgents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch('/api/agents');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && Array.isArray(result.data)) {
+          setAgents(result.data);
+        } else {
+          throw new Error('Invalid data format received');
+        }
+      } catch (error) {
+        console.error('Error fetching agents:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch agents');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchAgents();
   }, []);
+
 
   const filteredAgents = agents.filter(agent => {
     const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
@@ -69,10 +166,18 @@ export function AgentDashboard() {
     } else {
       return aValue < bValue ? 1 : -1;
     }
-  });
+  }); 
 
-  const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category.toLowerCase()))];
-  const tiers = ['all', ...Object.values(CredibilityTier)];
+        {/* Loading Skeleton for Agent Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <AgentCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -103,28 +208,37 @@ export function AgentDashboard() {
               <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
             </div>
           </div>
-        </div>
+        </div> 
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
+
       {/* Stats Overview */}
       <StatsOverview agents={agents} />
 
       {/* Search and Filters */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50">
         <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">Filter & Search Agents</h2>
+ 
         
         {/* Search Bar */}
         <div className="mb-6">
-          <div className="relative">
+          <div className="relative"> 
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+
             <input
               type="text"
               placeholder="Search agents by name, description, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+
               className="w-full px-4 py-3 pl-12 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
             <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,44 +251,51 @@ export function AgentDashboard() {
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex flex-col">
             <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+
               Category
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+ 
             >
               {categories.map(category => (
                 <option key={category} value={category}>
-                  {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                  {category === 'all' ? 'All Categories' : category}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Credibility Tier
             </label>
             <select
               value={selectedTier}
               onChange={(e) => setSelectedTier(e.target.value)}
+
               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+
             >
               {tiers.map(tier => (
                 <option key={tier} value={tier}>
-                  {tier === 'all' ? 'All Tiers' : tier.charAt(0).toUpperCase() + tier.slice(1)}
+                  {tier === 'all' ? 'All Tiers' : tier}
                 </option>
               ))}
             </select>
           </div>
 
+
           <div className="flex flex-col">
             <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+
               Sort By
             </label>
             <select
               value={sortBy}
+
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             >
@@ -190,7 +311,7 @@ export function AgentDashboard() {
           >
             <span>{sortOrder === 'asc' ? '↑' : '↓'}</span>
             <span>Sort Order</span>
-          </button>
+          </button> 
         </div>
 
         {/* Quick Stats */}
@@ -220,7 +341,7 @@ export function AgentDashboard() {
         )}
       </div>
 
-      {/* Agents Grid */}
+       {/* Agents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedAgents.map((agent, index) => (
           <div key={agent.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -237,6 +358,7 @@ export function AgentDashboard() {
           </p>
           <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
             Try adjusting your search criteria or filters.
+ 
           </p>
         </div>
       )}
