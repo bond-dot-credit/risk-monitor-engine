@@ -45,9 +45,10 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
+  extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' | 'info' | 'low' | 'medium' | 'high' | 'critical' | 'active' | 'inactive' | 'suspended' | 'pending' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  size?: 'default' | 'sm' | 'lg';
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
