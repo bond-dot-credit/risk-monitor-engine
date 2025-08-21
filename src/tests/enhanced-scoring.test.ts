@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { 
   calculateEnhancedAgentScore, 
@@ -5,7 +6,7 @@ import {
   calculatePerformanceScore, 
   calculateConfidenceScore 
 } from '../lib/enhanced-scoring';
-import { Agent, VerificationType, VerificationStatus, CredibilityTier, AgentStatus } from '../types/agent';
+import { Agent, VerificationType, VerificationStatus, CredibilityTier, AgentStatus, RiskLevel } from '../types/agent';
 
 describe('Enhanced Scoring System', () => {
   let mockAgent: Agent;
@@ -42,7 +43,7 @@ describe('Enhanced Scoring System', () => {
               methodology: 'Static analysis, manual review, fuzzing',
               findings: ['Minor gas optimization opportunities'],
               recommendations: ['Implement additional test coverage'],
-              riskLevel: 'LOW',
+              riskLevel: RiskLevel.LOW,
               complianceStandards: ['Ethereum Security Best Practices']
             }
           },
@@ -58,7 +59,7 @@ describe('Enhanced Scoring System', () => {
               methodology: 'Security review, threat modeling',
               findings: ['Robust access control implementation'],
               recommendations: ['Add rate limiting'],
-              riskLevel: 'LOW'
+              riskLevel: RiskLevel.LOW
             }
           },
           {
@@ -72,7 +73,7 @@ describe('Enhanced Scoring System', () => {
               methodology: 'Penetration testing, vulnerability assessment',
               findings: ['Resistant to common attack vectors'],
               recommendations: ['Implement additional rate limiting'],
-              riskLevel: 'LOW'
+              riskLevel: RiskLevel.LOW
             }
           }
         ]

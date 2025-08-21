@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Agent } from '@/types/agent';
+import { Agent, VerificationStatus } from '@/types/agent';
 import { VerificationDashboard } from '@/components/VerificationDashboard';
 
 export default function VerificationPage() {
@@ -68,12 +68,12 @@ export default function VerificationPage() {
                         Tier: {agent.credibilityTier}
                       </span>
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        agent.verification === 'PASSED' ? 'bg-green-100 text-green-800' :
-                        agent.verification === 'IN_PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
-                        agent.verification === 'FAILED' ? 'bg-red-100 text-red-800' :
+                        agent.verification === VerificationStatus.PASSED ? 'bg-green-100 text-green-800' :
+                          agent.verification === VerificationStatus.IN_PROGRESS ? 'bg-yellow-100 text-yellow-800' :
+                          agent.verification === VerificationStatus.FAILED ? 'bg-red-100 text-red-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {agent.verification.replace('_', ' ')}
+                          {String(agent.verification).replace('_', ' ')}
                       </span>
                     </div>
                   </button>
@@ -92,19 +92,19 @@ export default function VerificationPage() {
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Verified</span>
                   <span className="font-medium text-green-600">
-                    {agents.filter(a => a.verification === 'PASSED').length}
+                    {agents.filter(a => a.verification === VerificationStatus.PASSED).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">In Progress</span>
                   <span className="font-medium text-yellow-600">
-                    {agents.filter(a => a.verification === 'IN_PROGRESS').length}
+                    {agents.filter(a => a.verification === VerificationStatus.IN_PROGRESS).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Failed</span>
                   <span className="font-medium text-red-600">
-                    {agents.filter(a => a.verification === 'FAILED').length}
+                    {agents.filter(a => a.verification === VerificationStatus.FAILED).length}
                   </span>
                 </div>
               </div>

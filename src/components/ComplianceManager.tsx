@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Agent, VerificationStatus } from '@/types/agent';
+import { Agent } from '@/types/agent';
 
 interface ComplianceManagerProps {
   agents: Agent[];
@@ -43,7 +43,9 @@ export function ComplianceManager({ agents }: ComplianceManagerProps) {
       setSelectedAgent(agents[0]);
     }
     generateComplianceData();
-  }, [agents, selectedAgent]);
+    // Only re-run when agents change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agents]);
 
   const generateComplianceData = () => {
     // Mock compliance rules
@@ -102,11 +104,12 @@ export function ComplianceManager({ agents }: ComplianceManagerProps) {
       const failedRules = Math.floor(Math.random() * 2);
       const pendingRules = rules.length - passedRules - failedRules;
       const criticalIssues = Math.floor(Math.random() * 2);
+      const overallCompliance = Math.round((passedRules / rules.length) * 100);
 
       return {
         agentId: agent.id,
         agentName: agent.name,
-        overallCompliance: Math.round((passedRules / rules.length) * 100),
+        overallCompliance,
         passedRules,
         failedRules,
         pendingRules,

@@ -109,7 +109,7 @@ export default function PerformancePage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Low Performance (<70)</span>
+                  <span className="text-sm text-gray-600">Low Performance (&lt;70)</span>
                   <span className="font-medium text-red-600">
                     {agents.filter(a => a.score.performance < 70).length}
                   </span>

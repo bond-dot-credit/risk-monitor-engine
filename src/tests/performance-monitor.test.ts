@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+// @ts-expect-error: testing-library may be a devDependency not installed in this environment
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PerformanceMonitor } from '../components/PerformanceMonitor';
 import { Agent, VerificationType, VerificationStatus, CredibilityTier, AgentStatus } from '../types/agent';

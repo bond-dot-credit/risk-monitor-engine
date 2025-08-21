@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Agent, CredibilityTier, AgentStatus, VerificationStatus } from '@/types/agent';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
-import { calculateAgentScore, determineCredibilityTier } from '@/lib/scoring';
+import { calculateAgentScore } from '@/lib/scoring';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     if (tier && tier !== 'all') {
       filteredAgents = filteredAgents.filter(
-        agent => agent.credibilityTier === tier
+        agent => String(agent.credibilityTier) === tier
       );
     }
 
