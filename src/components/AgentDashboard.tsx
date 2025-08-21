@@ -15,10 +15,15 @@ export function AgentDashboard() {
 
   const fetchAgents = async () => {
     try {
+      console.log('Fetching agents...');
       const response = await fetch('/api/agents');
       const data = await response.json();
+      console.log('Agents API response:', data);
       if (data.success) {
         setAgents(data.data);
+        console.log('Agents set:', data.data);
+      } else {
+        console.error('API returned success: false:', data.error);
       }
     } catch (error) {
       console.error('Error fetching agents:', error);
@@ -33,8 +38,11 @@ export function AgentDashboard() {
   const filteredAgents = agents.filter(agent => {
     const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
     const tierMatch = selectedTier === 'all' || agent.credibilityTier === selectedTier;
+    console.log(`Agent ${agent.name}: categoryMatch=${categoryMatch}, tierMatch=${tierMatch}`);
     return categoryMatch && tierMatch;
   });
+
+  console.log('Filtered agents:', filteredAgents);
 
   const categories = ['all', ...new Set(agents.map(agent => agent.metadata.category.toLowerCase()))];
   const tiers = ['all', ...Object.values(CredibilityTier)];
