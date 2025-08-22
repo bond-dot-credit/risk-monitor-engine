@@ -13,13 +13,17 @@ export default function RiskPage() {
   const fetchAgents = useCallback(async () => {
     try {
       const response = await fetch('/api/agents');
-      const data = await response.json();
-      setAgents(data);
-      if (data.length > 0 && !selectedAgentId) {
-        setSelectedAgentId(data[0].id);
+      const result = await response.json();
+      // Handle the API response format: { success: true, data: [...] }
+      const data = result.success ? result.data : result;
+      const agentsArray = Array.isArray(data) ? data : [];
+      setAgents(agentsArray);
+      if (agentsArray.length > 0 && !selectedAgentId) {
+        setSelectedAgentId(agentsArray[0].id);
       }
     } catch (error) {
       console.error('Error fetching agents:', error);
+      setAgents([]);
     }
   }, [selectedAgentId]);
 
@@ -38,24 +42,56 @@ export default function RiskPage() {
     try {
       const response = await fetch(`/api/risk?agentId=${agentId}`);
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        // Handle the API response format: { success: true, data: {...} }
+        const data = result.success ? result.data : result;
         setRiskMetrics(data);
       } else {
-        console.error('Failed to fetch risk metrics');
+        console.error('Failed to fetch risk metrics', response.status);
+        setRiskMetrics(null);
       }
     } catch (error) {
       console.error('Error fetching risk metrics:', error);
+      setRiskMetrics(null);
     }
   };
 
   if (!isMounted) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="animate-pulse">
+          <h1 className="text-3xl font-bold mb-8">Risk Monitor: Agent Performance & Risk Assessment</h1>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-16 bg-gray-100 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-20 bg-gray-100 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const selectedAgent = agents.find(a => a.id === selectedAgentId);
+  const selectedAgent = Array.isArray(agents) ? agents.find(a => a.id === selectedAgentId) : undefined;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto" suppressHydrationWarning>
       <h1 className="text-3xl font-bold mb-8">Risk Monitor: Agent Performance & Risk Assessment</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
