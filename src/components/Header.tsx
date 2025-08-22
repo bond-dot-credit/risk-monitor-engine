@@ -8,26 +8,17 @@ import Link from 'next/link';
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    // Check if user has a saved preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
 
   useEffect(() => {
     // Check for saved dark mode preference
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-    setIsDarkMode(savedDarkMode);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const shouldUseDark = savedDarkMode || (!localStorage.getItem('darkMode') && prefersDark);
+    setIsDarkMode(shouldUseDark);
     
     // Apply dark mode to document
-    if (savedDarkMode) {
+    if (shouldUseDark) {
       document.documentElement.classList.add('dark');
     }
   }, []);
@@ -42,7 +33,6 @@ export function Header() {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
- 
     }
   };
 
@@ -93,33 +83,7 @@ export function Header() {
           </nav>
 
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-8">
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/">
-              Dashboard
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/agents">
-              Agents
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/risk">
-              Risk Monitor
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/credit">
-              Credit Vaults
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/verification">
-              Verification
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/analytics">
-              Analytics
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/scoring">
-              Scoring
-            </a>
-            <a className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors" href="/performance">
-              Performance
-            </a>
-          </nav>
+
 
           {/* Right Side Actions */}
 

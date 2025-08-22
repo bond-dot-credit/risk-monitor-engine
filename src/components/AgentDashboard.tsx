@@ -166,18 +166,7 @@ export function AgentDashboard() {
     } else {
       return aValue < bValue ? 1 : -1;
     }
-  }); 
-
-        {/* Loading Skeleton for Agent Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map(i => (
-            <AgentCardSkeleton key={i} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
+  });
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
