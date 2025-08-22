@@ -19,8 +19,9 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-   const pathname = usePathname();
- 
+
+  const pathname = usePathname();
+
 
   useEffect(() => {
     // Check for saved dark mode preference or system preference
@@ -37,6 +38,7 @@ export function Header() {
     }
   }, []);
 
+
     // Check for saved dark mode preference
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -48,6 +50,7 @@ export function Header() {
     if (shouldUseDark) {
       document.documentElement.classList.add('dark');
     }
+
 
   }, []);
 
@@ -133,6 +136,7 @@ export function Header() {
               </svg>
               <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full"></div>
             </button>
+
 
             {/* Dark Mode Toggle */}
             <button
