@@ -19,7 +19,9 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
   const pathname = usePathname();
+
 
   useEffect(() => {
     // Check for saved dark mode preference or system preference
@@ -36,14 +38,20 @@ export function Header() {
     }
   }, []);
 
-  useEffect(() => {
-    // Handle scroll effect
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Check for saved dark mode preference
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const shouldUseDark = savedDarkMode || (!localStorage.getItem('darkMode') && prefersDark);
+    setIsDarkMode(shouldUseDark);
+    
+    // Apply dark mode to document
+    if (shouldUseDark) {
+      document.documentElement.classList.add('dark');
+    }
+
+
   }, []);
 
   const toggleDarkMode = () => {
@@ -86,59 +94,37 @@ export function Header() {
             </div>
           </Link>
           
-          {/* Compact Desktop Navigation */}
-          <nav className="hidden xl:flex items-center space-x-1">
-            {navigation.slice(0, 6).map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
-                    isActive
-                      ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                  }`}
-                >
-                  <span className="flex items-center space-x-1.5">
-                    <span className="text-sm">{item.icon}</span>
-                    <span className="hidden lg:inline">{item.name}</span>
-                  </span>
-                  {isActive && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></div>
-                  )}
-                </Link>
-              );
-            })}
-            
-            {/* More Menu for remaining items */}
-            {navigation.length > 6 && (
-              <div className="relative group">
-                <button className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
-                  <span className="flex items-center space-x-1.5">
-                    <span className="text-sm">⋯</span>
-                    <span className="hidden lg:inline">More</span>
-                  </span>
-                </button>
-                
-                {/* Dropdown */}
-                <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-2">
-                    {navigation.slice(6).map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="flex items-center space-x-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-                      >
-                        <span>{item.icon}</span>
-                        <span>{item.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex space-x-8">
+            <Link href="/" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Dashboard
+            </Link>
+            <Link href="/agents" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Agents
+            </Link>
+            <Link href="/risk" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Risk Monitor
+            </Link>
+            <Link href="/credit" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Credit Vaults
+            </Link>
+            <Link href="/verification" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Verification
+            </Link>
+            <Link href="/analytics" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Analytics
+            </Link>
+            <Link href="/scoring" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Scoring
+            </Link>
+            <Link href="/performance" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+              Performance
+            </Link>
           </nav>
+
+
+
+
 
           {/* Compact Right Side Actions */}
           <div className="flex items-center space-x-2">
@@ -150,6 +136,7 @@ export function Header() {
               </svg>
               <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full"></div>
             </button>
+
 
             {/* Dark Mode Toggle */}
             <button
