@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
+// Agent interface defined locally since we don't have a types file
+ 
+
 import { Header } from '@/components/Header';
 import { ResponsiveHeader } from '@/components/ResponsiveHeader';
 import { MobileBottomSheet } from '@/components/MobileBottomSheet';
 import { useResponsive, useMobileSheet } from '@/hooks/useResponsive';
+
 
 interface Agent {
   id: string;
@@ -20,27 +25,36 @@ interface Agent {
     provenance: number;
     performance: number;
     perception: number;
+     verification?: number;
+ 
   };
   credibilityTier: string;
   status: string;
 }
 
-interface PerformanceMetrics {
-  totalTransactions: number;
-  successRate: number;
-  avgResponseTime: number;
-  uptime: number;
-  errorRate: number;
-  throughput: number;
-  latency: number;
-  availability: number;
+import { Header } from '@/components/Header';
+
+interface PerformanceMetric {
+  agentId: string;
+  timestamp: Date;
+  apr: number;
+  ltv: number;
+  aum: number;
+  volatility: number;
+  sharpeRatio: number;
+  maxDrawdown: number;
+  healthFactor: number;
+  utilization: number;
 }
 
-interface AlertData {
+interface PerformanceAlert {
   id: string;
-  type: 'warning' | 'error' | 'info';
+  agentId: string;
+  type: 'warning' | 'critical' | 'info';
   message: string;
   timestamp: Date;
+  resolved: boolean;
+
 }
 
 export default function PerformancePage() {
@@ -48,60 +62,136 @@ export default function PerformancePage() {
   const [selectedAgentId, setSelectedAgentId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
-  const [refreshInterval, setRefreshInterval] = useState<number>(30);
-  const [isAutoRefresh, setIsAutoRefresh] = useState(true);
-  
-  // Responsive state management
-  const { isMobile, isTablet, isDesktop, viewport } = useResponsive();
-  const agentSheet = useMobileSheet();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  useEffect(() => {
-    const fetchAgents = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch('/api/agents');
+  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
+  const [alerts, setAlerts] = useState<PerformanceAlert[]>([]);
+  const [isMonitoring, setIsMonitoring] = useState(false);
+  const [refreshInterval, setRefreshInterval] = useState(30);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data.success && data.data) {
-          setAgents(data.data);
-          if (data.data.length > 0 && !selectedAgentId) {
-            setSelectedAgentId(data.data[0].id);
-          }
-        } else {
-          throw new Error(data.message || 'Failed to fetch agents');
-        }
-      } catch (error) {
-        console.error('Error fetching agents:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch agents');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAgents();
-  }, [selectedAgentId]);
-
-  // Auto-refresh functionality
-  useEffect(() => {
-    if (!isAutoRefresh) return;
-
-    const interval = setInterval(() => {
-      // Trigger a re-render to update timestamps and simulate real-time data
-      setRefreshInterval(prev => prev);
-    }, refreshInterval * 1000);
-
-    return () => clearInterval(interval);
-  }, [isAutoRefresh, refreshInterval]);
-
+  // Move all hooks before any conditional returns
   const selectedAgent = agents.find(agent => agent.id === selectedAgentId);
 
+  const performanceStats = useMemo(() => {
+    const total = agents.length;
+    const high = agents.filter(a => a.score.performance >= 90).length;
+    const good = agents.filter(a => a.score.performance >= 80 && a.score.performance < 90).length;
+    const average = agents.filter(a => a.score.performance >= 70 && a.score.performance < 80).length;
+    const low = agents.filter(a => a.score.performance < 70).length;
+    const avgPerformance = total > 0 ? Math.round(agents.reduce((sum, a) => sum + a.score.performance, 0) / total) : 0;
+    
+    return { total, high, good, average, low, avgPerformance };
+  }, [agents]);
+
+  const fetchAgents = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/agents');
+      const data = await response.json();
+      if (data.success && data.data) {
+        setAgents(data.data);
+        if (data.data.length > 0 && !selectedAgentId) {
+          setSelectedAgentId(data.data[0].id);
+        }
+      } else {
+        throw new Error('Failed to fetch agents');
+      }
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch agents');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedAgentId]);
+
+  const generatePerformanceMetrics = useCallback(() => {
+    if (!selectedAgent) return;
+
+    const metrics: PerformanceMetric[] = [];
+    const baseMetrics = {
+      apr: 8 + (selectedAgent.score.performance / 100) * 12,
+      ltv: 50 + (selectedAgent.score.overall / 100) * 30,
+      aum: 100000 + (selectedAgent.score.performance / 100) * 900000,
+      volatility: 20 - (selectedAgent.score.overall / 100) * 15,
+      sharpeRatio: (selectedAgent.score.performance / 100) * 2 + 0.5,
+      maxDrawdown: 30 - (selectedAgent.score.overall / 100) * 20,
+      healthFactor: 1.5 + (selectedAgent.score.overall / 100) * 0.5,
+      utilization: 40 + (selectedAgent.score.overall / 100) * 40
+    };
+
+    // Generate 24 hours of hourly data
+    for (let i = 23; i >= 0; i--) {
+      const timestamp = new Date();
+      timestamp.setHours(timestamp.getHours() - i);
+      
+      const variation = (Math.random() - 0.5) * 0.1;
+      
+      metrics.push({
+        agentId: selectedAgent.id,
+        timestamp,
+        apr: Math.round((baseMetrics.apr * (1 + variation)) * 100) / 100,
+        ltv: Math.round((baseMetrics.ltv * (1 + variation)) * 100) / 100,
+        aum: Math.round(baseMetrics.aum * (1 + variation)),
+        volatility: Math.round((baseMetrics.volatility * (1 + variation)) * 100) / 100,
+        sharpeRatio: Math.round((baseMetrics.sharpeRatio * (1 + variation)) * 100) / 100,
+        maxDrawdown: Math.round((baseMetrics.maxDrawdown * (1 + variation)) * 100) / 100,
+        healthFactor: Math.round((baseMetrics.healthFactor * (1 + variation)) * 100) / 100,
+        utilization: Math.round((baseMetrics.utilization * (1 + variation)) * 100) / 100
+      });
+    }
+
+    setPerformanceMetrics(metrics);
+  }, [selectedAgent]);
+
+  const generateAlerts = useCallback(() => {
+    if (!selectedAgent) return;
+
+    const newAlerts: PerformanceAlert[] = [];
+    
+    if (selectedAgent.score.performance < 70) {
+      newAlerts.push({
+        id: `alert_${Date.now()}_1`,
+        agentId: selectedAgent.id,
+        type: 'warning',
+        message: `Performance score below threshold: ${selectedAgent.score.performance}`,
+        timestamp: new Date(),
+        resolved: false
+      });
+    }
+
+    if (selectedAgent.score.overall < 60) {
+      newAlerts.push({
+        id: `alert_${Date.now()}_2`,
+        agentId: selectedAgent.id,
+        type: 'critical',
+        message: `Overall score critically low: ${selectedAgent.score.overall}`,
+        timestamp: new Date(),
+        resolved: false
+      });
+    }
+
+    setAlerts(prev => [...newAlerts, ...prev]);
+  }, [selectedAgent]);
+
+  useEffect(() => {
+    fetchAgents();
+  }, [fetchAgents]);
+
+  useEffect(() => {
+    if (selectedAgent) {
+      generatePerformanceMetrics();
+      generateAlerts();
+    }
+  }, [selectedAgent, generatePerformanceMetrics, generateAlerts]);
+
+
+  useEffect(() => {
+    if (isMonitoring && selectedAgent) {
+      const interval = setInterval(() => {
+        generatePerformanceMetrics();
+      }, refreshInterval * 1000);
+
+ 
   // Enhanced performance metrics generator
   const generateMetrics = (agent: Agent): PerformanceMetrics => {
     const basePerformance = agent.score.performance / 100;
@@ -159,6 +249,7 @@ export default function PerformancePage() {
     if (score >= 85) return { label: 'Good', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' };
     if (score >= 70) return { label: 'Fair', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-50 dark:bg-yellow-900/20' };
     return { label: 'Poor', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20' };
+
   };
 
   if (loading) {
@@ -167,16 +258,15 @@ export default function PerformancePage() {
         <Header />
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="text-center">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 mx-auto mb-6"></div>
-              <div className="absolute inset-0 rounded-full h-20 w-20 border-4 border-purple-200 dark:border-purple-800 border-t-purple-600 dark:border-t-purple-400 mx-auto animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+
+            <div className="relative mb-8">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 dark:border-blue-800 mx-auto"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 absolute top-0 left-1/2 transform -translate-x-1/2"></div>
             </div>
-            <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-slate-200/50 dark:border-slate-700/50 max-w-md">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-3">Loading Performance Analytics</h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">Initializing real-time monitoring systems...</p>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full animate-pulse" style={{ width: '75%' }}></div>
-              </div>
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl px-8 py-6 shadow-xl border border-slate-200/50 dark:border-slate-700/50">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Loading Performance Data</h3>
+              <p className="text-slate-600 dark:text-slate-400">Fetching agent metrics and monitoring data...</p>
+ 
             </div>
           </div>
         </div>
@@ -189,6 +279,7 @@ export default function PerformancePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
         <Header />
         <div className="flex items-center justify-center min-h-[80vh]">
+
           <div className="text-center max-w-lg mx-auto px-4">
             <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-slate-200/50 dark:border-slate-700/50">
               <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -211,7 +302,16 @@ export default function PerformancePage() {
                 >
                   Dismiss
                 </button>
+
               </div>
+              <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-3">Connection Error</h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">{error}</p>
+              <button
+                onClick={() => fetchAgents()}
+                className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                Try Again
+              </button>
             </div>
           </div>
         </div>
@@ -310,11 +410,13 @@ export default function PerformancePage() {
               <div className="group bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200/50 dark:border-slate-700/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                 <div className="text-3xl sm:text-4xl font-black text-purple-600 dark:text-purple-400 mb-2 sm:mb-3">
                   {agents.filter(a => a.status === 'ACTIVE').length}
+
                 </div>
                 <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider">Active Agents</div>
                 <div className="mt-2 sm:mt-3 h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-300"></div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -360,6 +462,7 @@ export default function PerformancePage() {
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Live</span>
                   </div>
+
                 </div>
                 <p className="text-slate-600 dark:text-slate-400">Choose an agent to monitor performance metrics</p>
               </div>
@@ -542,6 +645,7 @@ export default function PerformancePage() {
                           isMobile ? 'text-sm' : 'text-lg'
                         }`}>
                           {new Date().toLocaleTimeString()}
+
                         </div>
                       </div>
                     </div>
@@ -808,6 +912,7 @@ export default function PerformancePage() {
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                   <span className={isMobile ? 'text-xs' : 'text-sm'}>System ready for monitoring</span>
                 </div>
+
               </div>
             )}
           </div>
