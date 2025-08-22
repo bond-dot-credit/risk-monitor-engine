@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { AgentCard } from './AgentCard';
+import { StatsOverview } from './StatsOverview';
 
- 
 interface Agent {
   id: string;
   name: string;
@@ -21,6 +22,17 @@ interface Agent {
   credibilityTier: string;
   status: string;
 }
+
+enum CredibilityTier {
+  BRONZE = 'BRONZE',
+  SILVER = 'SILVER',
+  GOLD = 'GOLD',
+  PLATINUM = 'PLATINUM',
+  DIAMOND = 'DIAMOND'
+}
+
+const categories = ['all', 'trading', 'defi', 'analytics', 'security', 'governance'];
+const tiers = ['all', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND'];
 
 // Loading Skeleton Component
 function AgentCardSkeleton() {
@@ -73,7 +85,6 @@ function AgentCardSkeleton() {
   );
 }
 
-
 export function AgentDashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,22 +92,8 @@ export function AgentDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTier, setSelectedTier] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [isMounted, setIsMounted] = useState(false);
-
-  const fetchAgents = async () => {
-    try {
-      const response = await fetch('/api/agents');
-      const data = await response.json();
-      if (data.success) {
-        setAgents(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching agents:', error);
-    }
-  }; 
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -127,7 +124,6 @@ export function AgentDashboard() {
     fetchAgents();
   }, []);
 
-
   const filteredAgents = agents.filter(agent => {
     const categoryMatch = selectedCategory === 'all' || agent.metadata.category.toLowerCase() === selectedCategory;
     const tierMatch = selectedTier === 'all' || agent.credibilityTier === selectedTier;
@@ -152,7 +148,13 @@ export function AgentDashboard() {
         bValue = b.score.overall;
         break;
       case 'tier':
-        const tierOrder = { [CredibilityTier.BRONZE]: 1, [CredibilityTier.SILVER]: 2, [CredibilityTier.GOLD]: 3, [CredibilityTier.PLATINUM]: 4, [CredibilityTier.DIAMOND]: 5 };
+        const tierOrder: Record<string, number> = { 
+          [CredibilityTier.BRONZE]: 1, 
+          [CredibilityTier.SILVER]: 2, 
+          [CredibilityTier.GOLD]: 3, 
+          [CredibilityTier.PLATINUM]: 4, 
+          [CredibilityTier.DIAMOND]: 5 
+        };
         aValue = tierOrder[a.credibilityTier] || 0;
         bValue = tierOrder[b.credibilityTier] || 0;
         break;
@@ -166,7 +168,28 @@ export function AgentDashboard() {
     } else {
       return aValue < bValue ? 1 : -1;
     }
-  }); 
+  });
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        {/* Loading Skeleton */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
+          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i}>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
+                <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Loading Skeleton for Agent Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -178,72 +201,45 @@ export function AgentDashboard() {
     );
   }
 
-
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  if (!isMounted) {
+  if (error) {
     return (
-      <div className="space-y-8">
-        {/* Loading Skeleton */}
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50 animate-pulse">
-          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 mb-6"></div>
-          <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full mb-6"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-            </div>
-            <div>
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-            </div>
-            <div>
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-            </div>
-            <div>
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20 mb-2"></div>
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-            </div>
-          </div>
-        </div> 
+      <div className="text-center py-12">
+        <div className="text-6xl mb-4">⚠️</div>
+        <p className="text-red-500 text-lg mb-4">Error loading agents: {error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-
       {/* Stats Overview */}
       <StatsOverview agents={agents} />
 
       {/* Search and Filters */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200/50 dark:border-slate-700/50">
         <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">Filter & Search Agents</h2>
- 
         
         {/* Search Bar */}
         <div className="mb-6">
-          <div className="relative"> 
+          <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-
             <input
               type="text"
               placeholder="Search agents by name, description, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-
               className="w-full px-4 py-3 pl-12 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
-            <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
           </div>
         </div>
 
@@ -251,14 +247,12 @@ export function AgentDashboard() {
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex flex-col">
             <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-
               Category
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
- 
+              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             >
               {categories.map(category => (
                 <option key={category} value={category}>
@@ -268,16 +262,14 @@ export function AgentDashboard() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
               Credibility Tier
             </label>
             <select
               value={selectedTier}
               onChange={(e) => setSelectedTier(e.target.value)}
-
               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-
             >
               {tiers.map(tier => (
                 <option key={tier} value={tier}>
@@ -287,15 +279,12 @@ export function AgentDashboard() {
             </select>
           </div>
 
-
           <div className="flex flex-col">
             <label className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-
               Sort By
             </label>
             <select
               value={sortBy}
-
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             >
@@ -311,7 +300,7 @@ export function AgentDashboard() {
           >
             <span>{sortOrder === 'asc' ? '↑' : '↓'}</span>
             <span>Sort Order</span>
-          </button> 
+          </button>
         </div>
 
         {/* Quick Stats */}
@@ -319,11 +308,15 @@ export function AgentDashboard() {
           <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-600">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{filteredAgents.filter(a => a.credibilityTier === CredibilityTier.PLATINUM || a.credibilityTier === CredibilityTier.DIAMOND).length}</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {filteredAgents.filter(a => a.credibilityTier === CredibilityTier.PLATINUM || a.credibilityTier === CredibilityTier.DIAMOND).length}
+                </div>
                 <div className="text-xs text-blue-600 dark:text-blue-400">Premium</div>
               </div>
               <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{filteredAgents.filter(a => a.status === 'ACTIVE').length}</div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {filteredAgents.filter(a => a.status === 'ACTIVE').length}
+                </div>
                 <div className="text-xs text-green-600 dark:text-green-400">Active</div>
               </div>
               <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
@@ -333,7 +326,9 @@ export function AgentDashboard() {
                 <div className="text-xs text-purple-600 dark:text-purple-400">Avg Score</div>
               </div>
               <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{filteredAgents.filter(a => a.metadata.category === 'trading').length}</div>
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {filteredAgents.filter(a => a.metadata.category === 'trading').length}
+                </div>
                 <div className="text-xs text-orange-600 dark:text-orange-400">Trading</div>
               </div>
             </div>
@@ -341,7 +336,7 @@ export function AgentDashboard() {
         )}
       </div>
 
-       {/* Agents Grid */}
+      {/* Agents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedAgents.map((agent, index) => (
           <div key={agent.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -358,7 +353,6 @@ export function AgentDashboard() {
           </p>
           <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
             Try adjusting your search criteria or filters.
- 
           </p>
         </div>
       )}
