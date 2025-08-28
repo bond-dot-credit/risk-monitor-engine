@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -10,9 +10,20 @@ const NearIntentsDashboard = () => {
   const [accountInfo, setAccountInfo] = useState<any>(null);
   const [swapResult, setSwapResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fromToken, setFromToken] = useState('NEAR');
+  const [toToken, setToToken] = useState('USDC');
+  const [amount, setAmount] = useState('1.0');
+
+  // Initialize with mock data for demo purposes
+  useEffect(() => {
+    // In a real implementation, you might want to check if the user is already connected
+    // and restore their session
+  }, []);
 
   const handleConnect = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       // In a real implementation, this would connect to the NEAR wallet
       // For demo purposes, we'll simulate a successful connection
@@ -24,14 +35,27 @@ const NearIntentsDashboard = () => {
         });
         setIsLoading(false);
       }, 1000);
-    } catch (error) {
-      console.error('Connection error:', error);
+    } catch (err) {
+      console.error('Connection error:', err);
+      setError('Failed to connect to NEAR wallet');
       setIsLoading(false);
     }
   };
 
+  const handleDisconnect = () => {
+    setIsConnected(false);
+    setAccountInfo(null);
+    setSwapResult(null);
+  };
+
   const handleSwap = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
     try {
       // In a real implementation, this would execute a token swap
       // For demo purposes, we'll simulate a successful swap
@@ -39,18 +63,27 @@ const NearIntentsDashboard = () => {
         setSwapResult({
           success: true,
           transactionHash: 'NEARtx...' + Math.random().toString(36).substr(2, 9),
-          amountIn: '1.0 NEAR',
-          amountOut: '0.97 USDC',
+          amountIn: `${amount} ${fromToken}`,
+          amountOut: `${(parseFloat(amount) * 0.97).toFixed(2)} ${toToken}`, // 3% fee
         });
         setIsLoading(false);
       }, 1500);
-    } catch (error) {
-      console.error('Swap error:', error);
+    } catch (err) {
+      console.error('Swap error:', err);
+      setError('Failed to execute swap');
       setSwapResult({
         success: false,
         error: 'Failed to execute swap',
       });
       setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow only numbers and decimal point
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setAmount(value);
     }
   };
 
@@ -72,6 +105,9 @@ const NearIntentsDashboard = () => {
               <Button onClick={handleConnect} disabled={isLoading}>
                 {isLoading ? 'Connecting...' : 'Connect NEAR Wallet'}
               </Button>
+              {error && (
+                <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+              )}
             </div>
           ) : (
             <div className="space-y-6">
@@ -82,25 +118,45 @@ const NearIntentsDashboard = () => {
                     {accountInfo?.accountId}
                   </p>
                 </div>
-                <Badge variant="secondary">{accountInfo?.balance}</Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">{accountInfo?.balance}</Badge>
+                  <Button variant="outline" size="sm" onClick={handleDisconnect}>
+                    Disconnect
+                  </Button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Token Swap</CardTitle>
+                    <CardDescription>
+                      Swap tokens using the NEAR Intents protocol
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">From</label>
                       <div className="flex items-center space-x-2">
                         <input
-                          type="number"
+                          type="text"
+                          value={fromToken}
+                          onChange={(e) => setFromToken(e.target.value)}
+                          className="flex h-10 w-20 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                        <input
+                          type="text"
+                          value={amount}
+                          onChange={handleInputChange}
                           placeholder="Amount"
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          defaultValue="1.0"
                         />
-                        <Badge>NEAR</Badge>
                       </div>
                     </div>
 
@@ -108,12 +164,18 @@ const NearIntentsDashboard = () => {
                       <label className="text-sm font-medium">To</label>
                       <div className="flex items-center space-x-2">
                         <input
-                          type="number"
-                          placeholder="Amount"
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          defaultValue="0.97"
+                          type="text"
+                          value={toToken}
+                          onChange={(e) => setToToken(e.target.value)}
+                          className="flex h-10 w-20 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
-                        <Badge>USDC</Badge>
+                        <input
+                          type="text"
+                          placeholder="Amount"
+                          disabled
+                          value={(parseFloat(amount || '0') * 0.97).toFixed(2)}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
                       </div>
                     </div>
 
@@ -126,10 +188,13 @@ const NearIntentsDashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Transaction Status</CardTitle>
+                    <CardDescription>
+                      View the status of your transactions
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     {swapResult ? (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">Status</span>
                           <Badge variant={swapResult.success ? 'default' : 'destructive'}>
@@ -140,7 +205,7 @@ const NearIntentsDashboard = () => {
                           <>
                             <div className="flex items-center justify-between">
                               <span className="text-sm">Transaction Hash</span>
-                              <span className="text-sm font-mono text-gray-600 dark:text-gray-400">
+                              <span className="text-sm font-mono text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
                                 {swapResult.transactionHash}
                               </span>
                             </div>
@@ -154,7 +219,7 @@ const NearIntentsDashboard = () => {
                             </div>
                           </>
                         ) : (
-                          <div className="text-sm text-red-500">{swapResult.error}</div>
+                          <div className="text-sm text-red-500 dark:text-red-400">{swapResult.error}</div>
                         )}
                       </div>
                     ) : (
@@ -173,11 +238,36 @@ const NearIntentsDashboard = () => {
       <Card>
         <CardHeader>
           <CardTitle>About NEAR Intents</CardTitle>
+          <CardDescription>
+            Cross-chain transaction protocol
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            NEAR Intents is a system for executing multichain transactions. An intent represents a user's desired state change (e.g., "I want to swap X NEAR for Y USDC") rather than a specific execution path. This allows for more flexible and efficient execution of financial operations.
-          </p>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              NEAR Intents is a system for executing multichain transactions. An intent represents a user's desired state change (e.g., "I want to swap X NEAR for Y USDC") rather than a specific execution path. This allows for more flexible and efficient execution of financial operations.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <h4 className="font-medium text-blue-800 dark:text-blue-200">Flexible Execution</h4>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  Intent-based transactions adapt to market conditions
+                </p>
+              </div>
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <h4 className="font-medium text-green-800 dark:text-green-200">Multi-chain</h4>
+                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  Execute transactions across multiple blockchain networks
+                </p>
+              </div>
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <h4 className="font-medium text-purple-800 dark:text-purple-200">Secure</h4>
+                <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                  On-chain verification ensures transaction integrity
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

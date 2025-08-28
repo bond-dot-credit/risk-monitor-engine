@@ -1,5 +1,7 @@
 import { Account, connect, KeyPair, keyStores, Near } from 'near-api-js';
 import { NearIntents, IntentRequest, Quote, IntentExecutionResult } from './near-intents';
+import { store } from '@/lib/store';
+import { Agent } from '@/types/agent';
 
 export interface NearAccountConfig {
   accountId: string;
@@ -65,13 +67,13 @@ export class AIAgent {
   /**
    * Deposits NEAR tokens for intent operations
    */
-  async depositNear(amount: number): Promise<boolean> {
+  async depositNear(amount: number, agentId?: string): Promise<boolean> {
     try {
       if (!this.account) {
         throw new Error('Agent not initialized. Call initialize() first.');
       }
       
-      console.log(`Depositing ${amount} NEAR to intents contract`);
+      console.log(`Depositing ${amount} NEAR to intents contract for agent ${agentId || 'unknown'}`);
       // In a real implementation, this would interact with the NEAR blockchain
       // to deposit tokens to the intents contract
       // Example:
@@ -93,16 +95,28 @@ export class AIAgent {
   /**
    * Swaps NEAR to a specified token using the intent system
    */
-  async swapNearToToken(targetToken: string, amount: number): Promise<IntentExecutionResult> {
+  async swapNearToToken(targetToken: string, amount: number, agentId?: string): Promise<IntentExecutionResult> {
     try {
       if (!this.account || !this.nearIntents) {
         throw new Error('Agent not initialized. Call initialize() first.');
       }
       
-      console.log(`Swapping ${amount} NEAR to ${targetToken}`);
+      // Check if the agent has sufficient credibility for this transaction
+      if (agentId) {
+        const canProceed = await this.nearIntents.checkAgentRisk(agentId, amount);
+        if (!canProceed) {
+          return {
+            success: false,
+            error: 'Agent does not have sufficient credibility for this transaction',
+            agentId,
+          };
+        }
+      }
+      
+      console.log(`Swapping ${amount} NEAR to ${targetToken} for agent ${agentId || 'unknown'}`);
       
       // 1. Create intent request
-      const request: IntentRequest = this.nearIntents.createIntentRequest('NEAR', amount, targetToken);
+      const request: IntentRequest = this.nearIntents.createIntentRequest('NEAR', amount, targetToken, agentId);
       
       // 2. Fetch quotes from Solver Bus
       const quotes: Quote[] = await this.nearIntents.fetchQuotes(request);
@@ -116,7 +130,8 @@ export class AIAgent {
         'NEAR',
         amount,
         targetToken,
-        bestQuote.amountOut
+        bestQuote.amountOut,
+        agentId
       );
       
       // 5. Submit to Solver Bus
@@ -128,6 +143,7 @@ export class AIAgent {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
+        agentId,
       };
     }
   }
@@ -145,6 +161,18 @@ export class AIAgent {
     } catch (error) {
       console.error('Error getting account state:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Gets agent information if linked to an agent
+   */
+  async getAgentInfo(agentId: string): Promise<Agent | undefined> {
+    try {
+      return store.getAgent(agentId);
+    } catch (error) {
+      console.error('Error getting agent info:', error);
+      return undefined;
     }
   }
 }

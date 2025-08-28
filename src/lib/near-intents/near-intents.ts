@@ -1,4 +1,6 @@
 import { Account } from 'near-api-js';
+import { store } from '@/lib/store';
+import { Agent } from '@/types/agent';
 
 // Type definitions for NEAR Intents
 export interface IntentRequest {
@@ -6,6 +8,7 @@ export interface IntentRequest {
   assetOut: string;
   amountIn: number;
   amountOut?: number;
+  agentId?: string; // Link to agent for risk monitoring
 }
 
 export interface Quote {
@@ -19,6 +22,7 @@ export interface IntentExecutionResult {
   success: boolean;
   transactionHash?: string;
   error?: string;
+  agentId?: string; // Link to agent for tracking
 }
 
 // Asset mapping for supported tokens
@@ -41,11 +45,12 @@ export class NearIntents {
   /**
    * Creates an intent request for token swap
    */
-  createIntentRequest(assetIn: string, amountIn: number, assetOut: string): IntentRequest {
+  createIntentRequest(assetIn: string, amountIn: number, assetOut: string, agentId?: string): IntentRequest {
     return {
       assetIn,
       assetOut,
       amountIn,
+      agentId,
     };
   }
 
@@ -94,7 +99,8 @@ export class NearIntents {
     assetIn: string,
     amountIn: number,
     assetOut: string,
-    amountOut: number
+    amountOut: number,
+    agentId?: string
   ): Promise<any> {
     // In a real implementation, this would create and sign the quote
     // This is a simplified version for demonstration
@@ -104,6 +110,7 @@ export class NearIntents {
       amount_in: amountIn,
       asset_out: assetOut,
       amount_out: amountOut,
+      agent_id: agentId,
       timestamp: Date.now(),
     };
   }
@@ -121,12 +128,14 @@ export class NearIntents {
       return {
         success: true,
         transactionHash: 'mock-transaction-hash-' + Date.now(),
+        agentId: quote.agent_id,
       };
     } catch (error) {
       console.error('Error publishing intent:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
+        agentId: quote.agent_id,
       };
     }
   }
@@ -143,5 +152,30 @@ export class NearIntents {
    */
   getAssetContractId(asset: string): string | null {
     return ASSET_MAP[asset] || null;
+  }
+
+  /**
+   * Integrates with the risk monitoring system by checking agent credibility
+   * before executing high-value transactions
+   */
+  async checkAgentRisk(agentId: string, transactionValue: number): Promise<boolean> {
+    try {
+      const agent = store.getAgent(agentId);
+      if (!agent) {
+        console.warn(`Agent ${agentId} not found in store`);
+        return false;
+      }
+
+      // For high-value transactions, check agent credibility
+      if (transactionValue > 100) { // Threshold in USD
+        // Only allow transactions for high-tier agents
+        return agent.credibilityTier === 'PLATINUM' || agent.credibilityTier === 'DIAMOND';
+      }
+
+      return true; // Allow for lower-value transactions
+    } catch (error) {
+      console.error('Error checking agent risk:', error);
+      return false;
+    }
   }
 }
