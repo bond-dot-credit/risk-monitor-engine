@@ -14,6 +14,7 @@ const navigation = [
   { name: 'Analytics', href: '/analytics', icon: '📈' },
   { name: 'Scoring', href: '/scoring', icon: '🎯' },
   { name: 'Performance', href: '/performance', icon: '⚡' },
+  { name: 'NEAR Intents', href: '/near-intents', icon: '🔗' },
 ];
 
 
@@ -95,6 +96,9 @@ export function Header() {
             <Link href="/analytics" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 lg:px-3 xl:px-4 py-2 lg:py-2.5 rounded-lg xl:rounded-xl text-sm lg:text-base font-medium transition-all duration-200 whitespace-nowrap">
               Analytics
             </Link>
+            <Link href="/near-intents" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 lg:px-3 xl:px-4 py-2 lg:py-2.5 rounded-lg xl:rounded-xl text-sm lg:text-base font-medium transition-all duration-200 whitespace-nowrap">
+              NEAR Intents
+            </Link>
 
           </nav>
 
@@ -161,6 +165,9 @@ export function Header() {
               </Link>
               <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all text-center focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" href="/analytics">
                 Analytics
+              </Link>
+              <Link className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all text-center focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" href="/near-intents">
+                NEAR Intents
               </Link>
             </nav>
           </div>
