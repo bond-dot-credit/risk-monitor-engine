@@ -1,44 +1,97 @@
 import { AIAgent } from './ai-agent';
+import { nearIntentsConfig, NearIntentsErrorHandler, RetryUtils, TransactionUtils } from './index';
 
 /**
- * Basic example of using the NEAR Intents AI Agent for token swaps
+ * Basic example of using the NEAR Intents AI Agent for token swaps with real error handling
  */
 async function basicSwapExample() {
   try {
-    // Initialize agent with account configuration
-    const agent = new AIAgent({
-      accountId: 'your-account.near',
-      privateKey: 'ed25519:your-private-key-here',
-    });
+    // Validate configuration first
+    const configValidation = nearIntentsConfig.validateConfig();
+    if (!configValidation.valid) {
+      console.error('Configuration errors:', configValidation.errors);
+      console.error('Please set up your environment variables according to .env.example');
+      return;
+    }
 
-    // Check account state
-    const accountState = await agent.getAccountState();
-    const balanceNear = parseFloat(accountState.amount) / 10 ** 24;
+    // Initialize agent with real configuration
+    const accountConfig = nearIntentsConfig.getAccountConfig();
+    const agent = new AIAgent(accountConfig);
 
-    console.log(`Account balance: ${balanceNear} NEAR`);
+    console.log(`Initializing NEAR Intents agent for account: ${accountConfig.accountId}`);
+    console.log(`Network: ${accountConfig.networkId}`);
 
-    if (balanceNear > 1.0) {
-      // Deposit NEAR for operations
-      const depositSuccess = await agent.depositNear(1.0);
+    // Initialize with retry logic
+    await RetryUtils.withRetry(async () => {
+      await agent.initialize();
+    }, 3, 2000);
+
+    console.log('Agent initialized successfully!');
+
+    // Check account state with proper error handling
+    const accountState = await RetryUtils.withRetry(async () => {
+      return await agent.getAccountState();
+    }, 2, 1000);
+
+    const availableNear = accountState.balanceInNear.available;
+    console.log(`Account balance: ${TransactionUtils.formatNearAmount(availableNear)}`);
+    console.log(`Total balance: ${TransactionUtils.formatNearAmount(accountState.balanceInNear.total)}`);
+    console.log(`Staked: ${TransactionUtils.formatNearAmount(accountState.balanceInNear.staked)}`);
+
+    // Check if we have sufficient balance for operations
+    const requiredAmount = 1.0;
+    if (availableNear > requiredAmount + 0.1) { // Keep 0.1 NEAR for fees
+      console.log(`\nAttempting to deposit ${requiredAmount} NEAR...`);
+      
+      // Deposit NEAR for operations with retry logic
+      const depositSuccess = await RetryUtils.withRetry(async () => {
+        return await agent.depositNear(requiredAmount);
+      }, 3, 5000);
+      
       if (depositSuccess) {
-        console.log('Successfully deposited 1.0 NEAR');
+        console.log(`\u2705 Successfully deposited ${requiredAmount} NEAR`);
         
-        // Swap NEAR to USDC
-        const result = await agent.swapNearToToken('USDC', 1.0);
+        console.log(`\nAttempting to swap ${requiredAmount} NEAR to USDC...`);
+        
+        // Swap NEAR to USDC with retry logic
+        const result = await RetryUtils.withRetry(async () => {
+          return await agent.swapNearToToken('USDC', requiredAmount);
+        }, 3, 10000); // Longer delay for swap operations
         
         if (result.success) {
-          console.log(`Swap completed successfully! Transaction hash: ${result.transactionHash}`);
+          console.log(`\u2705 Swap completed successfully!`);
+          console.log(`Transaction hash: ${result.transactionHash}`);
+          console.log(`Agent ID: ${result.agentId || 'N/A'}`);
         } else {
-          console.error(`Swap failed: ${result.error}`);
+          const error = NearIntentsErrorHandler.parseError(result.error);
+          console.error(`\u274c Swap failed: ${NearIntentsErrorHandler.formatUserMessage(error)}`);
+          
+          if (NearIntentsErrorHandler.isRetryable(error)) {
+            console.log(`Error is retryable. You can try again in ${NearIntentsErrorHandler.getRetryDelay(error)} seconds.`);
+          }
         }
       } else {
-        console.error('Failed to deposit NEAR');
+        console.error('\u274c Failed to deposit NEAR');
       }
     } else {
-      console.log('Insufficient balance for swap operation');
+      console.log(`\u26a0\ufe0f Insufficient balance for swap operation`);
+      console.log(`Required: ${TransactionUtils.formatNearAmount(requiredAmount + 0.1)} (including fees)`);
+      console.log(`Available: ${TransactionUtils.formatNearAmount(availableNear)}`);
+      console.log('Please add more NEAR to your account.');
     }
   } catch (error) {
-    console.error('Error in basic swap example:', error);
+    const nearError = NearIntentsErrorHandler.parseError(error);
+    console.error('\u274c Error in basic swap example:');
+    console.error(`Type: ${nearError.type}`);
+    console.error(`Message: ${NearIntentsErrorHandler.formatUserMessage(nearError)}`);
+    
+    if (nearError.details) {
+      console.error('Details:', nearError.details);
+    }
+    
+    if (nearError.type === 'CONFIGURATION_ERROR') {
+      console.error('\nPlease check your .env file and ensure all required variables are set.');
+    }
   }
 }
 

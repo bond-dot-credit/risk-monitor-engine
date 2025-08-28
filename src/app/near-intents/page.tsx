@@ -2,6 +2,7 @@
 
 import React from 'react';
 import NearIntentsDashboard from '@/components/NearIntentsDashboard';
+import NearBlocksViewer from '@/components/NearBlocksViewer';
 import { Header } from '@/components/Header';
 
 export default function NearIntentsPage() {
@@ -15,7 +16,10 @@ export default function NearIntentsPage() {
             Execute cross-chain transactions using the NEAR Intents protocol
           </p>
         </div>
-        <NearIntentsDashboard />
+        <div className="space-y-8">
+          <NearIntentsDashboard />
+          <NearBlocksViewer />
+        </div>
       </main>
     </div>
   );

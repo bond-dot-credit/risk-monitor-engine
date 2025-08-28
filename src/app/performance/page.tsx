@@ -191,7 +191,10 @@ export default function PerformancePage() {
         generatePerformanceMetrics();
       }, refreshInterval * 1000);
 
- 
+      return () => clearInterval(interval);
+    }
+  }, [isMonitoring, selectedAgent, refreshInterval, generatePerformanceMetrics]);
+
   // Enhanced performance metrics generator
   const generateMetrics = (agent: Agent): PerformanceMetrics => {
     const basePerformance = agent.score.performance / 100;
