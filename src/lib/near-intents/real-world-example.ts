@@ -330,4 +330,4 @@ export async function quickBalanceCheck(): Promise<void> {
 
 export async function quickWalletDemo(): Promise<void> {
   await demonstrateWalletUsage();
-}"
+}

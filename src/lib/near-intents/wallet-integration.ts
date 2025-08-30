@@ -1,4 +1,4 @@
-import { InMemoryKeyStore, KeyPair } from '@near-js/keystores';
+import { InMemoryKeyStore } from '@near-js/keystores';
 import { Account } from '@near-js/accounts';
 import { JsonRpcProvider } from '@near-js/providers';
 import { KeyPairSigner } from '@near-js/signers';
@@ -29,7 +29,7 @@ export async function initializeWalletConnection(networkId: string = 'mainnet'):
   try {
     // Parse the seed phrase to get the key pair
     const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC);
-    const keyPair = KeyPair.fromString(secretKey);
+    const keyPair = KeyPair.fromString(secretKey as any);
     
     // Derive account ID from public key (for implicit accounts)
     const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');
@@ -89,7 +89,7 @@ export async function deriveMultipleWallets(networkId: string = 'testnet', count
       const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC, path);
       
       // Create key pair
-      const keyPair = KeyPair.fromString(secretKey);
+      const keyPair = KeyPair.fromString(secretKey as any);
       
       // Derive account ID from public key (for implicit accounts)
       const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');

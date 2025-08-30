@@ -149,6 +149,19 @@ Health Factor = Collateral Value / Debt Value
 - **High Risk**: Health Factor 1.2-1.5
 - **Critical Risk**: Health Factor < 1.2
 
+## NEAR Protocol Rewards
+
+This project includes specialized tools to help users earn NEAR Protocol Rewards by meeting the three key requirements:
+
+### Requirements for NEAR Protocol Rewards:
+1. **Transaction Volume** ($10,000+)
+2. **Smart Contract Calls** (500+ calls)
+3. **Unique Wallets** (100+ distinct wallets)
+
+### Implementation Approach:
+
+Our solution uses specialized executors to meet each requirement. See the documentation in `PROTOCOL_REWARDS_README.md` for detailed instructions.
+
 ## Roadmap
 
 ### Phase 1 - MVP (Current)

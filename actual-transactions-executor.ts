@@ -29,7 +29,7 @@ async function executeActualTransactions() {
     
     // Initialize account without deprecated Connection
     const keyStore = new InMemoryKeyStore();
-    const keyPair = KeyPair.fromString(privateKey);
+    const keyPair = KeyPair.fromString(privateKey as any);
     await keyStore.setKey('mainnet', accountId, keyPair);
     
     const provider = new JsonRpcProvider({ url: nodeUrl });

@@ -32,8 +32,6 @@ interface Agent {
   status: string;
 }
 
-import { Header } from '@/components/Header';
-
 interface PerformanceMetric {
   agentId: string;
   timestamp: Date;
@@ -143,35 +141,7 @@ export default function PerformancePage() {
     setPerformanceMetrics(metrics);
   }, [selectedAgent]);
 
-  const generateAlerts = useCallback(() => {
-    if (!selectedAgent) return;
 
-    const newAlerts: PerformanceAlert[] = [];
-    
-    if (selectedAgent.score.performance < 70) {
-      newAlerts.push({
-        id: `alert_${Date.now()}_1`,
-        agentId: selectedAgent.id,
-        type: 'warning',
-        message: `Performance score below threshold: ${selectedAgent.score.performance}`,
-        timestamp: new Date(),
-        resolved: false
-      });
-    }
-
-    if (selectedAgent.score.overall < 60) {
-      newAlerts.push({
-        id: `alert_${Date.now()}_2`,
-        agentId: selectedAgent.id,
-        type: 'critical',
-        message: `Overall score critically low: ${selectedAgent.score.overall}`,
-        timestamp: new Date(),
-        resolved: false
-      });
-    }
-
-    setAlerts(prev => [...newAlerts, ...prev]);
-  }, [selectedAgent]);
 
   useEffect(() => {
     fetchAgents();
@@ -180,9 +150,12 @@ export default function PerformancePage() {
   useEffect(() => {
     if (selectedAgent) {
       generatePerformanceMetrics();
-      generateAlerts();
+      // Call the generateAlerts function with the selected agent
+      const alerts = generateAlerts(selectedAgent);
+      // For now, we'll just log the alerts
+      console.log('Generated alerts:', alerts);
     }
-  }, [selectedAgent, generatePerformanceMetrics, generateAlerts]);
+  }, [selectedAgent, generatePerformanceMetrics]);
 
 
   useEffect(() => {
@@ -246,6 +219,8 @@ export default function PerformancePage() {
     
     return alerts;
   };
+
+  // Remove the duplicate generateAlerts function that was declared earlier
 
   const getPerformanceStatus = (score: number) => {
     if (score >= 95) return { label: 'Excellent', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' };

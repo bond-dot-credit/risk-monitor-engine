@@ -41,7 +41,7 @@ async function deriveMultipleWallets(networkId: string = 'mainnet', count: numbe
       const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC, path);
       
       // Create key pair
-      const keyPair = KeyPair.fromString(secretKey);
+      const keyPair = KeyPair.fromString(secretKey as any);
       
       // Derive account ID from public key (for implicit accounts)
       const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');
@@ -77,7 +77,7 @@ async function initializeAccount(accountId: string, privateKey: string, nodeUrl:
   try {
     // Create key store and add the key
     const keyStore = new InMemoryKeyStore();
-    const keyPair = KeyPair.fromString(privateKey);
+    const keyPair = KeyPair.fromString(privateKey as any);
     await keyStore.setKey('mainnet', accountId, keyPair);
     
     // Create provider and signer
@@ -261,7 +261,7 @@ async function executeTransfersFromMainAccount(nodeUrl: string): Promise<{transf
     
     // Initialize main account
     const keyStore = new InMemoryKeyStore();
-    const keyPair = KeyPair.fromString(privateKey);
+    const keyPair = KeyPair.fromString(privateKey as any);
     await keyStore.setKey('mainnet', accountId, keyPair);
     
     const provider = new JsonRpcProvider({ url: nodeUrl });

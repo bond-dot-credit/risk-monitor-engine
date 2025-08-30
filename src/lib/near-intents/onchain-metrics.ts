@@ -1,4 +1,4 @@
-import { connect, KeyPair, keyStores, Near } from 'near-api-js';
+import { connect, keyStores, Near } from 'near-api-js';
 import { Account } from '@near-js/accounts';
 import { KeyPair } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
@@ -46,7 +46,7 @@ export class OnChainMetricsCollector {
     try {
       // Create key store
       const keyStore = new InMemoryKeyStore();
-      const keyPair = KeyPair.fromString(this.config.privateKey);
+      const keyPair = KeyPair.fromString(this.config.privateKey as any);
       await keyStore.setKey(this.config.networkId, this.config.accountId, keyPair);
 
       // Create provider and signer

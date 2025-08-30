@@ -2,7 +2,7 @@
 
 import React from 'react';
 import NearIntentsDashboard from '@/components/NearIntentsDashboard';
-import NearBlocksViewer from '@/components/NearBlocksViewer';
+import { NearBlocksViewer } from '@/components/NearBlocksViewer';
 import { Header } from '@/components/Header';
 
 export default function NearIntentsPage() {
