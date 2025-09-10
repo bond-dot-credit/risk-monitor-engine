@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { store } from '@/lib/store';
 import { calculateRiskMetrics } from '@/lib/scoring';
+import { ensureSeeded } from '@/lib/seed';
 
 export async function GET(request: NextRequest) {
   try {
+    ensureSeeded();
     const { searchParams } = new URL(request.url);
     const agentId = searchParams.get('agentId');
     if (!agentId) {
