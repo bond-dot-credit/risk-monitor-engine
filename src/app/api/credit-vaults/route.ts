@@ -18,43 +18,24 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const agentId = searchParams.get('agentId');
     
-    // In a real implementation, you would fetch vaults from a database
-    // For now, we'll return mock data
-    const mockVaults = [
-      {
-        id: 'vault_1',
-        agentId: 'agent_1',
-        chainId: ChainId.ETHEREUM,
-        status: VaultStatus.ACTIVE,
-        collateral: { token: 'ETH', amount: 10, valueUSD: 20000, lastUpdated: new Date() },
-        debt: { token: 'USDC', amount: 10000, valueUSD: 10000, lastUpdated: new Date() },
-        ltv: 50,
-        healthFactor: 2.0,
-        maxLTV: 70,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ];
+    // Get vaults from store (in a real implementation, this would be from a database)
+    // For now, we'll return an empty array since the store doesn't have vaults yet
+    let vaults: any[] = [];
     
-    let filteredVaults = mockVaults;
-    
+    // Apply filters
     if (chainId) {
-      filteredVaults = filteredVaults.filter(v => v.chainId === parseInt(chainId));
+      vaults = vaults.filter(v => v.chainId === parseInt(chainId));
     }
     
     if (status) {
-      filteredVaults = filteredVaults.filter(v => v.status === status);
+      vaults = vaults.filter(v => v.status === status);
     }
     
     if (agentId) {
-      filteredVaults = filteredVaults.filter(v => v.agentId === agentId);
+      vaults = vaults.filter(v => v.agentId === agentId);
     }
     
-    return NextResponse.json({
-      success: true,
-      data: filteredVaults,
-      total: filteredVaults.length
-    });
+    return NextResponse.json(vaults);
     
   } catch (error) {
     console.error('Error fetching credit vaults:', error);
@@ -121,7 +102,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      data: vault,
+      vault: vault,
       message: 'Credit vault created successfully'
     }, { status: 201 });
     

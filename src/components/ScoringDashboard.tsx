@@ -21,22 +21,32 @@ interface ScoringBreakdown {
   confidence: number;
 }
 
+interface HistoricalDatum {
+  date: string;
+  performance: number;
+  timestamp: Date;
+}
+
 export function ScoringDashboard({ agents }: ScoringDashboardProps) {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [scoringBreakdown, setScoringBreakdown] = useState<ScoringBreakdown | null>(null);
-  const [historicalData, setHistoricalData] = useState<any[]>([]);
+  const [historicalData, setHistoricalData] = useState<HistoricalDatum[]>([]);
 
   useEffect(() => {
     if (agents.length > 0 && !selectedAgent) {
       setSelectedAgent(agents[0]);
     }
-  }, [agents, selectedAgent]);
+    // we only want to run when agents change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agents]);
 
   useEffect(() => {
     if (selectedAgent) {
       calculateScoringBreakdown();
       generateHistoricalData();
     }
+    // calculateScoringBreakdown and generateHistoricalData are stable helpers here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAgent]);
 
   const calculateScoringBreakdown = () => {

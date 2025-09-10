@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 
 interface AnalyticsDashboardProps {
@@ -24,13 +24,8 @@ export function AnalyticsDashboard({ agents }: AnalyticsDashboardProps) {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState<'7d' | '30d' | '90d'>('30d');
 
-  useEffect(() => {
-    if (agents.length > 0) {
-      calculateAnalytics();
-    }
-  }, [agents, selectedTimeframe]);
-
-  const calculateAnalytics = () => {
+  const calculateAnalytics = useCallback(() => {
+    if (agents.length === 0) return;
     const totalAgents = agents.length;
     const averageScore = Math.round(
       agents.reduce((sum, agent) => sum + agent.score.overall, 0) / totalAgents
@@ -67,7 +62,11 @@ export function AnalyticsDashboard({ agents }: AnalyticsDashboardProps) {
       topPerformers,
       riskMetrics
     });
-  };
+  }, [agents]);
+
+  useEffect(() => {
+    calculateAnalytics();
+  }, [calculateAnalytics, selectedTimeframe]);
 
   const getTierColor = (tier: string) => {
     const colors = {

@@ -44,7 +44,22 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    // Check if request has a body by trying to read it
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      if (parseError instanceof SyntaxError) {
+        return NextResponse.json({ success: false, error: 'Invalid JSON format' }, { status: 400 });
+      }
+      // If it's not a syntax error, it might be missing body
+      return NextResponse.json({ success: false, error: 'Request body is required' }, { status: 400 });
+    }
+
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ success: false, error: 'Request body is required' }, { status: 400 });
+    }
+
     const { action, ...params } = body;
 
     if (!action) {
@@ -84,12 +99,42 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Validate rule conditions
-        if (conditions.ltvThreshold !== undefined && (conditions.ltvThreshold < 0 || conditions.ltvThreshold > 100)) {
-          return NextResponse.json({ success: false, error: 'Invalid rule conditions' }, { status: 400 });
+        // Type validation
+        if (typeof ruleVaultId !== 'string') {
+          return NextResponse.json({ success: false, error: 'vaultId must be a string' }, { status: 400 });
         }
-        if (conditions.healthFactorThreshold !== undefined && conditions.healthFactorThreshold < 0) {
-          return NextResponse.json({ success: false, error: 'Invalid rule conditions' }, { status: 400 });
+        if (typeof name !== 'string') {
+          return NextResponse.json({ success: false, error: 'name must be a string' }, { status: 400 });
+        }
+        if (typeof description !== 'string') {
+          return NextResponse.json({ success: false, error: 'description must be a string' }, { status: 400 });
+        }
+        if (typeof enabled !== 'boolean') {
+          return NextResponse.json({ success: false, error: 'enabled must be a boolean' }, { status: 400 });
+        }
+        if (typeof priority !== 'number') {
+          return NextResponse.json({ success: false, error: 'priority must be a number' }, { status: 400 });
+        }
+        if (typeof cooldown !== 'number') {
+          return NextResponse.json({ success: false, error: 'cooldown must be a number' }, { status: 400 });
+        }
+
+        // Validate rule conditions
+        if (conditions.ltvThreshold !== undefined) {
+          if (typeof conditions.ltvThreshold !== 'number') {
+            return NextResponse.json({ success: false, error: 'ltvThreshold must be a number' }, { status: 400 });
+          }
+          if (conditions.ltvThreshold < 0 || conditions.ltvThreshold > 100) {
+            return NextResponse.json({ success: false, error: 'Invalid rule conditions' }, { status: 400 });
+          }
+        }
+        if (conditions.healthFactorThreshold !== undefined) {
+          if (typeof conditions.healthFactorThreshold !== 'number') {
+            return NextResponse.json({ success: false, error: 'healthFactorThreshold must be a number' }, { status: 400 });
+          }
+          if (conditions.healthFactorThreshold < 0) {
+            return NextResponse.json({ success: false, error: 'Invalid rule conditions' }, { status: 400 });
+          }
         }
 
         // Validate rule actions
@@ -216,9 +261,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    if (error instanceof SyntaxError) {
-      return NextResponse.json({ success: false, error: 'Invalid JSON' }, { status: 400 });
-    }
     console.error('Error in liquidation protection API:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

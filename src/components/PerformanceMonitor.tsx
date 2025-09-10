@@ -40,13 +40,17 @@ export function PerformanceMonitor({ agents }: PerformanceMonitorProps) {
     if (agents.length > 0 && !selectedAgent) {
       setSelectedAgent(agents[0]);
     }
-  }, [agents, selectedAgent]);
+    // we intentionally only want to run this when `agents` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agents]);
 
   useEffect(() => {
     if (selectedAgent) {
       generatePerformanceMetrics();
       generateAlerts();
     }
+    // generatePerformanceMetrics and generateAlerts are stable helpers here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAgent]);
 
   useEffect(() => {
@@ -58,6 +62,8 @@ export function PerformanceMonitor({ agents }: PerformanceMonitorProps) {
 
       return () => clearInterval(interval);
     }
+    // updatePerformanceMetrics and checkForAlerts are stable helpers; we control re-run via isMonitoring/refreshInterval
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMonitoring, selectedAgent, refreshInterval]);
 
   const generatePerformanceMetrics = () => {

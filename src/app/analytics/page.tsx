@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -38,7 +39,7 @@ export default function AnalyticsPage() {
   });
 
   const categories = ['all', ...Array.from(new Set(agents.map(a => a.metadata.category)))];
-  const tiers = ['all', ...Array.from(new Set(agents.map(a => a.credibilityTier))];
+  const tiers = ['all', ...Array.from(new Set(agents.map(a => a.credibilityTier)))];
 
   if (!isMounted) {
     return <div className="p-6">Loading...</div>;

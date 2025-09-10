@@ -109,7 +109,7 @@ export default function ScoringPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Low Score (<70)</span>
+                  <span className="text-sm text-gray-600">Low Score (&lt;70)</span>
                   <span className="font-medium text-red-600">
                     {agents.filter(a => a.score.overall < 70).length}
                   </span>
