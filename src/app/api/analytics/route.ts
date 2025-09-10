@@ -52,6 +52,13 @@ export async function GET(request: NextRequest) {
       lowRisk: filteredAgents.filter(a => a.score.overall >= 80).length
     };
 
+    type CategoryData = {
+      count: number;
+      totalScore: number;
+      averageScore: number;
+      tiers: Record<string, number>;
+    };
+
     const categoryBreakdown = filteredAgents.reduce((acc, agent) => {
       const category = agent.metadata.category;
       if (!acc[category]) {
@@ -69,7 +76,7 @@ export async function GET(request: NextRequest) {
       acc[category].tiers[tier] = (acc[category].tiers[tier] || 0) + 1;
       
       return acc;
-    }, {} as { [key: string]: any });
+  }, {} as Record<string, CategoryData>);
 
     // Calculate average scores for each category
     Object.keys(categoryBreakdown).forEach(category => {
@@ -83,7 +90,7 @@ export async function GET(request: NextRequest) {
       let baseValue = 80;
       for (let i = 0; i < days; i++) {
         baseValue += Math.random() * 4 - 2; // Random variation
-        data.push(Math.max(0, Math.min(100, Math.round(baseValue)));
+        data.push(Math.max(0, Math.min(100, Math.round(baseValue))));
       }
       return data;
     };
