@@ -22,9 +22,9 @@ This repo contains our MVP implementation of AgentBeat with credibility verifica
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │ Agent Registry  │    │ Scoring Engine   │    │  LTV Adapter    │
-│ (metadata,      │    │ (provenance +    │    │ (score→credit)  │
-│  provenance)    │    │  performance +   │    │                 │
-│                 │    │  perception)     │    │                 │
+│ (metadata)      │    │ (risk +          │    │ (score→credit)  │
+│                 │    │  performance +   │    │                 │
+│                 │    │  stability)      │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
@@ -33,7 +33,7 @@ This repo contains our MVP implementation of AgentBeat with credibility verifica
 ### Agent Scoring System
 - **Provenance Scoring**: Code verification, audit history, deployment provenance
 - **Performance Scoring**: Historical performance data and consistency
-- **Perception Scoring**: Community trust and reputation metrics
+- **Stability Scoring**: Community trust and reputation metrics
 - **Confidence Calculation**: Data quality and scoring consistency
 
 ### Credibility Tiers
