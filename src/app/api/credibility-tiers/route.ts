@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let result: any = {};
+    let result: Record<string, unknown> = {};
 
     switch (action) {
       case 'calculate_ltv':

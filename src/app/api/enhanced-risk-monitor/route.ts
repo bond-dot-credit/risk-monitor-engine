@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
         }
 
         const monitoringResult = await enhancedRiskMonitor.monitorVault(
-          vault as any,
+          vault as Record<string, unknown>,
           agent,
           historicalData || []
         );

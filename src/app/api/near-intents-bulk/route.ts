@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
 /**
  * Validate bulk operation configuration
  */
-function validateBulkConfig(config: any): { valid: boolean; error?: string } {
+function validateBulkConfig(config: Record<string, unknown>): { valid: boolean; error?: string } {
   if (!config.wallets || !Array.isArray(config.wallets)) {
     return { valid: false, error: 'Invalid wallets configuration' };
   }

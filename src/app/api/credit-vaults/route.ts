@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     
     // Get vaults from store (in a real implementation, this would be from a database)
     // For now, we'll return an empty array since the store doesn't have vaults yet
-    let vaults: any[] = [];
+    let vaults: Record<string, unknown>[] = [];
     
     // Apply filters
     if (chainId) {

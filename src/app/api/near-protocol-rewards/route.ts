@@ -29,7 +29,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { action, startDate, endDate, agentId, walletIds } = body as any;
+    const { action, startDate, endDate, agentId, walletIds } = body as {
+      action: string;
+      startDate?: string;
+      endDate?: string;
+      agentId?: string;
+      walletIds?: string[];
+    };
 
     switch (action) {
       case 'collectMetrics':
@@ -130,7 +136,7 @@ export async function GET() {
  * - Smart Contract Calls: 8 points (max at 500+ calls)
  * - Unique Wallets: 4 points (max at 100+ unique wallets)
  */
-function calculateRewardTier(metrics: any): string {
+function calculateRewardTier(metrics: Record<string, unknown>): string {
   let score = 0;
   
   // Transaction Volume (8 points)
