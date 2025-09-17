@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { CreditVault, VaultStatus } from '@/types/credit';
 import { CreditVaultManager } from '@/components/CreditVaultManager';
+import { Header } from '@/components/Header';
 
 export default function CreditVaultsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -151,6 +152,7 @@ export default function CreditVaultsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">

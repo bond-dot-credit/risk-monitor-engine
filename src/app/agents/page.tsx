@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { ReputationSummary } from '@/types/reputation';
+import { Header } from '@/components/Header';
 
 interface PerformanceMetrics {
   apr?: number;
@@ -88,11 +89,12 @@ export default function AgentsPage() {
   const currentMetrics = performanceMetrics[selectedAgentId];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Agent Performance & Reputation</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Agent Performance & Reputation</h1>
+          <p className="mt-2 text-gray-600 dark:text-slate-300">
             Monitor agent performance metrics and reputation scores
           </p>
         </div>
@@ -100,12 +102,12 @@ export default function AgentsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Agent Selection */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold mb-4">Select Agent</h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Select Agent</h2>
               <select
                 value={selectedAgentId}
                 onChange={(e) => setSelectedAgentId(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2"
               >
                 {agents.map((agent) => (
                   <option key={agent.id} value={agent.id}>
@@ -121,9 +123,9 @@ export default function AgentsPage() {
             {selectedAgent && (
               <div className="space-y-6">
                 {/* Agent Overview */}
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">{selectedAgent.name}</h2>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">{selectedAgent.name}</h2>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                       selectedAgent.credibilityTier === 'PLATINUM' ? 'bg-slate-100 text-slate-800' :
                       selectedAgent.credibilityTier === 'GOLD' ? 'bg-yellow-100 text-yellow-800' :
@@ -134,86 +136,86 @@ export default function AgentsPage() {
                     </span>
                   </div>
                   
-                  <p className="text-gray-600 mb-4">{selectedAgent.metadata.description}</p>
+                  <p className="text-gray-600 dark:text-slate-300 mb-4">{selectedAgent.metadata.description}</p>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-blue-600">{selectedAgent.score.overall}</div>
-                      <div className="text-sm text-gray-500">Overall Score</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-400">Overall Score</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-green-600">{selectedAgent.score.performance}</div>
-                      <div className="text-sm text-gray-500">Performance</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-400">Performance</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-purple-600">{selectedAgent.score.provenance}</div>
-                      <div className="text-sm text-gray-500">Provenance</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-400">Provenance</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-orange-600">{selectedAgent.score.perception}</div>
-                      <div className="text-sm text-gray-500">Perception</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-400">Perception</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Performance Metrics */}
                 {currentMetrics && (
-                  <div className="bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-semibold mb-4">Performance Metrics</h3>
+                  <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Performance Metrics</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                      <div className="bg-blue-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-blue-600">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                           {currentMetrics.apr ? `${currentMetrics.apr}%` : 'N/A'}
                         </div>
-                        <div className="text-sm text-blue-600">APR</div>
+                        <div className="text-sm text-blue-600 dark:text-blue-400">APR</div>
                       </div>
-                      <div className="bg-green-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-green-600">
+                      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                           {currentMetrics.ltv ? `${currentMetrics.ltv}%` : 'N/A'}
                         </div>
-                        <div className="text-sm text-green-600">LTV</div>
+                        <div className="text-sm text-green-600 dark:text-green-400">LTV</div>
                       </div>
-                      <div className="bg-purple-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-purple-600">
+                      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                           {currentMetrics.aum ? `$${currentMetrics.aum.toLocaleString()}` : 'N/A'}
                         </div>
-                        <div className="text-sm text-purple-600">AUM</div>
+                        <div className="text-sm text-purple-600 dark:text-purple-400">AUM</div>
                       </div>
                     </div>
 
                     {/* Additional Metrics */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <div className="text-lg font-bold text-gray-700">
+                      <div className="text-center p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                        <div className="text-lg font-bold text-gray-700 dark:text-slate-200">
                           {currentMetrics.volatility ? `${currentMetrics.volatility}%` : 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">Volatility</div>
+                        <div className="text-xs text-gray-500 dark:text-slate-400">Volatility</div>
                       </div>
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <div className="text-lg font-bold text-gray-700">
+                      <div className="text-center p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                        <div className="text-lg font-bold text-gray-700 dark:text-slate-200">
                           {currentMetrics.sharpeRatio ? currentMetrics.sharpeRatio.toFixed(2) : 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">Sharpe Ratio</div>
+                        <div className="text-xs text-gray-500 dark:text-slate-400">Sharpe Ratio</div>
                       </div>
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <div className="text-lg font-bold text-gray-700">
+                      <div className="text-center p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                        <div className="text-lg font-bold text-gray-700 dark:text-slate-200">
                           {currentMetrics.maxDrawdown ? `${currentMetrics.maxDrawdown}%` : 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">Max Drawdown</div>
+                        <div className="text-xs text-gray-500 dark:text-slate-400">Max Drawdown</div>
                       </div>
-                      <div className="text-center p-3 bg-gray-50 rounded-lg">
-                        <div className="text-xs text-gray-500">Last Updated</div>
-                        <div className="text-xs font-medium text-gray-700">
+                      <div className="text-center p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                        <div className="text-xs text-gray-500 dark:text-slate-400">Last Updated</div>
+                        <div className="text-xs font-medium text-gray-700 dark:text-slate-200">
                           {currentMetrics.lastUpdated ? new Date(currentMetrics.lastUpdated).toLocaleDateString() : 'N/A'}
                         </div>
                       </div>
                     </div>
 
                     {/* Performance Chart Placeholder */}
-                    <div className="border-t pt-4">
-                      <h4 className="font-medium text-gray-900 mb-3">Performance Trend (Last 30 Days)</h4>
-                      <div className="h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <div className="text-center text-gray-500">
+                    <div className="border-t border-gray-200 dark:border-slate-600 pt-4">
+                      <h4 className="font-medium text-gray-900 dark:text-slate-100 mb-3">Performance Trend (Last 30 Days)</h4>
+                      <div className="h-32 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+                        <div className="text-center text-gray-500 dark:text-slate-400">
                           <div className="text-2xl mb-2">📈</div>
                           <div className="text-sm">Performance Chart</div>
                           <div className="text-xs">Historical data visualization</div>
@@ -225,30 +227,30 @@ export default function AgentsPage() {
 
                 {/* Reputation Summary */}
                 {reputationSummary && (
-                  <div className="bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-semibold mb-4">Reputation Summary</h3>
+                  <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Reputation Summary</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-gray-900">{reputationSummary.totalEvents}</div>
-                        <div className="text-sm text-gray-500">Total Events</div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-slate-100">{reputationSummary.totalEvents}</div>
+                        <div className="text-sm text-gray-500 dark:text-slate-400">Total Events</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{reputationSummary.positiveEvents}</div>
-                        <div className="text-sm text-gray-500">Positive</div>
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">{reputationSummary.positiveEvents}</div>
+                        <div className="text-sm text-gray-500 dark:text-slate-400">Positive</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-red-600">{reputationSummary.negativeEvents}</div>
-                        <div className="text-sm text-gray-500">Negative</div>
+                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">{reputationSummary.negativeEvents}</div>
+                        <div className="text-sm text-gray-500 dark:text-slate-400">Negative</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{reputationSummary.breakdown.overall}</div>
-                        <div className="text-sm text-gray-500">Reputation Score</div>
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{reputationSummary.breakdown.overall}</div>
+                        <div className="text-sm text-gray-500 dark:text-slate-400">Reputation Score</div>
                       </div>
                     </div>
                     
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Trend</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-slate-300">Trend</span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           reputationSummary.trend === 'improving' ? 'bg-green-100 text-green-800' :
                           reputationSummary.trend === 'declining' ? 'bg-red-100 text-red-800' :
@@ -260,12 +262,12 @@ export default function AgentsPage() {
                     </div>
 
                     <div className="space-y-3">
-                      <h4 className="font-medium text-gray-900">Recent Events</h4>
+                      <h4 className="font-medium text-gray-900 dark:text-slate-100">Recent Events</h4>
                       {reputationSummary.recentEvents.slice(0, 3).map((event) => (
-                        <div key={event.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={event.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
                           <div>
-                            <div className="font-medium text-sm">{event.description}</div>
-                            <div className="text-xs text-gray-500">
+                            <div className="font-medium text-sm text-gray-900 dark:text-slate-100">{event.description}</div>
+                            <div className="text-xs text-gray-500 dark:text-slate-400">
                               {new Date(event.timestamp).toLocaleDateString()}
                             </div>
                           </div>
@@ -281,42 +283,42 @@ export default function AgentsPage() {
                 )}
 
                 {/* Performance Comparison */}
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-semibold mb-4">Performance Comparison</h3>
+                <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+                  <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Performance Comparison</h3>
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
+                      <thead className="bg-gray-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                             Agent
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                             Overall Score
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                             Performance
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                             Tier
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                             Status
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
                         {agents.slice(0, 5).map((agent) => (
-                          <tr key={agent.id} className={agent.id === selectedAgentId ? 'bg-blue-50' : ''}>
+                          <tr key={agent.id} className={agent.id === selectedAgentId ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="text-sm font-medium text-gray-900">{agent.name}</div>
+                                <div className="text-sm font-medium text-gray-900 dark:text-slate-100">{agent.name}</div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{agent.score.overall}</div>
+                              <div className="text-sm text-gray-900 dark:text-slate-100">{agent.score.overall}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{agent.score.performance}</div>
+                              <div className="text-sm text-gray-900 dark:text-slate-100">{agent.score.performance}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`px-2 py-1 text-xs font-medium rounded-full ${

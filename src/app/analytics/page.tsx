@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/types/agent';
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
+import { Header } from '@/components/Header';
 
 export default function AnalyticsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -46,26 +47,27 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Agent Analytics</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Agent Analytics</h1>
+          <p className="mt-2 text-gray-600 dark:text-slate-300">
             Comprehensive analytics and insights for agent performance
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-wrap items-center gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm"
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
@@ -76,13 +78,13 @@ export default function AnalyticsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Credibility Tier
               </label>
               <select
                 value={selectedTier}
                 onChange={(e) => setSelectedTier(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm"
               >
                 {tiers.map((tier) => (
                   <option key={tier} value={tier}>
@@ -93,7 +95,7 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="ml-auto">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-slate-400">
                 Showing {filteredAgents.length} of {agents.length} agents
               </div>
             </div>
@@ -105,12 +107,12 @@ export default function AnalyticsPage() {
 
         {/* Additional Insights */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Performance Insights</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Performance Insights</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Best Performing Category</span>
-                <span className="font-medium">
+                <span className="text-sm text-gray-600 dark:text-slate-300">Best Performing Category</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">
                   {(() => {
                     const categoryScores = agents.reduce((acc, agent) => {
                       const category = agent.metadata.category;
@@ -136,14 +138,14 @@ export default function AnalyticsPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Score Range</span>
-                <span className="font-medium">
+                <span className="text-sm text-gray-600 dark:text-slate-300">Score Range</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">
                   {Math.min(...agents.map(a => a.score.overall))} - {Math.max(...agents.map(a => a.score.overall))}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Standard Deviation</span>
-                <span className="font-medium">
+                <span className="text-sm text-gray-600 dark:text-slate-300">Standard Deviation</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">
                   {(() => {
                     const scores = agents.map(a => a.score.overall);
                     const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
@@ -155,24 +157,24 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Trend Analysis</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Trend Analysis</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Overall Trend</span>
-                <span className="font-medium text-green-600">↗️ Improving</span>
+                <span className="text-sm text-gray-600 dark:text-slate-300">Overall Trend</span>
+                <span className="font-medium text-green-600 dark:text-green-400">↗️ Improving</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Growth Rate</span>
-                <span className="font-medium">+2.3% / month</span>
+                <span className="text-sm text-gray-600 dark:text-slate-300">Growth Rate</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">+2.3% / month</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Volatility</span>
-                <span className="font-medium">Low</span>
+                <span className="text-sm text-gray-600 dark:text-slate-300">Volatility</span>
+                <span className="font-medium text-gray-900 dark:text-slate-100">Low</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Prediction</span>
-                <span className="font-medium text-blue-600">+5% next month</span>
+                <span className="text-sm text-gray-600 dark:text-slate-300">Prediction</span>
+                <span className="font-medium text-blue-600 dark:text-blue-400">+5% next month</span>
               </div>
             </div>
           </div>
