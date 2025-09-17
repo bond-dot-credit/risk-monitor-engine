@@ -167,7 +167,7 @@ export class ConfigManager {
   private loadFromEnvironment(): Partial<FullConfig> {
     return {
       app: {
-        environment: (process.env.NODE_ENV as any) || 'development',
+        environment: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
         port: parseInt(process.env.PORT || '3000'),
         host: process.env.HOST || 'localhost',
         baseUrl: process.env.BASE_URL || 'http://localhost:3000',
@@ -271,7 +271,7 @@ export class ConfigManager {
   }
 
   private mergeConfigs(...configs: Partial<FullConfig>[]): FullConfig {
-    const merged: any = {};
+    const merged: Record<string, unknown> = {};
     
     for (const config of configs) {
       this.deepMerge(merged, config);
@@ -280,7 +280,7 @@ export class ConfigManager {
     return merged as FullConfig;
   }
 
-  private deepMerge(target: any, source: any): void {
+  private deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): void {
     for (const key in source) {
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
         if (!target[key]) {
@@ -338,7 +338,7 @@ export class ConfigManager {
   // Get specific config value
   get<T>(path: string): T | undefined {
     const keys = path.split('.');
-    let value: any = this.config;
+    let value: Record<string, unknown> | unknown = this.config;
     
     for (const key of keys) {
       if (value && typeof value === 'object' && key in value) {

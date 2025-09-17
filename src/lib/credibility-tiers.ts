@@ -210,7 +210,7 @@ function getTransactionsRequired(tier: CredibilityTier): number {
 // Tier benefits calculation
 export function calculateTierBenefits(agent: Agent): {
   currentTier: CredibilityTier;
-  tierInfo: any;
+  tierInfo: Record<string, unknown>;
   maxLTV: number;
   benefits: string[];
   upgradePath: {
@@ -288,8 +288,8 @@ export function compareAgentTiers(agents: Agent[]): {
     tierLTVs[agent.credibilityTier].push(calculateMaxLTV(agent));
   });
   
-  const averageScores: { [key in CredibilityTier]: number } = {} as any;
-  const tierPerformance: { [key in CredibilityTier]: { avgLTV: number; avgScore: number } } = {} as any;
+  const averageScores: { [key in CredibilityTier]: number } = {} as { [key in CredibilityTier]: number };
+  const tierPerformance: { [key in CredibilityTier]: { avgLTV: number; avgScore: number } } = {} as { [key in CredibilityTier]: { avgLTV: number; avgScore: number } };
   
   Object.keys(tierDistribution).forEach(tier => {
     const tierKey = tier as CredibilityTier;

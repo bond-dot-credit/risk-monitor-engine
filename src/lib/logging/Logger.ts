@@ -10,7 +10,7 @@ export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   error?: Error;
   userId?: string;
   sessionId?: string;
@@ -200,7 +200,7 @@ export class Logger {
     return level >= this.config.level;
   }
 
-  private async log(level: LogLevel, message: string, context?: Record<string, any>, error?: Error): Promise<void> {
+  private async log(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error): Promise<void> {
     if (!this.shouldLog(level)) {
       return;
     }
@@ -230,23 +230,23 @@ export class Logger {
     );
   }
 
-  debug(message: string, context?: Record<string, any>): void {
+  debug(message: string, context?: Record<string, unknown>): void {
     this.log(LogLevel.DEBUG, message, context);
   }
 
-  info(message: string, context?: Record<string, any>): void {
+  info(message: string, context?: Record<string, unknown>): void {
     this.log(LogLevel.INFO, message, context);
   }
 
-  warn(message: string, context?: Record<string, any>): void {
+  warn(message: string, context?: Record<string, unknown>): void {
     this.log(LogLevel.WARN, message, context);
   }
 
-  error(message: string, context?: Record<string, any>, error?: Error): void {
+  error(message: string, context?: Record<string, unknown>, error?: Error): void {
     this.log(LogLevel.ERROR, message, context, error);
   }
 
-  fatal(message: string, context?: Record<string, any>, error?: Error): void {
+  fatal(message: string, context?: Record<string, unknown>, error?: Error): void {
     this.log(LogLevel.FATAL, message, context, error);
   }
 
@@ -257,7 +257,7 @@ export class Logger {
     }
   }
 
-  endTimer(name: string, context?: Record<string, any>): void {
+  endTimer(name: string, context?: Record<string, unknown>): void {
     if (this.config.enablePerformanceTracking) {
       const startTime = this.performanceMarks.get(name);
       if (startTime) {
@@ -273,7 +273,7 @@ export class Logger {
   }
 
   // Error reporting
-  reportError(error: Error, context?: Record<string, any>): void {
+  reportError(error: Error, context?: Record<string, unknown>): void {
     if (this.config.enableErrorReporting) {
       this.error('Error reported', context, error);
       
@@ -284,7 +284,7 @@ export class Logger {
     }
   }
 
-  private async sendToErrorReportingService(error: Error, context?: Record<string, any>): Promise<void> {
+  private async sendToErrorReportingService(error: Error, context?: Record<string, unknown>): Promise<void> {
     try {
       const payload = {
         error: {
@@ -371,15 +371,15 @@ export class Logger {
 export const logger = new Logger();
 
 // Convenience functions
-export const debug = (message: string, context?: Record<string, any>) => logger.debug(message, context);
-export const info = (message: string, context?: Record<string, any>) => logger.info(message, context);
-export const warn = (message: string, context?: Record<string, any>) => logger.warn(message, context);
-export const error = (message: string, context?: Record<string, any>, err?: Error) => logger.error(message, context, err);
-export const fatal = (message: string, context?: Record<string, any>, err?: Error) => logger.fatal(message, context, err);
+export const debug = (message: string, context?: Record<string, unknown>) => logger.debug(message, context);
+export const info = (message: string, context?: Record<string, unknown>) => logger.info(message, context);
+export const warn = (message: string, context?: Record<string, unknown>) => logger.warn(message, context);
+export const error = (message: string, context?: Record<string, unknown>, err?: Error) => logger.error(message, context, err);
+export const fatal = (message: string, context?: Record<string, unknown>, err?: Error) => logger.fatal(message, context, err);
 
 // Performance tracking helpers
 export const startTimer = (name: string) => logger.startTimer(name);
-export const endTimer = (name: string, context?: Record<string, any>) => logger.endTimer(name, context);
+export const endTimer = (name: string, context?: Record<string, unknown>) => logger.endTimer(name, context);
 
 // Error reporting helper
-export const reportError = (err: Error, context?: Record<string, any>) => logger.reportError(err, context);
+export const reportError = (err: Error, context?: Record<string, unknown>) => logger.reportError(err, context);
