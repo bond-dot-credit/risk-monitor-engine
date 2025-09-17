@@ -39,7 +39,7 @@ export class AIAgent {
 
       // Create key store
       const keyStore = new InMemoryKeyStore();
-      const keyPair = KeyPair.fromString(this.config.privateKey as any);
+      const keyPair = KeyPair.fromString(this.config.privateKey as string);
       await keyStore.setKey(networkId, this.config.accountId, keyPair);
 
       // Create provider and signer
@@ -125,7 +125,7 @@ export class AIAgent {
       const yoctoAmount = (amount * 1e24).toString();
       
       // Call the deposit function on the intents contract
-      const result = await (this.account as any).functionCall({
+      const result = await (this.account as { functionCall: (params: Record<string, unknown>) => Promise<unknown> }).functionCall({
         contractId: this.intentsContractId,
         methodName: 'deposit',
         args: {
@@ -162,7 +162,7 @@ export class AIAgent {
       }
       
       // Check account balance
-      const balance = await (this.account as any).getAccountBalance();
+      const balance = await (this.account as { getAccountBalance: () => Promise<{ available: string }> }).getAccountBalance();
       const availableNear = parseFloat(balance.available) / 1e24;
       
       if (availableNear < amount) {
@@ -231,7 +231,7 @@ export class AIAgent {
   /**
    * Gets the account state/balance with comprehensive information
    */
-  async getAccountState(): Promise<any> {
+  async getAccountState(): Promise<Record<string, unknown>> {
     try {
       if (!this.account) {
         throw new Error('Agent not initialized. Call initialize() first.');
@@ -239,7 +239,7 @@ export class AIAgent {
       
       const [state, balance] = await Promise.all([
         this.account.state(),
-        (this.account as any).getAccountBalance()
+        (this.account as { getAccountBalance: () => Promise<{ total: string; available: string }> }).getAccountBalance()
       ]);
       
       return {
