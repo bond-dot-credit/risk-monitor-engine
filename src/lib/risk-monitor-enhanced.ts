@@ -17,7 +17,7 @@ export interface EnhancedRiskAlert {
   acknowledgedAt?: Date;
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   category: 'LTV' | 'HEALTH_FACTOR' | 'MARKET_RISK' | 'LIQUIDATION' | 'PERFORMANCE' | 'SYSTEM';
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   escalationLevel: number;
   autoEscalation: boolean;
   relatedAlerts: string[];
