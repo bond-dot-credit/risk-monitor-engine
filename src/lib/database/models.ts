@@ -17,8 +17,8 @@ export abstract class BaseRepositoryImpl<T> implements BaseRepository<T> {
   protected abstract tableName: string;
   protected abstract connection: DatabaseConnection;
 
-  protected abstract mapToEntity(row: any): T;
-  protected abstract mapToDatabase(entity: T): any;
+  protected abstract mapToEntity(row: Record<string, unknown>): T;
+  protected abstract mapToDatabase(entity: T): Record<string, unknown>;
 
   async create(data: Omit<T, 'id' | 'createdAt' | 'updatedAt'>): Promise<T> {
     const now = new Date();
@@ -52,7 +52,7 @@ export abstract class BaseRepositoryImpl<T> implements BaseRepository<T> {
 
   async findAll(filters?: Partial<T>): Promise<T[]> {
     let sql = `SELECT * FROM ${this.tableName}`;
-    const values: any[] = [];
+    const values: unknown[] = [];
     let paramIndex = 1;
 
     if (filters && Object.keys(filters).length > 0) {
@@ -71,7 +71,7 @@ export abstract class BaseRepositoryImpl<T> implements BaseRepository<T> {
     sql += ' ORDER BY createdAt DESC';
     const result = await this.connection.query(sql, values);
     
-    return (result.rows || []).map((row: any) => this.mapToEntity(row));
+    return (result.rows || []).map((row: Record<string, unknown>) => this.mapToEntity(row));
   }
 
   async update(id: string, data: Partial<T>): Promise<T | null> {
@@ -102,7 +102,7 @@ export abstract class BaseRepositoryImpl<T> implements BaseRepository<T> {
 
   async count(filters?: Partial<T>): Promise<number> {
     let sql = `SELECT COUNT(*) FROM ${this.tableName}`;
-    const values: any[] = [];
+    const values: unknown[] = [];
     let paramIndex = 1;
 
     if (filters && Object.keys(filters).length > 0) {
@@ -137,7 +137,7 @@ export class CreditVaultRepository extends BaseRepositoryImpl<CreditVault> {
     this.connection = connection;
   }
 
-  protected mapToEntity(row: any): CreditVault {
+  protected mapToEntity(row: Record<string, unknown>): CreditVault {
     return {
       id: row.id,
       agentId: row.agent_id,
@@ -170,7 +170,7 @@ export class CreditVaultRepository extends BaseRepositoryImpl<CreditVault> {
     };
   }
 
-  protected mapToDatabase(entity: CreditVault): any {
+  protected mapToDatabase(entity: CreditVault): Record<string, unknown> {
     return {
       id: entity.id,
       agent_id: entity.agentId,
@@ -213,7 +213,7 @@ export class CreditVaultRepository extends BaseRepositoryImpl<CreditVault> {
   async findHighRiskVaults(ltvThreshold: number): Promise<CreditVault[]> {
     const sql = `SELECT * FROM ${this.tableName} WHERE ltv >= $1 ORDER BY ltv DESC`;
     const result = await this.connection.query(sql, [ltvThreshold]);
-    return (result.rows || []).map((row: any) => this.mapToEntity(row));
+    return (result.rows || []).map((row: Record<string, unknown>) => this.mapToEntity(row));
   }
 
   async updateVaultMetrics(id: string, ltv: number, healthFactor: number): Promise<CreditVault | null> {
@@ -231,7 +231,7 @@ export class AgentRepository extends BaseRepositoryImpl<Agent> {
     this.connection = connection;
   }
 
-  protected mapToEntity(row: any): Agent {
+  protected mapToEntity(row: Record<string, unknown>): Agent {
     return {
       id: row.id,
       name: row.name,
@@ -260,7 +260,7 @@ export class AgentRepository extends BaseRepositoryImpl<Agent> {
     };
   }
 
-  protected mapToDatabase(entity: Agent): any {
+  protected mapToDatabase(entity: Agent): Record<string, unknown> {
     return {
       id: entity.id,
       name: entity.name,
@@ -293,10 +293,10 @@ export class AgentRepository extends BaseRepositoryImpl<Agent> {
   async findHighScoreAgents(minScore: number): Promise<Agent[]> {
     const sql = `SELECT * FROM ${this.tableName} WHERE score->>'overall' >= $1 ORDER BY (score->>'overall')::int DESC`;
     const result = await this.connection.query(sql, [minScore.toString()]);
-    return (result.rows || []).map((row: any) => this.mapToEntity(row));
+    return (result.rows || []).map((row: Record<string, unknown>) => this.mapToEntity(row));
   }
 
-  async updateAgentScore(id: string, score: any): Promise<Agent | null> {
+  async updateAgentScore(id: string, score: Record<string, unknown>): Promise<Agent | null> {
     return this.update(id, { score } as Partial<Agent>);
   }
 }

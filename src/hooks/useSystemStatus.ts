@@ -3,7 +3,7 @@ import { useRealTimeData } from './useRealTimeData';
 interface SystemStatus {
   isRunning: boolean;
   lastCheck: Date | null;
-  config: any;
+  config: Record<string, unknown>;
   alertsCount: number;
   performanceMetrics: {
     totalChecks: number;

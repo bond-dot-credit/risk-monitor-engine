@@ -13,13 +13,13 @@ export interface DatabaseConfig {
 }
 
 export interface DatabaseConnection {
-  query: (sql: string, params?: any[]) => Promise<any>;
+  query: (sql: string, params?: unknown[]) => Promise<DatabaseResult>;
   close: () => Promise<void>;
   isConnected: () => boolean;
 }
 
 export interface DatabaseResult {
-  rows?: any[];
+  rows?: Record<string, unknown>[];
   rowCount?: number;
   insertId?: string;
   affectedRows?: number;
@@ -29,7 +29,7 @@ export interface DatabaseResult {
 abstract class BaseDatabaseConnection implements DatabaseConnection {
   protected connected: boolean = false;
 
-  abstract query(sql: string, params?: any[]): Promise<DatabaseResult>;
+  abstract query(sql: string, params?: unknown[]): Promise<DatabaseResult>;
   abstract close(): Promise<void>;
   
   isConnected(): boolean {
@@ -43,7 +43,7 @@ abstract class BaseDatabaseConnection implements DatabaseConnection {
 
 // PostgreSQL connection implementation
 class PostgreSQLConnection extends BaseDatabaseConnection {
-  private pool: any; // Will be properly typed when pg is installed
+  private pool: unknown; // Will be properly typed when pg is installed
 
   constructor(config: DatabaseConfig) {
     super();
@@ -52,7 +52,7 @@ class PostgreSQLConnection extends BaseDatabaseConnection {
     console.log('PostgreSQL connection initialized for:', config.host);
   }
 
-  async query(sql: string, params: any[] = []): Promise<DatabaseResult> {
+  async query(sql: string, params: unknown[] = []): Promise<DatabaseResult> {
     try {
       // Placeholder implementation
       console.log('PostgreSQL query:', sql, params);
@@ -71,8 +71,8 @@ class PostgreSQLConnection extends BaseDatabaseConnection {
 
 // MongoDB connection implementation
 class MongoDBConnection extends BaseDatabaseConnection {
-  private client: any; // Will be properly typed when mongodb is installed
-  private db: any;
+  private client: unknown; // Will be properly typed when mongodb is installed
+  private db: unknown;
 
   constructor(config: DatabaseConfig) {
     super();
@@ -81,7 +81,7 @@ class MongoDBConnection extends BaseDatabaseConnection {
     console.log('MongoDB connection initialized for:', config.host);
   }
 
-  async query(sql: string, params: any[] = []): Promise<DatabaseResult> {
+  async query(sql: string, params: unknown[] = []): Promise<DatabaseResult> {
     try {
       // Parse SQL-like query for MongoDB operations
       // This is a simplified approach - in production, use proper MongoDB query builder
