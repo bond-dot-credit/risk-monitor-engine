@@ -24,7 +24,7 @@ export interface TransactionData {
   hash: string;
   signerId: string;
   receiverId: string;
-  actions: any[];
+  actions: Record<string, unknown>[];
   timestamp: number;
   value: number; // in USD
 }
@@ -46,7 +46,7 @@ export class OnChainMetricsCollector {
     try {
       // Create key store
       const keyStore = new InMemoryKeyStore();
-      const keyPair = KeyPair.fromString(this.config.privateKey as any);
+      const keyPair = KeyPair.fromString(this.config.privateKey as string);
       await keyStore.setKey(this.config.networkId, this.config.accountId, keyPair);
 
       // Create provider and signer
@@ -169,11 +169,11 @@ export class OnChainMetricsCollector {
       
       // Filter and transform the data to match our TransactionData interface
       return data.txns
-        .filter((tx: any) => {
-          const txDate = new Date(tx.block_timestamp / 1000000); // Convert nanoseconds to milliseconds
+        .filter((tx: Record<string, unknown>) => {
+          const txDate = new Date((tx.block_timestamp as number) / 1000000); // Convert nanoseconds to milliseconds
           return txDate >= startDate && txDate <= endDate;
         })
-        .map((tx: any) => ({
+        .map((tx: Record<string, unknown>) => ({
           hash: tx.transaction_hash,
           signerId: tx.predecessor_account_id || tx.signer_account_id,
           receiverId: tx.receiver_account_id,
@@ -286,7 +286,7 @@ export class OnChainMetricsCollector {
   /**
    * Get account balance
    */
-  async getAccountBalance(): Promise<any> {
+  async getAccountBalance(): Promise<Record<string, unknown>> {
     try {
       if (!this.account) {
         throw new Error('Account not initialized. Call initialize() first.');
@@ -302,7 +302,7 @@ export class OnChainMetricsCollector {
   /**
    * Get account state
    */
-  async getAccountState(): Promise<any> {
+  async getAccountState(): Promise<Record<string, unknown>> {
     try {
       if (!this.account) {
         throw new Error('Account not initialized. Call initialize() first.');
@@ -337,7 +337,7 @@ export class OnChainMetricsCollector {
   /**
    * Calculate the real USD value of a transaction using NEAR price data
    */
-  private calculateRealTransactionValue(tx: any): number {
+  private calculateRealTransactionValue(tx: Record<string, unknown>): number {
     try {
       // Get the current NEAR price (this should be cached or fetched periodically)
       const nearPriceUSD = this.getNearPrice();
