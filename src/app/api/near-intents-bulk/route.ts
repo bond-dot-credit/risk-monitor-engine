@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BulkOperationsManager, BulkOperationConfig, nearIntentsConfig } from '@/lib/near-intents';
+import { BulkOperationsManager, nearIntentsConfig } from '@/lib/near-intents';
 import { deriveMultipleWallets } from '@/lib/near-intents/wallet-integration';
 import { store } from '@/lib/store';
-import { ensureSeeded } from '@/lib/seed';
 
 export async function POST(request: NextRequest) {
   try {

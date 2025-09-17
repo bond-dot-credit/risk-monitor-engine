@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DEFAULT_CHAIN_CONFIGS, shouldTriggerLiquidationProtection, executeProtectionRules } from '@/lib/credit-vault';
 import { riskMonitor } from '@/lib/risk-monitor';
-import { ChainId, VaultProtectionRule } from '@/types/credit-vault';
+import { VaultProtectionRule } from '@/types/credit-vault';
 
 // In-memory storage for protection rules (in production, this would be a database)
 const protectionRules = new Map<string, VaultProtectionRule>();

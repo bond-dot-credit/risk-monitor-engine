@@ -3,11 +3,9 @@ import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
 import { 
   createCreditVault, 
-  calculateDynamicLTV,
-  recalculateVaultMetrics,
-  DEFAULT_CHAIN_CONFIGS
+  calculateDynamicLTV
 } from '@/lib/credit-vault';
-import { ChainId, VaultStatus } from '@/types/credit-vault';
+import { ChainId } from '@/types/credit-vault';
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OnChainMetricsCollector, OnChainMetricsConfig } from '@/lib/near-intents/onchain-metrics';
-import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
 
 // Configuration from environment variables

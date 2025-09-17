@@ -3,7 +3,6 @@ import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
 import { 
   CREDIBILITY_TIERS, 
-  calculateCredibilityTier, 
   calculateMaxLTV, 
   checkTierUpgradeEligibility,
   compareAgentTiers
