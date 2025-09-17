@@ -45,19 +45,19 @@ const mockAgent: Agent = {
 
 describe('NEAR Intents Integration', () => {
   let nearIntents: NearIntents;
-  let mockAccount: any;
+  let mockAccount: Record<string, unknown>;
 
   beforeEach(() => {
     mockAccount = new MockAccount('test-account.near');
     nearIntents = new NearIntents(
-      mockAccount as any,
+      mockAccount as Record<string, unknown>,
       'https://solver-bus.near.org',
       'intents.verifier.near'
     );
     
     // Add mock agent to store
-    (store as any).agents = new Map();
-    (store as any).agents.set('agent_1', mockAgent);
+    (store as Record<string, unknown>).agents = new Map();
+    (store as Record<string, unknown>).agents.set('agent_1', mockAgent);
   });
 
   describe('NearIntents', () => {
@@ -155,7 +155,7 @@ describe('NEAR Intents Integration', () => {
         privateKey: 'ed25519:test-key',
       });
       
-      const agentInfo = await (agent as any).getAgentInfo('agent_1');
+      const agentInfo = await (agent as Record<string, unknown>).getAgentInfo('agent_1');
       expect(agentInfo).toBeDefined();
       expect(agentInfo?.id).toBe('agent_1');
     });

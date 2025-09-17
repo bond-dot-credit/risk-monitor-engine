@@ -70,7 +70,7 @@ global.fetch = vi.fn();
 describe('Dashboard Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as any).mockResolvedValue({
+    (global.fetch as Record<string, unknown>).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true })
     });

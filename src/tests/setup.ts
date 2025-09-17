@@ -35,7 +35,7 @@ if (!global.performance) {
     getEntriesByName: vi.fn(() => []),
     getEntries: vi.fn(() => []),
     toJSON: vi.fn(() => ({}))
-  } as any;
+  } as Record<string, unknown>;
 }
 
 // Mock crypto API if not available
@@ -48,5 +48,5 @@ if (!global.crypto) {
       return arr;
     }),
     randomUUID: vi.fn(() => 'test-uuid-' + Math.random().toString(36).substr(2, 9))
-  } as any;
+  } as Record<string, unknown>;
 }
