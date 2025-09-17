@@ -9,7 +9,7 @@ import { NearIntentsErrorHandler, RetryUtils } from './utils';
  * with your mnemonic phrase for actual on-chain transactions
  */
 export class RealWorldNearIntentsDemo {
-  private wallet: any;
+  private wallet: Record<string, unknown> | null;
   private agent: AIAgent | null = null;
   private metricsCollector: OnChainMetricsCollector | null = null;
 

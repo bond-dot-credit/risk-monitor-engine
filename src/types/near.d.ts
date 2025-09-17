@@ -2,7 +2,7 @@
 declare module 'near-api-js' {
   export class Account {
     accountId: string;
-    state(): Promise<any>;
+    state(): Promise<Record<string, unknown>>;
   }
 
   export class KeyPair {
@@ -10,14 +10,14 @@ declare module 'near-api-js' {
   }
 
   export class Near {
-    constructor(config: any);
+    constructor(config: Record<string, unknown>);
     account(accountId: string): Promise<Account>;
   }
 
-  export const connect: (config: any) => Promise<Near>;
+  export const connect: (config: Record<string, unknown>) => Promise<Near>;
   
   export const keyStores: {
-    InMemoryKeyStore: any;
+    InMemoryKeyStore: Record<string, unknown>;
   };
   
   export const utils: {
