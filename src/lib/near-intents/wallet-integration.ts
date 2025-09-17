@@ -29,7 +29,7 @@ export async function initializeWalletConnection(networkId: string = 'mainnet'):
   try {
     // Parse the seed phrase to get the key pair
     const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC);
-    const keyPair = KeyPair.fromString(secretKey as any);
+    const keyPair = KeyPair.fromString(secretKey as string);
     
     // Derive account ID from public key (for implicit accounts)
     const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');
@@ -89,7 +89,7 @@ export async function deriveMultipleWallets(networkId: string = 'testnet', count
       const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC, path);
       
       // Create key pair
-      const keyPair = KeyPair.fromString(secretKey as any);
+      const keyPair = KeyPair.fromString(secretKey as string);
       
       // Derive account ID from public key (for implicit accounts)
       const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');
@@ -131,7 +131,7 @@ export async function getAccountBalance(account: Account): Promise<{
   availableInNear: number;
 }> {
   try {
-    const balance = await (account as any).getAccountBalance();
+    const balance = await (account as { getAccountBalance: () => Promise<{ total: string; available: string; staked: string }> }).getAccountBalance();
     
     return {
       total: balance.total,
@@ -154,11 +154,11 @@ export async function transferNear(
   account: Account,
   receiverId: string,
   amount: number // Amount in NEAR
-): Promise<any> {
+): Promise<Record<string, unknown>> {
   try {
     const yoctoAmount = (amount * 1e24).toString();
     
-    const result = await (account as any).sendMoney(
+    const result = await (account as { sendMoney: (receiverId: string, amount: string) => Promise<Record<string, unknown>> }).sendMoney(
       receiverId,
       yoctoAmount
     );
@@ -180,12 +180,12 @@ export async function callContract(
   account: Account,
   contractId: string,
   methodName: string,
-  args: any,
+  args: Record<string, unknown>,
   attachedDeposit: string = '0',
   gas: string = '300000000000000'
-): Promise<any> {
+): Promise<Record<string, unknown>> {
   try {
-    const result = await (account as any).functionCall({
+    const result = await (account as { functionCall: (params: Record<string, unknown>) => Promise<Record<string, unknown>> }).functionCall({
       contractId,
       methodName,
       args,
@@ -212,7 +212,7 @@ export async function swapTokensOnRef(
   tokenOut: string,
   amountIn: number,
   minAmountOut?: number
-): Promise<any> {
+): Promise<Record<string, unknown>> {
   try {
     const refFinanceContract = 'v2.ref-finance.near';
     const yoctoAmountIn = (amountIn * 1e24).toString();
@@ -254,7 +254,7 @@ export async function getTransactionStatus(
   near: Near,
   txHash: string,
   accountId: string
-): Promise<any> {
+): Promise<Record<string, unknown>> {
   try {
     const result = await near.connection.provider.txStatus(txHash, accountId);
     return result;
