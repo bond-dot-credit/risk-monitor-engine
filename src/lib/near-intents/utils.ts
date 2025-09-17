@@ -15,7 +15,7 @@ export interface NearIntentsError {
   type: NearIntentsErrorType;
   message: string;
   code?: string;
-  details?: any;
+  details?: Record<string, unknown>;
   retryable?: boolean;
   retryAfter?: number; // seconds
 }
@@ -24,7 +24,7 @@ export class NearIntentsErrorHandler {
   /**
    * Parse and categorize errors from NEAR blockchain operations
    */
-  static parseError(error: any): NearIntentsError {
+  static parseError(error: unknown): NearIntentsError {
     if (typeof error === 'string') {
       return this.parseStringError(error);
     }
@@ -103,7 +103,7 @@ export class NearIntentsErrorHandler {
     return this.parseStringError(error.message);
   }
 
-  private static parseNearError(error: any): NearIntentsError {
+  private static parseNearError(error: Record<string, unknown>): NearIntentsError {
     // Handle specific NEAR error types
     if (error.type === 'ActionError') {
       return {
@@ -283,7 +283,7 @@ export class RetryUtils {
     baseDelay: number = 1000,
     backoffMultiplier: number = 2
   ): Promise<T> {
-    let lastError: any;
+    let lastError: unknown;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
