@@ -187,7 +187,7 @@ function calculateSourceCodeQualityScore(agent: Agent): number {
   return Math.min(20, score);
 }
 
-export function calculatePerformanceScore(agent: Agent, historicalData?: any[]): number {
+export function calculatePerformanceScore(agent: Agent, historicalData?: Record<string, unknown>[]): number {
   let score = 0;
   let maxScore = 0;
 
@@ -209,7 +209,7 @@ export function calculatePerformanceScore(agent: Agent, historicalData?: any[]):
   return Math.round((score / maxScore) * 100);
 }
 
-function calculatePerformanceConsistencyScore(agent: Agent, historicalData?: any[]): number {
+function calculatePerformanceConsistencyScore(agent: Agent, historicalData?: Record<string, unknown>[]): number {
   if (!historicalData || historicalData.length < 3) {
     // Use agent score as fallback
     return Math.min(40, agent.score.performance);
