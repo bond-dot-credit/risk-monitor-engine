@@ -91,7 +91,7 @@ export class NearIntents {
       const data = await response.json();
       
       // Transform Solver Bus response to our Quote format
-      return data.quotes?.map((quote: any) => ({
+      return data.quotes?.map((quote: Record<string, unknown>) => ({
         intent: request,
         solver: quote.solver_id,
         amountOut: parseFloat(quote.amount_out),
@@ -144,7 +144,7 @@ export class NearIntents {
     assetOut: string,
     amountOut: number,
     agentId?: string
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       // Create the quote object according to NEAR Intents protocol
       const quote = {
@@ -182,7 +182,7 @@ export class NearIntents {
   /**
    * Publishes the intent to the Solver Bus and executes via Verifier Contract
    */
-  async publishIntent(quote: any): Promise<IntentExecutionResult> {
+  async publishIntent(quote: Record<string, unknown>): Promise<IntentExecutionResult> {
     try {
       console.log('Publishing intent to Solver Bus:', quote);
       
@@ -225,7 +225,7 @@ export class NearIntents {
   /**
    * Execute the intent via NEAR Verifier Contract
    */
-  private async executeViaVerifierContract(intentId: string, quote: any): Promise<any> {
+  private async executeViaVerifierContract(intentId: string, quote: Record<string, unknown>): Promise<Record<string, unknown>> {
     try {
       // Call the verifier contract on NEAR
       const result = await this.account.functionCall({
@@ -252,7 +252,7 @@ export class NearIntents {
   /**
    * Fallback: Execute directly without Solver Bus
    */
-  private async executeDirectly(quote: any): Promise<IntentExecutionResult> {
+  private async executeDirectly(quote: Record<string, unknown>): Promise<IntentExecutionResult> {
     try {
       // For direct execution, we can use common DEX contracts like Ref Finance
       const refFinanceContract = 'v2.ref-finance.near';
