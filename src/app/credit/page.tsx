@@ -67,7 +67,7 @@ export default function CreditVaultsPage() {
   });
 
   const sortedVaults = [...filteredVaults].sort((a, b) => {
-    let aValue: any, bValue: any;
+    let aValue: number | string, bValue: number | string;
     
     switch (sortBy) {
       case 'creditLimit':
@@ -272,7 +272,7 @@ export default function CreditVaultsPage() {
             <div className="lg:w-48">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'creditLimit' | 'healthFactor' | 'utilization' | 'created')}
                 className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
                 <option value="created">Sort by Created</option>

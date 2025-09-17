@@ -168,7 +168,7 @@ export function AgentDashboard() {
   });
 
   const sortedAgents = [...filteredAgents].sort((a, b) => {
-    let aValue: any, bValue: any;
+    let aValue: string | number, bValue: string | number;
     
     switch (sortBy) {
       case 'name':
@@ -452,7 +452,7 @@ export function AgentDashboard() {
             </h3>
             <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mb-2 sm:mb-3 max-w-md mx-auto leading-relaxed">
               {searchQuery ? (
-                <>No agents found matching <span className="font-medium text-slate-700 dark:text-slate-300">"{searchQuery}"</span></>
+                <>No agents found matching <span className="font-medium text-slate-700 dark:text-slate-300">&quot;{searchQuery}&quot;</span></>
               ) : (
                 'No agents found matching the selected filters.'
               )}

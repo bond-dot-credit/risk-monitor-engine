@@ -57,7 +57,7 @@ const NearIntentsDashboard = () => {
   const [isBulkOperationRunning, setIsBulkOperationRunning] = useState(false);
   const [protocolRewardsData, setProtocolRewardsData] = useState<ProtocolRewardsData | null>(null);
   const [isRewardsCollectionRunning, setIsRewardsCollectionRunning] = useState(false);
-  const [configurationStatus, setConfigurationStatus] = useState<any>(null);
+  const [configurationStatus, setConfigurationStatus] = useState<Record<string, unknown> | null>(null);
   const [dateRange, setDateRange] = useState({
     startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days ago
     endDate: new Date().toISOString().split('T')[0] // today
@@ -556,7 +556,7 @@ const NearIntentsDashboard = () => {
                 <div className="mt-4">
                   <h4 className="font-medium mb-2">Errors:</h4>
                   <div className="max-h-40 overflow-y-auto">
-                    {bulkOperationResult.errors.slice(0, 5).map((error: any, index: number) => (
+                    {bulkOperationResult.errors.slice(0, 5).map((error: { wallet: string; error: string }, index: number) => (
                       <div key={index} className="text-sm p-2 bg-red-50 dark:bg-red-900/20 rounded mb-1">
                         <span className="font-medium">{error.wallet}:</span> {error.error}
                       </div>
@@ -683,7 +683,7 @@ const NearIntentsDashboard = () => {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              NEAR Intents is a system for executing multichain transactions. An intent represents a user's desired state change (e.g., "I want to swap X NEAR for Y USDC") rather than a specific execution path. This allows for more flexible and efficient execution of financial operations.
+              NEAR Intents is a system for executing multichain transactions. An intent represents a user&apos;s desired state change (e.g., &quot;I want to swap X NEAR for Y USDC&quot;) rather than a specific execution path. This allows for more flexible and efficient execution of financial operations.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">

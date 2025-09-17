@@ -227,7 +227,7 @@ describe('NEAR Protocol Rewards Implementation', () => {
         privateKey: 'ed25519:test-key'
       });
 
-      // @ts-ignore - accessing private method for testing
+      // @ts-expect-error - accessing private method for testing
       const smartContractCalls = collector.countSmartContractCalls(mockTransactions);
       
       // Should count all transactions with FunctionCall actions
@@ -257,7 +257,7 @@ describe('NEAR Protocol Rewards Implementation', () => {
         privateKey: 'ed25519:test-key'
       });
 
-      // @ts-ignore - accessing private method for testing
+      // @ts-expect-error - accessing private method for testing
       const uniqueWallets = collector.countUniqueWallets(mockTransactions);
       
       // Should count unique signer IDs and receiver IDs

@@ -2,20 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
- 
-import { usePathname } from 'next/navigation';
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: '📊' },
-  { name: 'Agents', href: '/agents', icon: '🤖' },
-  { name: 'Risk', href: '/risk', icon: '⚠️' },
-  { name: 'Credit', href: '/credit', icon: '🏦' },
-  { name: 'Verify', href: '/verification', icon: '✅' },
-  { name: 'Analytics', href: '/analytics', icon: '📈' },
-  { name: 'Scoring', href: '/scoring', icon: '🎯' },
-  { name: 'Performance', href: '/performance', icon: '⚡' },
-  { name: 'NEAR Intents', href: '/near-intents', icon: '🔗' },
-];
 
 
 export function Header() {

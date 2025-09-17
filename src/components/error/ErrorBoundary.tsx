@@ -82,7 +82,7 @@ class ErrorBoundary extends Component<Props, State> {
     }
   };
 
-  private sendToErrorService = (errorData: any) => {
+  private sendToErrorService = (errorData: Record<string, unknown>) => {
     // Send to your error monitoring service (e.g., Sentry, LogRocket, etc.)
     try {
       // Example: Send to Sentry
@@ -154,7 +154,7 @@ class ErrorBoundary extends Component<Props, State> {
 
               {/* Error Message */}
               <p className="text-sm text-muted-foreground mb-4">
-                We're sorry, but something unexpected happened. Our team has been notified.
+                We&apos;re sorry, but something unexpected happened. Our team has been notified.
               </p>
 
               {/* Error ID for support */}
