@@ -198,7 +198,7 @@ describe('Credit Vaults API', () => {
       expect(response.status).toBe(200);
       expect(data).toBeInstanceOf(Array);
       // Should only return Ethereum vaults
-      expect(data.every((vault: any) => vault.chainId === ChainId.ETHEREUM)).toBe(true);
+      expect(data.every((vault: Record<string, unknown>) => vault.chainId === ChainId.ETHEREUM)).toBe(true);
     });
 
     it('should filter vaults by status', async () => {
@@ -221,7 +221,7 @@ describe('Credit Vaults API', () => {
       expect(response.status).toBe(200);
       expect(data).toBeInstanceOf(Array);
       // Should only return active vaults
-      expect(data.every((vault: any) => vault.status === VaultStatus.ACTIVE)).toBe(true);
+      expect(data.every((vault: Record<string, unknown>) => vault.status === VaultStatus.ACTIVE)).toBe(true);
     });
 
     it('should filter vaults by agent ID', async () => {
@@ -244,7 +244,7 @@ describe('Credit Vaults API', () => {
       expect(response.status).toBe(200);
       expect(data).toBeInstanceOf(Array);
       // Should only return vaults for agent_1
-      expect(data.every((vault: any) => vault.agentId === 'agent_1')).toBe(true);
+      expect(data.every((vault: Record<string, unknown>) => vault.agentId === 'agent_1')).toBe(true);
     });
 
     it('should handle multiple filter parameters', async () => {

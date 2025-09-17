@@ -22,7 +22,7 @@ import {
 
 // Mock the credibility tiers library
 vi.mock('../lib/credibility-tiers', () => ({
-  calculateMaxLTV: vi.fn().mockImplementation((agent: any, collateral: number = 0, marketConditions: string = 'normal') => {
+  calculateMaxLTV: vi.fn().mockImplementation((agent: Record<string, unknown>, collateral: number = 0, marketConditions: string = 'normal') => {
     // Mock implementation that returns a reasonable LTV value
     const baseLTV = 70; // Default to 70%
     let adjustedLTV = baseLTV;
