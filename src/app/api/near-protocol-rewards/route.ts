@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         const metrics = await collector.collectMetrics(start, end, walletIds);
 
         // Calculate reward tier based on NEAR Protocol Rewards scoring system
-        const rewardTier = calculateRewardTier(metrics);
+        const rewardTier = calculateRewardTier(metrics as unknown as Record<string, unknown>);
         const monetaryReward = calculateMonetaryReward(rewardTier);
 
         return NextResponse.json({
@@ -139,35 +139,38 @@ function calculateRewardTier(metrics: Record<string, unknown>): string {
   let score = 0;
   
   // Transaction Volume (8 points)
-  if (metrics.transactionVolume >= 10000) {
+  const transactionVolume = typeof metrics.transactionVolume === 'number' ? metrics.transactionVolume : 0;
+  if (transactionVolume >= 10000) {
     score += 8;
-  } else if (metrics.transactionVolume >= 5000) {
+  } else if (transactionVolume >= 5000) {
     score += 6;
-  } else if (metrics.transactionVolume >= 1000) {
+  } else if (transactionVolume >= 1000) {
     score += 4;
-  } else if (metrics.transactionVolume >= 100) {
+  } else if (transactionVolume >= 100) {
     score += 2;
   }
   
   // Smart Contract Calls (8 points)
-  if (metrics.smartContractCalls >= 500) {
+  const smartContractCalls = typeof metrics.smartContractCalls === 'number' ? metrics.smartContractCalls : 0;
+  if (smartContractCalls >= 500) {
     score += 8;
-  } else if (metrics.smartContractCalls >= 250) {
+  } else if (smartContractCalls >= 250) {
     score += 6;
-  } else if (metrics.smartContractCalls >= 100) {
+  } else if (smartContractCalls >= 100) {
     score += 4;
-  } else if (metrics.smartContractCalls >= 50) {
+  } else if (smartContractCalls >= 50) {
     score += 2;
   }
   
   // Unique Wallets (4 points)
-  if (metrics.uniqueWallets >= 100) {
+  const uniqueWallets = typeof metrics.uniqueWallets === 'number' ? metrics.uniqueWallets : 0;
+  if (uniqueWallets >= 100) {
     score += 4;
-  } else if (metrics.uniqueWallets >= 50) {
+  } else if (uniqueWallets >= 50) {
     score += 3;
-  } else if (metrics.uniqueWallets >= 25) {
+  } else if (uniqueWallets >= 25) {
     score += 2;
-  } else if (metrics.uniqueWallets >= 10) {
+  } else if (uniqueWallets >= 10) {
     score += 1;
   }
   

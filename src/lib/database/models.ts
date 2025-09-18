@@ -1,6 +1,6 @@
 import { DatabaseConnection, DatabaseResult } from './connection';
 import { CreditVault, VaultStatus, ChainId } from '@/types/credit-vault';
-import { Agent, AgentStatus } from '@/types/agent';
+import { Agent, AgentStatus, CredibilityTier, VerificationStatus } from '@/types/agent';
 
 // Base repository interface for common database operations
 export interface BaseRepository<T> {
@@ -119,7 +119,7 @@ export abstract class BaseRepositoryImpl<T> implements BaseRepository<T> {
     }
 
     const result = await this.connection.query(sql, values);
-    return parseInt(result.rows?.[0]?.count || '0', 10);
+    return parseInt(String(result.rows?.[0]?.count || '0'), 10);
   }
 
   protected generateId(): string {
@@ -139,34 +139,34 @@ export class CreditVaultRepository extends BaseRepositoryImpl<CreditVault> {
 
   protected mapToEntity(row: Record<string, unknown>): CreditVault {
     return {
-      id: row.id,
-      agentId: row.agent_id,
+      id: row.id as string,
+      agentId: row.agent_id as string,
       chainId: row.chain_id as ChainId,
       status: row.status as VaultStatus,
       collateral: {
-        token: row.collateral_token,
-        amount: parseFloat(row.collateral_amount),
-        valueUSD: parseFloat(row.collateral_value_usd),
-        lastUpdated: new Date(row.collateral_last_updated),
+        token: row.collateral_token as string,
+        amount: parseFloat(row.collateral_amount as string),
+        valueUSD: parseFloat(row.collateral_value_usd as string),
+        lastUpdated: new Date(row.collateral_last_updated as string),
       },
       debt: {
-        token: row.debt_token,
-        amount: parseFloat(row.debt_amount),
-        valueUSD: parseFloat(row.debt_value_usd),
-        lastUpdated: new Date(row.debt_last_updated),
+        token: row.debt_token as string,
+        amount: parseFloat(row.debt_amount as string),
+        valueUSD: parseFloat(row.debt_value_usd as string),
+        lastUpdated: new Date(row.debt_last_updated as string),
       },
-      ltv: parseFloat(row.ltv),
-      healthFactor: parseFloat(row.health_factor),
-      maxLTV: parseFloat(row.max_ltv),
+      ltv: parseFloat(row.ltv as string),
+      healthFactor: parseFloat(row.health_factor as string),
+      maxLTV: parseFloat(row.max_ltv as string),
       liquidationProtection: {
-        enabled: row.liquidation_protection_enabled,
-        threshold: parseFloat(row.liquidation_protection_threshold),
-        cooldown: parseInt(row.liquidation_protection_cooldown),
-        lastTriggered: row.liquidation_protection_last_triggered ? new Date(row.liquidation_protection_last_triggered) : undefined,
+        enabled: row.liquidation_protection_enabled as boolean,
+        threshold: parseFloat(row.liquidation_protection_threshold as string),
+        cooldown: parseInt(row.liquidation_protection_cooldown as string, 10),
+        lastTriggered: row.liquidation_protection_last_triggered ? new Date(row.liquidation_protection_last_triggered as string) : undefined,
       },
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
-      lastRiskCheck: new Date(row.last_risk_check),
+      createdAt: new Date(row.created_at as string),
+      updatedAt: new Date(row.updated_at as string),
+      lastRiskCheck: new Date(row.last_risk_check as string),
     };
   }
 
@@ -233,30 +233,30 @@ export class AgentRepository extends BaseRepositoryImpl<Agent> {
 
   protected mapToEntity(row: Record<string, unknown>): Agent {
     return {
-      id: row.id,
-      name: row.name,
-      operator: row.operator,
+      id: row.id as string,
+      name: row.name as string,
+      operator: row.operator as string,
       metadata: {
-        description: row.metadata_description,
-        category: row.metadata_category,
-        version: row.metadata_version,
-        tags: row.metadata_tags ? JSON.parse(row.metadata_tags) : [],
+        description: row.metadata_description as string,
+        category: row.metadata_category as string,
+        version: row.metadata_version as string,
+        tags: row.metadata_tags ? JSON.parse(row.metadata_tags as string) : [],
         provenance: {
-          sourceCode: row.provenance_source_code,
-          verificationHash: row.provenance_verification_hash,
-          deploymentChain: row.provenance_deployment_chain,
-          lastAudit: new Date(row.provenance_last_audit),
-          auditScore: parseInt(row.provenance_audit_score),
-          auditReport: row.provenance_audit_report,
+          sourceCode: row.provenance_source_code as string,
+          verificationHash: row.provenance_verification_hash as string,
+          deploymentChain: row.provenance_deployment_chain as string,
+          lastAudit: new Date(row.provenance_last_audit as string),
+          auditScore: parseInt(row.provenance_audit_score as string, 10),
+          auditReport: row.provenance_audit_report as string,
         },
-        verificationMethods: row.verification_methods ? JSON.parse(row.verification_methods) : [],
+        verificationMethods: row.verification_methods ? JSON.parse(row.verification_methods as string) : [],
       },
-      score: row.score ? JSON.parse(row.score) : {},
-      credibilityTier: row.credibility_tier,
+      score: row.score ? JSON.parse(row.score as string) : {},
+      credibilityTier: row.credibility_tier as CredibilityTier,
       status: row.status as AgentStatus,
-      verification: row.verification,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      verification: row.verification as VerificationStatus,
+      createdAt: new Date(row.created_at as string),
+      updatedAt: new Date(row.updated_at as string),
     };
   }
 
@@ -297,7 +297,7 @@ export class AgentRepository extends BaseRepositoryImpl<Agent> {
   }
 
   async updateAgentScore(id: string, score: Record<string, unknown>): Promise<Agent | null> {
-    return this.update(id, { score } as Partial<Agent>);
+    return this.update(id, { score } as unknown as Partial<Agent>);
   }
 }
 

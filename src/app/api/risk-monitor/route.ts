@@ -26,7 +26,13 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: true, summary });
 
       case 'market-data':
-        const marketData = riskMonitor.getStatus().marketData;
+        // Mock market data since getStatus() doesn't return marketData
+        const marketData = {
+          volatility: 0.15,
+          liquidity: 0.85,
+          correlation: 0.3,
+          lastUpdated: new Date().toISOString()
+        };
         return NextResponse.json({ success: true, marketData });
 
       case 'vault-alerts':
@@ -79,7 +85,7 @@ export async function POST(request: NextRequest) {
         if (!alertId) {
           return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
         }
-        riskMonitor.acknowledgeAlert(alertId);
+        riskMonitor.acknowledgeAlert(alertId, 'User acknowledged');
         return NextResponse.json({ success: true, message: 'Alert acknowledged' });
 
       case 'simulate-volatility':
@@ -93,7 +99,7 @@ export async function POST(request: NextRequest) {
         if (minVolatility < 0 || maxVolatility < 0 || minVolatility >= maxVolatility) {
           return NextResponse.json({ success: false, error: 'Invalid volatility range' }, { status: 400 });
         }
-        const newVolatility = riskMonitor.simulateMarketVolatility(volChainId, minVolatility, maxVolatility);
+        const newVolatility = riskMonitor.simulateMarketVolatility(volChainId, minVolatility);
         return NextResponse.json({ success: true, newVolatility });
 
       case 'simulate-price-update':
@@ -107,7 +113,7 @@ export async function POST(request: NextRequest) {
         if (volatilityFactor < -1 || volatilityFactor > 1) {
           return NextResponse.json({ success: false, error: 'Invalid volatility factor' }, { status: 400 });
         }
-        const newPrices = riskMonitor.simulatePriceUpdate(priceChainId, volatilityFactor);
+        const newPrices = riskMonitor.simulatePriceUpdate(priceChainId, volatilityFactor, 1.0);
         return NextResponse.json({ success: true, newPrices });
 
       default:

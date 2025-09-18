@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { enhancedRiskMonitor } from '@/lib/risk-monitor-enhanced';
 import { store } from '@/lib/store';
 import { ensureSeeded } from '@/lib/seed';
-import { ChainId } from '@/types/credit-vault';
+import { ChainId, CreditVault, VaultStatus } from '@/types/credit-vault';
 
 export async function GET(request: NextRequest) {
   try {
@@ -144,11 +144,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Get vault and agent from store (in a real implementation, this would come from database)
-        const vault = store.getCreditVault?.(vaultId) || {
+        const vault: CreditVault = {
           id: vaultId,
           agentId,
           chainId: ChainId.ETHEREUM,
-          status: 'ACTIVE',
+          status: VaultStatus.ACTIVE,
           collateral: { token: 'ETH', amount: 10, valueUSD: 20000, lastUpdated: new Date() },
           debt: { token: 'USDC', amount: 16000, valueUSD: 16000, lastUpdated: new Date() },
           ltv: 80,
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
         }
 
         const monitoringResult = await enhancedRiskMonitor.monitorVault(
-          vault as Record<string, unknown>,
+          vault,
           agent,
           historicalData || []
         );

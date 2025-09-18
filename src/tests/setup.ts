@@ -34,8 +34,15 @@ if (!global.performance) {
     getEntriesByType: vi.fn(() => []),
     getEntriesByName: vi.fn(() => []),
     getEntries: vi.fn(() => []),
-    toJSON: vi.fn(() => ({}))
-  } as Record<string, unknown>;
+    toJSON: vi.fn(() => ({})),
+    eventCounts: new Map(),
+    navigation: {} as PerformanceNavigation,
+    onresourcetimingbufferfull: null,
+    timeOrigin: Date.now(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(() => true),
+  } as unknown as Performance;
 }
 
 // Mock crypto API if not available
@@ -47,6 +54,7 @@ if (!global.crypto) {
       }
       return arr;
     }),
-    randomUUID: vi.fn(() => 'test-uuid-' + Math.random().toString(36).substr(2, 9))
-  } as Record<string, unknown>;
+    randomUUID: vi.fn(() => 'test-uuid-' + Math.random().toString(36).substr(2, 9)),
+    subtle: {} as SubtleCrypto,
+  } as unknown as Crypto;
 }

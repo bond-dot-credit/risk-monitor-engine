@@ -3,26 +3,7 @@
 import { useState, useEffect } from 'react';
 import { AgentCard } from './AgentCard';
 import { StatsOverview } from './StatsOverview';
-import { CredibilityTier } from '@/types/agent';
-
-interface Agent {
-  id: string;
-  name: string;
-  metadata: {
-    category: string;
-    description: string;
-    version: string;
-    tags: string[];
-  };
-  score: {
-    overall: number;
-    provenance: number;
-    performance: number;
-    perception: number;
-  };
-  credibilityTier: string;
-  status: string;
-}
+import { Agent } from '@/types/agent';
 
 // Loading Skeleton Component
 function AgentCardSkeleton() {

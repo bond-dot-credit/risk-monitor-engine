@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 interface AccountInfo {
   accountId: string;
@@ -298,11 +298,11 @@ const NearIntentsDashboard = () => {
               <div>
                 <h4 className="font-medium">Configuration Status</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Network: {configurationStatus.networkId} | Node: {new URL(configurationStatus.nodeUrl).hostname}
+                  Network: {(configurationStatus as Record<string, unknown>).networkId as string} | Node: {new URL((configurationStatus as Record<string, unknown>).nodeUrl as string).hostname}
                 </p>
               </div>
-              <Badge variant={configurationStatus.configured ? "default" : "destructive"}>
-                {configurationStatus.configured ? 'Configured' : 'Not Configured'}
+              <Badge variant={(configurationStatus as Record<string, unknown>).configured ? "default" : "destructive"}>
+                {(configurationStatus as Record<string, unknown>).configured ? 'Configured' : 'Not Configured'}
               </Badge>
             </div>
           )}
@@ -642,31 +642,31 @@ const NearIntentsDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Transaction Volume</p>
-                  <p className="text-xl font-bold">${protocolRewardsData.metrics.transactionVolume.toLocaleString()}</p>
+                  <p className="text-xl font-bold">${((protocolRewardsData as unknown) as Record<string, unknown>).transactionVolume?.toLocaleString() || '0'}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Smart Contract Calls</p>
-                  <p className="text-xl font-bold">{protocolRewardsData.metrics.smartContractCalls}</p>
+                  <p className="text-xl font-bold">{String(((protocolRewardsData as unknown) as Record<string, unknown>).smartContractCalls || '0')}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Unique Wallets</p>
-                  <p className="text-xl font-bold">{protocolRewardsData.metrics.uniqueWallets}</p>
+                  <p className="text-xl font-bold">{String(((protocolRewardsData as unknown) as Record<string, unknown>).uniqueWallets || '0')}</p>
                 </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1 p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
                   <p className="text-sm text-blue-600 dark:text-blue-400">Reward Tier</p>
-                  <p className="text-xl font-bold text-blue-800 dark:text-blue-200">{protocolRewardsData.rewardTier}</p>
+                  <p className="text-xl font-bold text-blue-800 dark:text-blue-200">{String(((protocolRewardsData as unknown) as Record<string, unknown>).rewardTier || 'None')}</p>
                 </div>
                 <div className="flex-1 p-3 bg-green-50 dark:bg-green-900/20 rounded">
                   <p className="text-sm text-green-600 dark:text-green-400">Potential Reward</p>
-                  <p className="text-xl font-bold text-green-800 dark:text-green-200">${protocolRewardsData.monetaryReward.toLocaleString()}</p>
+                  <p className="text-xl font-bold text-green-800 dark:text-green-200">${String(((protocolRewardsData as unknown) as Record<string, unknown>).monetaryReward || '0')}</p>
                 </div>
               </div>
               
               <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                <p>Period: {protocolRewardsData.period.startDate} to {protocolRewardsData.period.endDate}</p>
+                <p>Period: {String((((protocolRewardsData as unknown) as Record<string, unknown>).period as Record<string, unknown>)?.startDate || 'N/A')} to {String((((protocolRewardsData as unknown) as Record<string, unknown>).period as Record<string, unknown>)?.endDate || 'N/A')}</p>
               </div>
             </div>
           )}

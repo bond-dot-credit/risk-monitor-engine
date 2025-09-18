@@ -126,7 +126,7 @@ export function CreditVaultManager({ agents, onVaultCreated, onClose }: CreditVa
           </div>
           
           <button
-            onClick={handleClose}
+            onClick={() => onClose?.()}
             className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-white/50 dark:hover:bg-slate-600/50"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,7 +381,7 @@ export function CreditVaultManager({ agents, onVaultCreated, onClose }: CreditVa
             {currentStep > 1 && (
               <button
                 type="button"
-                onClick={prevStep}
+                onClick={() => setCurrentStep(currentStep - 1)}
                 className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-200 flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,7 +393,7 @@ export function CreditVaultManager({ agents, onVaultCreated, onClose }: CreditVa
             
             <button
               type="button"
-              onClick={handleClose}
+              onClick={() => onClose?.()}
               className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-200"
             >
               Cancel
@@ -402,7 +402,7 @@ export function CreditVaultManager({ agents, onVaultCreated, onClose }: CreditVa
             {currentStep < 3 ? (
               <button
                 type="button"
-                onClick={nextStep}
+                onClick={() => setCurrentStep(currentStep + 1)}
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
                 <span>Next</span>

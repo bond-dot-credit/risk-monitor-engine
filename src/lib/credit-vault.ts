@@ -66,6 +66,60 @@ export const DEFAULT_CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
       liquidationPenalty: 0.07,
       gracePeriod: 1200 // 20 minutes
     }
+  },
+  [ChainId.ETHEREUM_SEPOLIA]: {
+    chainId: ChainId.ETHEREUM_SEPOLIA,
+    name: 'Ethereum Sepolia',
+    rpcUrl: 'https://sepolia.infura.io/v3/your-project-id',
+    blockExplorer: 'https://sepolia.etherscan.io',
+    nativeToken: 'ETH',
+    gasToken: 'ETH',
+    ltvAdjustments: {
+      baseMultiplier: 0.8,
+      scoreMultiplier: 0.1,
+      volatilityMultiplier: 0.9
+    },
+    liquidationSettings: {
+      minHealthFactor: 1.2,
+      liquidationPenalty: 0.08,
+      gracePeriod: 7200 // 2 hours
+    }
+  },
+  [ChainId.ARBITRUM_SEPOLIA]: {
+    chainId: ChainId.ARBITRUM_SEPOLIA,
+    name: 'Arbitrum Sepolia',
+    rpcUrl: 'https://sepolia-rollup.arbitrum.io/rpc',
+    blockExplorer: 'https://sepolia.arbiscan.io',
+    nativeToken: 'ETH',
+    gasToken: 'ETH',
+    ltvAdjustments: {
+      baseMultiplier: 0.75,
+      scoreMultiplier: 0.1,
+      volatilityMultiplier: 0.85
+    },
+    liquidationSettings: {
+      minHealthFactor: 1.25,
+      liquidationPenalty: 0.1,
+      gracePeriod: 3600 // 1 hour
+    }
+  },
+  [ChainId.POLYGON_MUMBAI]: {
+    chainId: ChainId.POLYGON_MUMBAI,
+    name: 'Polygon Mumbai',
+    rpcUrl: 'https://rpc-mumbai.maticvigil.com',
+    blockExplorer: 'https://mumbai.polygonscan.com',
+    nativeToken: 'MATIC',
+    gasToken: 'MATIC',
+    ltvAdjustments: {
+      baseMultiplier: 0.7,
+      scoreMultiplier: 0.1,
+      volatilityMultiplier: 0.8
+    },
+    liquidationSettings: {
+      minHealthFactor: 1.3,
+      liquidationPenalty: 0.12,
+      gracePeriod: 1800 // 30 minutes
+    }
   }
 };
 

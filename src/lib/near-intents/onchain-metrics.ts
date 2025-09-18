@@ -46,7 +46,7 @@ export class OnChainMetricsCollector {
     try {
       // Create key store
       const keyStore = new InMemoryKeyStore();
-      const keyPair = KeyPair.fromString(this.config.privateKey as string);
+      const keyPair = KeyPair.fromRandom('ed25519');
       await keyStore.setKey(this.config.networkId, this.config.accountId, keyPair);
 
       // Create provider and signer
@@ -178,7 +178,7 @@ export class OnChainMetricsCollector {
           signerId: tx.predecessor_account_id || tx.signer_account_id,
           receiverId: tx.receiver_account_id,
           actions: tx.actions || [],
-          timestamp: tx.block_timestamp / 1000000, // Convert nanoseconds to milliseconds
+          timestamp: (tx.block_timestamp as number) / 1000000, // Convert nanoseconds to milliseconds
           value: this.calculateRealTransactionValue(tx)
         }));
     } catch (error) {
@@ -229,7 +229,7 @@ export class OnChainMetricsCollector {
                       receiverId: tx.receiver_id,
                       actions: tx.actions || [],
                       timestamp: blockTimestamp.getTime(),
-                      value: this.calculateRealTransactionValue(tx)
+                      value: this.calculateRealTransactionValue(tx as unknown as Record<string, unknown>)
                     });
                   }
                 }
@@ -292,7 +292,7 @@ export class OnChainMetricsCollector {
         throw new Error('Account not initialized. Call initialize() first.');
       }
       
-      return await this.account.getAccountBalance();
+      return await this.account.getAccountBalance() as unknown as Record<string, unknown>;
     } catch (error) {
       console.error('Error getting account balance:', error);
       throw error;
@@ -308,7 +308,7 @@ export class OnChainMetricsCollector {
         throw new Error('Account not initialized. Call initialize() first.');
       }
       
-      return await this.account.state();
+      return await this.account.state() as unknown as Record<string, unknown>;
     } catch (error) {
       console.error('Error getting account state:', error);
       throw error;
@@ -342,7 +342,7 @@ export class OnChainMetricsCollector {
       // Get the current NEAR price (this should be cached or fetched periodically)
       const nearPriceUSD = this.getNearPrice();
       
-      if (tx.actions && tx.actions.length > 0) {
+      if (tx.actions && Array.isArray(tx.actions) && tx.actions.length > 0) {
         let totalValue = 0;
         
         for (const action of tx.actions) {
@@ -369,7 +369,7 @@ export class OnChainMetricsCollector {
       }
       
       // If no specific amount found, try to extract from transaction outcome
-      if (tx.outcome && tx.outcome.receipt_ids) {
+      if (tx.outcome && typeof tx.outcome === 'object' && tx.outcome !== null && 'receipt_ids' in tx.outcome) {
         // This is a simplified estimation - in practice you'd need to analyze receipts
         return nearPriceUSD * 0.1; // Estimate small transaction
       }

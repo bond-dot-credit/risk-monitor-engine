@@ -33,10 +33,10 @@ async function basicSwapExample() {
       return await agent.getAccountState();
     }, 2, 1000);
 
-    const availableNear = accountState.balanceInNear.available;
+    const availableNear = (accountState.balanceInNear as { available: number }).available;
     console.log(`Account balance: ${TransactionUtils.formatNearAmount(availableNear)}`);
-    console.log(`Total balance: ${TransactionUtils.formatNearAmount(accountState.balanceInNear.total)}`);
-    console.log(`Staked: ${TransactionUtils.formatNearAmount(accountState.balanceInNear.staked)}`);
+    console.log(`Total balance: ${TransactionUtils.formatNearAmount((accountState.balanceInNear as { total: number }).total)}`);
+    console.log(`Staked: ${TransactionUtils.formatNearAmount((accountState.balanceInNear as { staked: number }).staked)}`);
 
     // Check if we have sufficient balance for operations
     const requiredAmount = 1.0;

@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from "@/components/ui/Badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -172,53 +172,35 @@ export function ProtocolRewardsDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="space-y-2">
             <label className="text-sm font-medium">Start Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !dateRange.startDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.startDate ? format(dateRange.startDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={dateRange.startDate}
-                  onSelect={(date) => setDateRange({...dateRange, startDate: date || new Date()})}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="relative">
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !dateRange.startDate && "text-muted-foreground"
+                )}
+                onClick={() => {/* Handle date picker */}}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange.startDate ? format(dateRange.startDate, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">End Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !dateRange.endDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.endDate ? format(dateRange.endDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={dateRange.endDate}
-                  onSelect={(date) => setDateRange({...dateRange, endDate: date || new Date()})}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="relative">
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !dateRange.endDate && "text-muted-foreground"
+                )}
+                onClick={() => {/* Handle date picker */}}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange.endDate ? format(dateRange.endDate, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </div>
           </div>
         </div>
 

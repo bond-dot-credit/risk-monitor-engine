@@ -218,7 +218,7 @@ function calculatePerformanceConsistencyScore(agent: Agent, historicalData?: Rec
   let score = 0;
 
   // Calculate performance variance
-  const performances = historicalData.map(d => d.performance || 0);
+  const performances = historicalData.map(d => Number(d.performance) || 0);
   const mean = performances.reduce((sum, p) => sum + p, 0) / performances.length;
   const variance = performances.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / performances.length;
   const stdDev = Math.sqrt(variance);
@@ -327,7 +327,7 @@ function calculateReputationMetricsScore(agent: Agent, reputationEvents?: Reputa
   score += tierBonus[agent.credibilityTier] || 0;
 
   // Verification status bonus
-  if (agent.verification === 'PASSED') score += 7;
+  if (agent.verification === VerificationStatus.PASSED) score += 7;
 
   return Math.min(35, score);
 }

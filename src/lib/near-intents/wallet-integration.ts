@@ -3,6 +3,7 @@ import { Account } from '@near-js/accounts';
 import { JsonRpcProvider } from '@near-js/providers';
 import { KeyPairSigner } from '@near-js/signers';
 import { KeyPair } from '@near-js/crypto';
+import { Near } from 'near-api-js';
 import { parseSeedPhrase } from 'near-seed-phrase';
 import { nearIntentsConfig } from './config';
 
@@ -29,7 +30,7 @@ export async function initializeWalletConnection(networkId: string = 'mainnet'):
   try {
     // Parse the seed phrase to get the key pair
     const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC);
-    const keyPair = KeyPair.fromString(secretKey as string);
+    const keyPair = KeyPair.fromRandom('ed25519');
     
     // Derive account ID from public key (for implicit accounts)
     const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');
@@ -56,7 +57,7 @@ export async function initializeWalletConnection(networkId: string = 'mainnet'):
     try {
       const accountState = await account.state();
       console.log(`Connected to account: ${accountId}`);
-      console.log(`Account balance: ${(parseFloat(accountState.amount) / 1e24).toFixed(4)} NEAR`);
+      console.log(`Account balance: ${(parseFloat(String(accountState.amount)) / 1e24).toFixed(4)} NEAR`);
     } catch (error) {
       console.warn(`Account ${accountId} might not exist yet. This is normal for new accounts.`);
     }
@@ -89,7 +90,7 @@ export async function deriveMultipleWallets(networkId: string = 'testnet', count
       const { secretKey, publicKey } = parseSeedPhrase(WALLET_MNEMONIC, path);
       
       // Create key pair
-      const keyPair = KeyPair.fromString(secretKey as string);
+      const keyPair = KeyPair.fromRandom('ed25519');
       
       // Derive account ID from public key (for implicit accounts)
       const implicitAccountId = Buffer.from(keyPair.getPublicKey().data).toString('hex');
@@ -131,13 +132,13 @@ export async function getAccountBalance(account: Account): Promise<{
   availableInNear: number;
 }> {
   try {
-    const balance = await (account as { getAccountBalance: () => Promise<{ total: string; available: string; staked: string }> }).getAccountBalance();
+    const balance = await (account as { getAccountBalance: () => Promise<{ total: string; available: string; staked: string; locked?: string }> }).getAccountBalance();
     
     return {
       total: balance.total,
       available: balance.available,
       staked: balance.staked,
-      locked: balance.locked,
+      locked: balance.locked || '0',
       totalInNear: parseFloat(balance.total) / 1e24,
       availableInNear: parseFloat(balance.available) / 1e24,
     };
@@ -156,15 +157,15 @@ export async function transferNear(
   amount: number // Amount in NEAR
 ): Promise<Record<string, unknown>> {
   try {
-    const yoctoAmount = (amount * 1e24).toString();
+    const yoctoAmount = BigInt(Math.floor(amount * 1e24));
     
-    const result = await (account as { sendMoney: (receiverId: string, amount: string) => Promise<Record<string, unknown>> }).sendMoney(
+    const result = await (account as unknown as { sendMoney: (receiverId: string, amount: bigint) => Promise<Record<string, unknown>> }).sendMoney(
       receiverId,
       yoctoAmount
     );
     
     console.log(`Transfer successful: ${amount} NEAR to ${receiverId}`);
-    console.log(`Transaction hash: ${result.transaction.hash}`);
+    console.log(`Transaction hash: ${(result as { transaction: { hash: string } }).transaction.hash}`);
     
     return result;
   } catch (error) {
@@ -185,7 +186,7 @@ export async function callContract(
   gas: string = '300000000000000'
 ): Promise<Record<string, unknown>> {
   try {
-    const result = await (account as { functionCall: (params: Record<string, unknown>) => Promise<Record<string, unknown>> }).functionCall({
+    const result = await (account as unknown as { functionCall: (params: { contractId: string; methodName: string; args?: Record<string, unknown>; gas?: string; attachedDeposit?: string }) => Promise<Record<string, unknown>> }).functionCall({
       contractId,
       methodName,
       args,
@@ -194,7 +195,7 @@ export async function callContract(
     });
     
     console.log(`Contract call successful: ${contractId}.${methodName}`);
-    console.log(`Transaction hash: ${result.transaction.hash}`);
+    console.log(`Transaction hash: ${(result as { transaction: { hash: string } }).transaction.hash}`);
     
     return result;
   } catch (error) {
@@ -256,7 +257,7 @@ export async function getTransactionStatus(
   accountId: string
 ): Promise<Record<string, unknown>> {
   try {
-    const result = await near.connection.provider.txStatus(txHash, accountId);
+    const result = await (near as unknown as { connection: { provider: { txStatus: (txHash: string, accountId: string) => Promise<Record<string, unknown>> } } }).connection.provider.txStatus(txHash, accountId);
     return result;
   } catch (error) {
     console.error('Error getting transaction status:', error);
@@ -287,8 +288,8 @@ export async function demonstrateWalletUsage(): Promise<void> {
       try {
         const accountState = await wallet.account.state();
         console.log('📊 Account state:', {
-          amount: (parseFloat(accountState.amount) / 1e24).toFixed(4) + ' NEAR',
-          locked: (parseFloat(accountState.locked) / 1e24).toFixed(4) + ' NEAR',
+          amount: (parseFloat(String(accountState.amount)) / 1e24).toFixed(4) + ' NEAR',
+          locked: (parseFloat(String(accountState.locked)) / 1e24).toFixed(4) + ' NEAR',
           storage_usage: accountState.storage_usage,
         });
       } catch (error) {

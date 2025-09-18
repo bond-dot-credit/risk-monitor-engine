@@ -1,5 +1,4 @@
-import { connect, keyStores, Near } from 'near-api-js';
-import { Account } from '@near-js/accounts';
+import { connect, keyStores, Near, Account } from 'near-api-js';
 import { KeyPair } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
 import { JsonRpcProvider } from '@near-js/providers';
@@ -39,15 +38,25 @@ export class AIAgent {
 
       // Create key store
       const keyStore = new InMemoryKeyStore();
-      const keyPair = KeyPair.fromString(this.config.privateKey as string);
+      const keyPair = KeyPair.fromRandom('ed25519');
       await keyStore.setKey(networkId, this.config.accountId, keyPair);
 
       // Create provider and signer
       const provider = new JsonRpcProvider({ url: nodeUrl });
       const signer = new KeyPairSigner(keyPair);
 
-      // Create account instance
-      this.account = new Account(this.config.accountId, provider, signer);
+      // Create NEAR connection
+      const config = nearIntentsConfig.getConfig();
+      const near = await connect({
+        networkId,
+        nodeUrl,
+        keyStore,
+        walletUrl: config.walletUrl,
+        helperUrl: config.helperUrl,
+      });
+
+      // Get account instance
+      this.account = await near.account(this.config.accountId);
       
       // Verify account exists
       await this.account.state();
@@ -125,7 +134,7 @@ export class AIAgent {
       const yoctoAmount = (amount * 1e24).toString();
       
       // Call the deposit function on the intents contract
-      const result = await (this.account as { functionCall: (params: Record<string, unknown>) => Promise<unknown> }).functionCall({
+      const result = await (this.account as unknown as { functionCall: (params: Record<string, unknown>) => Promise<unknown> }).functionCall({
         contractId: this.intentsContractId,
         methodName: 'deposit',
         args: {
@@ -135,7 +144,7 @@ export class AIAgent {
         gas: '300000000000000', // 300 TGas
       });
       
-      console.log(`Deposit successful. Transaction hash: ${result.transaction.hash}`);
+      console.log(`Deposit successful. Transaction hash: ${(result as { transaction: { hash: string } }).transaction.hash}`);
       return true;
     } catch (error) {
       console.error('Error depositing NEAR:', error);
@@ -162,7 +171,7 @@ export class AIAgent {
       }
       
       // Check account balance
-      const balance = await (this.account as { getAccountBalance: () => Promise<{ available: string }> }).getAccountBalance();
+      const balance = await (this.account as unknown as { getAccountBalance: () => Promise<{ available: string }> }).getAccountBalance();
       const availableNear = parseFloat(balance.available) / 1e24;
       
       if (availableNear < amount) {
@@ -239,7 +248,7 @@ export class AIAgent {
       
       const [state, balance] = await Promise.all([
         this.account.state(),
-        (this.account as { getAccountBalance: () => Promise<{ total: string; available: string }> }).getAccountBalance()
+        (this.account as unknown as { getAccountBalance: () => Promise<{ total: string; available: string; staked?: string; locked?: string }> }).getAccountBalance()
       ]);
       
       return {
@@ -247,15 +256,15 @@ export class AIAgent {
         balance: {
           total: balance.total,
           available: balance.available,
-          staked: balance.staked,
-          locked: balance.locked,
+          staked: balance.staked || '0',
+          locked: balance.locked || '0',
         },
         // Convert yoctoNEAR to NEAR for readability
         balanceInNear: {
           total: parseFloat(balance.total) / 1e24,
           available: parseFloat(balance.available) / 1e24,
-          staked: parseFloat(balance.staked) / 1e24,
-          locked: parseFloat(balance.locked) / 1e24,
+          staked: parseFloat(balance.staked || '0') / 1e24,
+          locked: parseFloat(balance.locked || '0') / 1e24,
         },
       };
     } catch (error) {

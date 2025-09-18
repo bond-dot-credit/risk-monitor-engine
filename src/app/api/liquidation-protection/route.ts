@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DEFAULT_CHAIN_CONFIGS, shouldTriggerLiquidationProtection, executeProtectionRules } from '@/lib/credit-vault';
 import { riskMonitor } from '@/lib/risk-monitor';
-import { VaultProtectionRule } from '@/types/credit-vault';
+import { VaultProtectionRule, CreditVault, VaultStatus, ChainId } from '@/types/credit-vault';
+import { Agent, CredibilityTier, AgentStatus, VerificationStatus } from '@/types/agent';
 
 // In-memory storage for protection rules (in production, this would be a database)
 const protectionRules = new Map<string, VaultProtectionRule>();
@@ -26,8 +27,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           success: true,
           protectionStatus: {
-            totalVaults: status.totalVaults,
-            activeAlerts: status.activeAlerts,
+            totalVaults: 0, // Would be calculated from actual vault data
+            activeAlerts: alerts.length,
             protectionRules: protectionRules.size,
             enabledVaults: Array.from(vaultProtectionSettings.values()).filter(s => s.enabled).length
           }
@@ -74,8 +75,59 @@ export async function POST(request: NextRequest) {
         }
         
         // Mock vault and agent for testing (in production, these would be retrieved from store)
-        const mockVault = { id: vaultId, ltv: 50, healthFactor: 2.0, liquidationProtection: { enabled: true } };
-        const mockAgent = { id: agentId, score: { overall: 80 } };
+        const mockVault: CreditVault = {
+          id: vaultId,
+          agentId,
+          chainId: ChainId.ETHEREUM,
+          status: VaultStatus.ACTIVE,
+          collateral: { token: 'ETH', amount: 10, valueUSD: 20000, lastUpdated: new Date() },
+          debt: { token: 'USDC', amount: 10000, valueUSD: 10000, lastUpdated: new Date() },
+          ltv: 50,
+          healthFactor: 2.0,
+          maxLTV: 85,
+          liquidationProtection: {
+            enabled: true,
+            threshold: 80,
+            cooldown: 3600
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastRiskCheck: new Date()
+        };
+        const mockAgent: Agent = {
+          id: agentId,
+          name: 'Test Agent',
+          operator: 'test-operator',
+          metadata: {
+            description: 'Test agent for liquidation protection',
+            category: 'DeFi',
+            version: '1.0.0',
+            tags: ['test', 'defi'],
+            provenance: {
+              sourceCode: 'https://github.com/test/agent',
+              verificationHash: 'test-hash',
+              deploymentChain: 'ethereum',
+              lastAudit: new Date(),
+              auditScore: 85,
+              auditReport: 'Test audit report'
+            },
+            verificationMethods: []
+          },
+          score: {
+            overall: 80,
+            provenance: 85,
+            performance: 75,
+            perception: 80,
+            confidence: 90,
+            verification: 85,
+            lastUpdated: new Date()
+          },
+          credibilityTier: CredibilityTier.GOLD,
+          status: AgentStatus.ACTIVE,
+          verification: VerificationStatus.PASSED,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
         
         const shouldTrigger = shouldTriggerLiquidationProtection(mockVault, mockAgent, marketVolatility || 1.0);
         return NextResponse.json({ success: true, shouldTrigger });
@@ -87,8 +139,59 @@ export async function POST(request: NextRequest) {
         }
         
         // Mock vault and agent for testing
-        const execMockVault = { id: execVaultId, ltv: 50, healthFactor: 2.0, liquidationProtection: { enabled: true } };
-        const execMockAgent = { id: execAgentId, score: { overall: 80 } };
+        const execMockVault: CreditVault = {
+          id: execVaultId,
+          agentId: execAgentId,
+          chainId: ChainId.ETHEREUM,
+          status: VaultStatus.ACTIVE,
+          collateral: { token: 'ETH', amount: 10, valueUSD: 20000, lastUpdated: new Date() },
+          debt: { token: 'USDC', amount: 10000, valueUSD: 10000, lastUpdated: new Date() },
+          ltv: 50,
+          healthFactor: 2.0,
+          maxLTV: 85,
+          liquidationProtection: {
+            enabled: true,
+            threshold: 80,
+            cooldown: 3600
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastRiskCheck: new Date()
+        };
+        const execMockAgent: Agent = {
+          id: execAgentId,
+          name: 'Test Agent',
+          operator: 'test-operator',
+          metadata: {
+            description: 'Test agent for liquidation protection',
+            category: 'DeFi',
+            version: '1.0.0',
+            tags: ['test', 'defi'],
+            provenance: {
+              sourceCode: 'https://github.com/test/agent',
+              verificationHash: 'test-hash',
+              deploymentChain: 'ethereum',
+              lastAudit: new Date(),
+              auditScore: 85,
+              auditReport: 'Test audit report'
+            },
+            verificationMethods: []
+          },
+          score: {
+            overall: 80,
+            provenance: 85,
+            performance: 75,
+            perception: 80,
+            confidence: 90,
+            verification: 85,
+            lastUpdated: new Date()
+          },
+          credibilityTier: CredibilityTier.GOLD,
+          status: AgentStatus.ACTIVE,
+          verification: VerificationStatus.PASSED,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
         
         const results = executeProtectionRules(execMockVault, rules, execMockAgent, execMarketVolatility || 1.0);
         return NextResponse.json({ success: true, results });

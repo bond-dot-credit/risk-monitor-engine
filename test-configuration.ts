@@ -52,7 +52,7 @@ async function testConfiguration() {
     const accountBalance = await collector.getAccountBalance();
     const accountState = await collector.getAccountState();
     
-    console.log(`💰 Account Balance: ${(parseFloat(accountBalance.available) / 1e24).toFixed(4)} NEAR`);
+    console.log(`💰 Account Balance: ${(parseFloat(String(accountBalance.available)) / 1e24).toFixed(4)} NEAR`);
     console.log(`📊 Storage Usage: ${accountState.storage_usage} bytes`);
     
     // Test 5: NEAR Price Fetching

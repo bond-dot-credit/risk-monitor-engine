@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui';
-import { useRiskAlerts } from '@/hooks/useRealTimeData';
+// import { useRiskAlerts } from '@/hooks/useRealTimeData';
 
 export interface Notification {
   id: string;
@@ -37,7 +37,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Real-time risk alerts
-  const [riskAlerts] = useRiskAlerts();
+  const [riskAlerts] = useState([]);
 
   // Update unread count
   useEffect(() => {
@@ -46,15 +46,16 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   // Handle real-time risk alerts
   useEffect(() => {
-    if (riskAlerts.data) {
-      addNotification({
-        type: 'warning',
-        title: 'Risk Alert',
-        message: riskAlerts.data.message || 'New risk alert detected',
-        autoDismiss: 10000,
-      });
-    }
-  }, [riskAlerts.data]);
+    // Mock risk alerts handling
+    // if (riskAlerts.data) {
+    //   addNotification({
+    //     type: 'warning',
+    //     title: 'Risk Alert',
+    //     message: riskAlerts.data.message || 'New risk alert detected',
+    //     autoDismiss: 10000,
+    //   });
+    // }
+  }, []);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {

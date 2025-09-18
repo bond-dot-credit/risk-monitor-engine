@@ -43,14 +43,20 @@ export async function POST(request: NextRequest) {
       case 'getAccountInfo':
         try {
           const accountState = await agent.getAccountState();
+          const balanceInNear = accountState.balanceInNear as {
+            total: number;
+            available: number;
+            staked: number;
+            locked: number;
+          };
           const accountInfo = {
             accountId: accountConfig.accountId,
             networkId: accountConfig.networkId,
             balance: {
-              total: `${accountState.balanceInNear.total.toFixed(4)} NEAR`,
-              available: `${accountState.balanceInNear.available.toFixed(4)} NEAR`,
-              staked: `${accountState.balanceInNear.staked.toFixed(4)} NEAR`,
-              locked: `${accountState.balanceInNear.locked.toFixed(4)} NEAR`,
+              total: `${balanceInNear.total.toFixed(4)} NEAR`,
+              available: `${balanceInNear.available.toFixed(4)} NEAR`,
+              staked: `${balanceInNear.staked.toFixed(4)} NEAR`,
+              locked: `${balanceInNear.locked.toFixed(4)} NEAR`,
             },
             storage: {
               used: accountState.storage_usage,

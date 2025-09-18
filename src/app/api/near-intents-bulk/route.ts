@@ -5,7 +5,6 @@ import { store } from '@/lib/store';
 
 export async function POST(request: NextRequest) {
   try {
-    ensureSeeded();
     const body = await request.json();
     const { action, config, agentId, useHdWallets = false, walletCount = 100 } = body;
 
@@ -154,7 +153,7 @@ function validateBulkConfig(config: Record<string, unknown>): { valid: boolean; 
     return { valid: false, error: 'Invalid wallets configuration' };
   }
 
-  if (!config.transactionsPerWallet || config.transactionsPerWallet <= 0) {
+  if (!config.transactionsPerWallet || typeof config.transactionsPerWallet !== 'number' || config.transactionsPerWallet <= 0) {
     return { valid: false, error: 'Invalid transactionsPerWallet value' };
   }
 
@@ -162,20 +161,25 @@ function validateBulkConfig(config: Record<string, unknown>): { valid: boolean; 
     return { valid: false, error: 'Invalid tokens configuration' };
   }
 
-  if (!config.amountRange || !config.amountRange.min || !config.amountRange.max) {
+  if (!config.amountRange || typeof config.amountRange !== 'object' || !config.amountRange) {
     return { valid: false, error: 'Invalid amountRange configuration' };
   }
 
-  if (config.amountRange.min <= 0 || config.amountRange.max <= 0) {
+  const amountRange = config.amountRange as Record<string, unknown>;
+  if (!amountRange.min || !amountRange.max || typeof amountRange.min !== 'number' || typeof amountRange.max !== 'number') {
+    return { valid: false, error: 'Invalid amountRange configuration' };
+  }
+
+  if (amountRange.min <= 0 || amountRange.max <= 0) {
     return { valid: false, error: 'Amount range values must be positive' };
   }
 
-  if (config.amountRange.min > config.amountRange.max) {
+  if (amountRange.min > amountRange.max) {
     return { valid: false, error: 'Invalid amount range: min cannot be greater than max' };
   }
 
   // Validate token pairs
-  for (const tokenPair of config.tokens) {
+  for (const tokenPair of config.tokens as Record<string, unknown>[]) {
     if (!tokenPair.from || !tokenPair.to) {
       return { valid: false, error: 'Invalid token pair: missing from or to token' };
     }

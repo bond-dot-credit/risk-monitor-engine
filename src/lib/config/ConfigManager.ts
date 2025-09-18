@@ -167,7 +167,7 @@ export class ConfigManager {
   private loadFromEnvironment(): Partial<FullConfig> {
     return {
       app: {
-        environment: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+        environment: (process.env.NODE_ENV as 'development' | 'staging' | 'production') || 'development',
         port: parseInt(process.env.PORT || '3000'),
         host: process.env.HOST || 'localhost',
         baseUrl: process.env.BASE_URL || 'http://localhost:3000',
@@ -277,7 +277,7 @@ export class ConfigManager {
       this.deepMerge(merged, config);
     }
     
-    return merged as FullConfig;
+    return merged as unknown as FullConfig;
   }
 
   private deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): void {
@@ -286,7 +286,7 @@ export class ConfigManager {
         if (!target[key]) {
           target[key] = {};
         }
-        this.deepMerge(target[key], source[key]);
+        this.deepMerge(target[key] as Record<string, unknown>, source[key] as Record<string, unknown>);
       } else {
         target[key] = source[key];
       }
@@ -342,7 +342,7 @@ export class ConfigManager {
     
     for (const key of keys) {
       if (value && typeof value === 'object' && key in value) {
-        value = value[key];
+        value = (value as Record<string, unknown>)[key];
       } else {
         return undefined;
       }
@@ -389,7 +389,7 @@ export class ConfigManager {
       errors.push('Database password should not be the default value');
     }
     
-    if (this.config.isProduction() && !this.config.security.enableHttps) {
+    if (this.config.app.environment === 'production' && !this.config.security.enableHttps) {
       errors.push('HTTPS must be enabled in production');
     }
     

@@ -156,11 +156,14 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
                 {metrics.memory.used}MB / {metrics.memory.limit}MB
               </span>
             </div>
-            <Progress
-              value={memoryUsagePercent}
-              variant={memoryUsagePercent > 80 ? 'danger' : memoryUsagePercent > 60 ? 'warning' : 'success'}
-              showLabel={false}
-            />
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  memoryUsagePercent > 80 ? 'bg-red-500' : memoryUsagePercent > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                }`}
+                style={{ width: `${memoryUsagePercent}%` }}
+              ></div>
+            </div>
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
               <span>Used: {metrics.memory.used}MB</span>
               <span>Total: {metrics.memory.total}MB</span>

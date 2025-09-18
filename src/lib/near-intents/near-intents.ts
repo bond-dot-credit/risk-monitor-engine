@@ -93,9 +93,9 @@ export class NearIntents {
       // Transform Solver Bus response to our Quote format
       return data.quotes?.map((quote: Record<string, unknown>) => ({
         intent: request,
-        solver: quote.solver_id,
-        amountOut: parseFloat(quote.amount_out),
-        fee: parseFloat(quote.fee_rate || '0.03'), // Default 3% fee
+        solver: quote.solver_id as string,
+        amountOut: parseFloat(quote.amount_out as string),
+        fee: parseFloat((quote.fee_rate as string) || '0.03'), // Default 3% fee
       })) || this.getMockQuotes(request);
       
     } catch (error) {
@@ -209,15 +209,15 @@ export class NearIntents {
       
       return {
         success: true,
-        transactionHash: executionResult.transaction_hash,
-        agentId: quote.agent_id,
+        transactionHash: executionResult.transaction_hash as string,
+        agentId: quote.agent_id as string,
       };
     } catch (error) {
       console.error('Error publishing intent:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
-        agentId: quote.agent_id,
+        agentId: quote.agent_id as string,
       };
     }
   }
@@ -228,7 +228,7 @@ export class NearIntents {
   private async executeViaVerifierContract(intentId: string, quote: Record<string, unknown>): Promise<Record<string, unknown>> {
     try {
       // Call the verifier contract on NEAR
-      const result = await this.account.functionCall({
+      const result = await (this.account as unknown as { functionCall: (params: Record<string, unknown>) => Promise<unknown> }).functionCall({
         contractId: this.verifierContractId,
         methodName: 'execute_intent',
         args: {
@@ -240,7 +240,7 @@ export class NearIntents {
       });
 
       return {
-        transaction_hash: result.transaction.hash,
+        transaction_hash: (result as { transaction: { hash: string } }).transaction.hash,
         status: 'success',
       };
     } catch (error) {
@@ -257,7 +257,7 @@ export class NearIntents {
       // For direct execution, we can use common DEX contracts like Ref Finance
       const refFinanceContract = 'v2.ref-finance.near';
       
-      const result = await this.account.functionCall({
+      const result = await (this.account as unknown as { functionCall: (params: Record<string, unknown>) => Promise<unknown> }).functionCall({
         contractId: refFinanceContract,
         methodName: 'swap',
         args: {
@@ -275,15 +275,15 @@ export class NearIntents {
 
       return {
         success: true,
-        transactionHash: result.transaction.hash,
-        agentId: quote.agent_id,
+        transactionHash: (result as { transaction: { hash: string } }).transaction.hash,
+        agentId: quote.agent_id as string,
       };
     } catch (error) {
       console.error('Error in direct execution:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Direct execution failed',
-        agentId: quote.agent_id,
+        agentId: quote.agent_id as string,
       };
     }
   }

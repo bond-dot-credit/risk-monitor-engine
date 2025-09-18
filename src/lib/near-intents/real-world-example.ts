@@ -3,6 +3,7 @@ import { AIAgent } from './ai-agent';
 import { OnChainMetricsCollector } from './onchain-metrics';
 import { BulkOperationsManager } from './bulk-operations';
 import { NearIntentsErrorHandler, RetryUtils } from './utils';
+import { Account } from '@near-js/accounts';
 
 /**
  * Comprehensive example demonstrating real NEAR blockchain integration
@@ -25,13 +26,13 @@ export class RealWorldNearIntentsDemo {
       console.log('🚀 Initializing Real World NEAR Intents Demo...');
       
       // Step 1: Initialize wallet connection with your mnemonic
-      this.wallet = await initializeWalletConnection('testnet');
+      this.wallet = await initializeWalletConnection('testnet') as unknown as Record<string, unknown>;
       console.log(`✅ Wallet connected: ${this.wallet.accountId}`);
       
       // Step 2: Initialize AI Agent with real account
       this.agent = new AIAgent({
-        accountId: this.wallet.accountId,
-        privateKey: this.wallet.keyPair.toString(),
+        accountId: this.wallet.accountId as string,
+        privateKey: (this.wallet.keyPair as { toString: () => string }).toString(),
         networkId: 'testnet',
       });
       
@@ -44,8 +45,8 @@ export class RealWorldNearIntentsDemo {
         nodeUrl: 'https://rpc.testnet.near.org',
         walletUrl: 'https://wallet.testnet.near.org',
         helperUrl: 'https://helper.testnet.near.org',
-        accountId: this.wallet.accountId,
-        privateKey: this.wallet.keyPair.toString(),
+        accountId: this.wallet.accountId as string,
+        privateKey: (this.wallet.keyPair as { toString: () => string }).toString(),
       });
       
       await this.metricsCollector.initialize();
@@ -70,7 +71,7 @@ export class RealWorldNearIntentsDemo {
       }
       
       // Get real account balance
-      const balance = await getAccountBalance(this.wallet.account);
+      const balance = await getAccountBalance(this.wallet.account as unknown as Account);
       console.log(`💰 Current Balance:`);
       console.log(`   Total: ${balance.totalInNear.toFixed(4)} NEAR`);
       console.log(`   Available: ${balance.availableInNear.toFixed(4)} NEAR`);
@@ -78,8 +79,8 @@ export class RealWorldNearIntentsDemo {
       // Get detailed account state using AI Agent
       const accountState = await this.agent.getAccountState();
       console.log(`📈 Account Details:`);
-      console.log(`   Storage Used: ${accountState.storage.used} bytes`);
-      console.log(`   Storage Paid: ${accountState.storage.paid}`);
+      console.log(`   Storage Used: ${(accountState.storage as { used: number }).used} bytes`);
+      console.log(`   Storage Paid: ${(accountState.storage as { paid: number }).paid}`);
       
       // Check if account needs funding
       if (balance.availableInNear < 0.1) {
@@ -188,8 +189,8 @@ export class RealWorldNearIntentsDemo {
       // Create a small bulk operation config for testing
       const bulkConfig = {
         wallets: [{
-          accountId: this.wallet.accountId,
-          privateKey: this.wallet.keyPair.toString(),
+          accountId: this.wallet.accountId as string,
+          privateKey: (this.wallet.keyPair as { toString: () => string }).toString(),
           networkId: 'testnet',
         }],
         transactionsPerWallet: 2, // Small number for testing
@@ -237,7 +238,7 @@ export class RealWorldNearIntentsDemo {
       }
       
       // Get current balance first
-      const balance = await getAccountBalance(this.wallet.account);
+      const balance = await getAccountBalance(this.wallet.account as unknown as Account);
       
       if (balance.availableInNear < 0.01) {
         console.log('⚠️  Insufficient balance for transfer demo');
@@ -250,10 +251,10 @@ export class RealWorldNearIntentsDemo {
       
       console.log(`💰 Transferring ${transferAmount} NEAR to ${recipientId}...`);
       
-      const result = await transferNear(this.wallet.account, recipientId, transferAmount);
+      const result = await transferNear(this.wallet.account as unknown as Account, recipientId, transferAmount);
       
       console.log('✅ Transfer successful!');
-      console.log(`📋 Transaction Hash: ${result.transaction.hash}`);
+      console.log(`📋 Transaction Hash: ${(result.transaction as { hash: string }).hash}`);
       
     } catch (error) {
       const nearError = NearIntentsErrorHandler.parseError(error);
@@ -274,15 +275,19 @@ export class RealWorldNearIntentsDemo {
       await this.demonstrateMetricsCollection();
       
       // Only run operations that require balance if account is funded
-      const balance = await getAccountBalance(this.wallet.account);
-      if (balance.availableInNear > 0.1) {
-        await this.demonstrateTransfer();
-        await this.demonstrateTokenSwap();
-        await this.demonstrateBulkOperations();
+      if (this.wallet && this.wallet.account) {
+        const balance = await getAccountBalance(this.wallet.account as unknown as Account);
+        if (balance.availableInNear > 0.1) {
+          await this.demonstrateTransfer();
+          await this.demonstrateTokenSwap();
+          await this.demonstrateBulkOperations();
+        } else {
+          console.log('\n⚠️  Skipping transaction demos due to low balance');
+          console.log('🔗 Fund your account at: https://near-faucet.io/');
+          console.log(`📝 Account: ${this.wallet.accountId}`);
+        }
       } else {
-        console.log('\n⚠️  Skipping transaction demos due to low balance');
-        console.log('🔗 Fund your account at: https://near-faucet.io/');
-        console.log(`📝 Account: ${this.wallet.accountId}`);
+        console.log('\n⚠️  Wallet account not available');
       }
       
       console.log('\n🎉 Demo completed successfully!');

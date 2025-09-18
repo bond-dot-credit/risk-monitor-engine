@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Progress } from '@/components/ui/Progress';
 import { useSystemStatus } from '@/hooks/useSystemStatus';
 
 export const PerformanceMetrics: React.FC = () => {
@@ -92,7 +92,12 @@ export const PerformanceMetrics: React.FC = () => {
                 <span className="text-sm font-medium">Health Score</span>
                 <span className="text-2xl font-bold">{healthScore}%</span>
               </div>
-              <Progress value={healthScore} className="h-3" />
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                <div 
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-300" 
+                  style={{ width: `${healthScore}%` }}
+                ></div>
+              </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">

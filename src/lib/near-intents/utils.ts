@@ -34,8 +34,8 @@ export class NearIntentsErrorHandler {
     }
 
     // Handle NEAR-specific error objects
-    if (error?.type || error?.kind) {
-      return this.parseNearError(error);
+    if ((error as Record<string, unknown>)?.type || (error as Record<string, unknown>)?.kind) {
+      return this.parseNearError(error as Record<string, unknown>);
     }
 
     // Default error
@@ -108,8 +108,8 @@ export class NearIntentsErrorHandler {
     if (error.type === 'ActionError') {
       return {
         type: NearIntentsErrorType.CONTRACT_ERROR,
-        message: error.kind?.kind || 'Contract execution failed',
-        code: error.kind?.kind,
+        message: (error.kind as Record<string, unknown>)?.kind as string || 'Contract execution failed',
+        code: (error.kind as Record<string, unknown>)?.kind as string,
         details: error,
         retryable: false,
       };
@@ -135,7 +135,7 @@ export class NearIntentsErrorHandler {
 
     return {
       type: NearIntentsErrorType.NETWORK_ERROR,
-      message: error.message || 'NEAR blockchain error',
+      message: (error.message as string) || 'NEAR blockchain error',
       details: error,
       retryable: true,
       retryAfter: 5,
