@@ -47,29 +47,37 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
     
     try {
       setIsLoading(true);
+      setError(null);
+      
+      console.log('Initializing NEAR Wallet Selector...');
       
       // Create wallet selector
       const walletSelector = await createWalletSelector();
+      console.log('Wallet selector created:', walletSelector);
       selectorRef.current = walletSelector;
       setSelector(walletSelector);
       
       // Create modal
       const walletModal = await createWalletSelectorModal(walletSelector);
+      console.log('Wallet modal created:', walletModal);
       modalRef.current = walletModal;
       setModal(walletModal);
       
       // Check if already signed in
       const signedInAccount = walletSelector.store.getState().accounts[0];
       if (signedInAccount) {
+        console.log('Found signed in account:', signedInAccount);
         await handleAccountChange(signedInAccount);
       }
       
       // Listen for account changes
       walletSelector.on('accountsChanged', handleAccountChange);
       
+      console.log('Wallet selector initialized successfully');
+      
     } catch (err) {
       console.error('Error initializing wallet selector:', err);
-      setError('Failed to initialize wallet connection');
+      setError(`Failed to initialize wallet connection: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +148,8 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
   const connect = useCallback(async () => {
     const modal = modalRef.current;
     if (!modal) {
-      setError('Wallet selector not initialized');
+      setError('Wallet selector not initialized. Please refresh the page.');
+      console.error('Modal not available:', modalRef.current);
       return;
     }
 
@@ -148,8 +157,10 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
     setError(null);
 
     try {
+      console.log('Opening wallet selector modal...');
       // Show wallet selector modal
       modal.show();
+      console.log('Wallet selector modal opened');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to connect wallet';
       setError(errorMessage);

@@ -24,19 +24,28 @@ export const defaultConfig: WalletSelectorConfig = {
 };
 
 export async function createWalletSelector(config: WalletSelectorConfig = defaultConfig) {
-  const selector = await setupWalletSelector({
-    network: config.networkId,
-    debug: process.env.NODE_ENV === 'development',
-    modules: [
-      setupMyNearWallet({
-        walletUrl: config.walletUrl,
-      }),
-      setupSender(),
-      setupLedger(),
-    ],
-  });
+  try {
+    console.log('Creating wallet selector with config:', config);
+    
+    const selector = await setupWalletSelector({
+      network: config.networkId,
+      debug: process.env.NODE_ENV === 'development',
+      modules: [
+        setupMyNearWallet({
+          walletUrl: config.walletUrl,
+        }),
+        // Temporarily disable Sender and Ledger to avoid compatibility issues
+        // setupSender(),
+        // setupLedger(),
+      ],
+    });
 
-  return selector;
+    console.log('Wallet selector created successfully');
+    return selector;
+  } catch (error) {
+    console.error('Error creating wallet selector:', error);
+    throw error;
+  }
 }
 
 export async function createWalletSelectorModal(selector: any) {
