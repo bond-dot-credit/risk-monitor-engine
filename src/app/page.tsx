@@ -1,7 +1,22 @@
+'use client';
+
 import { AgentDashboard } from "@/components/AgentDashboard";
 import { Header } from "@/components/Header";
+import { NearLoginButton } from "@/components/NearLoginButton";
+import { UserDashboard } from "@/components/UserDashboard";
+import { useNearWallet } from "@/hooks/useNearWallet";
 
 export default function Home() {
+  const { account, isConnected, disconnect } = useNearWallet();
+
+  const handleLoginSuccess = (accountId: string) => {
+    console.log('Login successful for account:', accountId);
+  };
+
+  const handleLogout = async () => {
+    await disconnect();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
       <Header />
@@ -41,9 +56,22 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center px-2 sm:px-4 max-w-xs sm:max-w-md lg:max-w-lg mx-auto">
-            <button className="w-full sm:w-auto px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2.5 md:py-3 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm sm:text-base md:text-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              Get Started
-            </button>
+            {!isConnected ? (
+              <NearLoginButton 
+                onLoginSuccess={handleLoginSuccess}
+                className="w-full sm:w-auto"
+              />
+            ) : (
+              <button 
+                onClick={() => window.location.reload()}
+                className="w-full sm:w-auto px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2.5 md:py-3 lg:py-4 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm sm:text-base md:text-lg focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span>Go to Dashboard</span>
+                </div>
+              </button>
+            )}
             <button className="w-full sm:w-auto px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2.5 md:py-3 lg:py-4 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-lg md:rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 text-sm sm:text-base md:text-lg focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
               <span className="hidden sm:inline">View Documentation</span>
               <span className="sm:hidden">Documentation</span>
@@ -52,21 +80,26 @@ export default function Home() {
         </div>
 
         {/* Dashboard Section */}
-        <div className="mb-8 sm:mb-12 lg:mb-16 xl:mb-20">
-          <div className="text-center mb-6 sm:mb-8 lg:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-2 sm:mb-3 lg:mb-4 px-2 sm:px-4 leading-tight">
-              Live Agent Dashboard
-            </h2>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-sm sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto px-2 sm:px-4 leading-relaxed">
-              Monitor real-time agent performance, credibility scores, and risk metrics across all supported networks
-            </p>
+        {isConnected && account ? (
+          <UserDashboard account={account} onLogout={handleLogout} />
+        ) : (
+          <div className="mb-8 sm:mb-12 lg:mb-16 xl:mb-20">
+            <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-2 sm:mb-3 lg:mb-4 px-2 sm:px-4 leading-tight">
+                Live Agent Dashboard
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-sm sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto px-2 sm:px-4 leading-relaxed">
+                Monitor real-time agent performance, credibility scores, and risk metrics across all supported networks
+              </p>
+            </div>
+     
+            <AgentDashboard />
           </div>
- 
-          <AgentDashboard />
-        </div>
+        )}
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8 mb-8 sm:mb-12 lg:mb-16">
+        {/* Stats Section - Only show when not logged in */}
+        {!isConnected && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8 mb-8 sm:mb-12 lg:mb-16">
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 xl:p-7 shadow-lg border border-slate-200/50 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300 hover:scale-105">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
@@ -149,7 +182,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );
