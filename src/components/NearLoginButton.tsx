@@ -1,7 +1,7 @@
 'use client';
 
 import { useNearWallet } from '@/hooks/useNearWallet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface NearLoginButtonProps {
   className?: string;
@@ -17,24 +17,26 @@ export function NearLoginButton({ className = '', onLoginSuccess }: NearLoginBut
     connect, 
     disconnect, 
     signIn, 
-    signOut 
+    signOut,
+    signMessage 
   } = useNearWallet();
   
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleConnect = async () => {
     await connect();
-    if (onLoginSuccess && account) {
-      onLoginSuccess(account.accountId);
-    }
   };
 
   const handleSignIn = async () => {
     await signIn();
-    if (onLoginSuccess && account) {
+  };
+
+  // Call onLoginSuccess when account changes
+  useEffect(() => {
+    if (account && onLoginSuccess) {
       onLoginSuccess(account.accountId);
     }
-  };
+  }, [account, onLoginSuccess]);
 
   const handleSignOut = async () => {
     await signOut();

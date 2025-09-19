@@ -2,38 +2,52 @@
 
 ## Overview
 
-This document describes the implementation of NEAR intent login functionality for the Risk Monitor Engine. The system allows users to connect their NEAR wallets and access personalized yield opportunities with trust scoring.
+This document describes the implementation of **real NEAR Wallet Selector integration** for the Risk Monitor Engine. The system now uses actual NEAR blockchain authentication instead of mock implementations, allowing users to connect their real NEAR wallets and access personalized yield opportunities with trust scoring.
 
 ## Features Implemented
 
-### 1. NEAR Wallet Connection Hook (`useNearWallet.ts`)
+### 1. NEAR Wallet Selector Integration (`useNearWallet.ts`)
 
-A React hook that manages NEAR wallet connection state and provides methods for:
-- Connecting to NEAR wallet
-- Signing in/out
-- Managing account state
-- Persistent storage of wallet data
+A React hook that integrates with the official NEAR Wallet Selector and provides methods for:
+- Connecting to real NEAR wallets (MyNearWallet, Sender, Ledger)
+- Real blockchain authentication and signing
+- Live account balance fetching from NEAR blockchain
+- Persistent session management
 
 **Key Features:**
-- Persistent login state using localStorage
-- Error handling and loading states
-- Mock wallet connection for development
-- Account balance tracking
+- **Real NEAR Integration**: Uses `@near-wallet-selector/core` for authentic blockchain connections
+- **Multiple Wallet Support**: MyNearWallet, Sender, and Ledger hardware wallets
+- **Live Balance**: Fetches real NEAR token balances from the blockchain
+- **Message Signing**: Supports signing messages for authentication
+- **Session Persistence**: Maintains login state across browser sessions
+- **Error Handling**: Comprehensive error states and user feedback
 
-### 2. NEAR Login Button Component (`NearLoginButton.tsx`)
+### 2. NEAR Wallet Selector Configuration (`wallet-selector-config.ts`)
 
-A reusable component that handles the complete login flow:
-- "Login with NEAR" button when disconnected
-- Account dropdown when connected
-- Loading states and error handling
-- Responsive design with Tailwind CSS
+Configuration setup for NEAR Wallet Selector with support for:
+- Multiple wallet providers (MyNearWallet, Sender, Ledger)
+- Environment-based configuration
+- Modal UI setup for wallet selection
+- Network configuration (testnet/mainnet)
+
+**Supported Wallets:**
+- **MyNearWallet**: Web-based wallet for easy access
+- **Sender**: Browser extension wallet
+- **Ledger**: Hardware wallet integration
+
+### 3. NEAR Login Button Component (`NearLoginButton.tsx`)
+
+A reusable component that integrates with the real NEAR Wallet Selector:
+- "Login with NEAR" button that opens wallet selector modal
+- Real wallet selection interface
+- Account dropdown with live balance display
+- Sign out and disconnect functionality
 
 **States:**
 - **Disconnected**: Shows "Login with NEAR" button
-- **Connected but not signed in**: Shows "Sign In to [account]" button
-- **Signed in**: Shows account dropdown with balance and options
+- **Connected**: Shows account dropdown with real balance and options
 
-### 3. User Dashboard (`UserDashboard.tsx`)
+### 4. User Dashboard (`UserDashboard.tsx`)
 
 A comprehensive dashboard shown after successful login that includes:
 - Account balance display (NEAR, USDC, Total Value)
@@ -47,25 +61,27 @@ A comprehensive dashboard shown after successful login that includes:
 - **Liquidity Provider**: 15.7% APY, 82 Trust Score, Medium Risk
 - **DeFi Yield Farming**: 22.1% APY, 75 Trust Score, High Risk
 
-### 4. API Endpoint (`/api/near-auth`)
+### 5. Environment Configuration
 
-A REST API endpoint for handling authentication events:
-- `POST /api/near-auth` with actions: `login`, `logout`, `verify`
-- Future-ready for real NEAR blockchain integration
-- Proper error handling and response formatting
+Updated environment configuration for real NEAR integration:
+- `NEXT_PUBLIC_NEAR_NETWORK_ID`: Network selection (testnet/mainnet)
+- `NEXT_PUBLIC_NEAR_NODE_URL`: NEAR RPC endpoint
+- `NEXT_PUBLIC_NEAR_WALLET_URL`: Wallet provider URL
+- `NEXT_PUBLIC_NEAR_CONTRACT_ID`: Contract ID for wallet selector
 
 ## Architecture
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │    │  NEAR Wallet     │    │  Backend API    │
-│   Components    │◄──►│  Integration     │◄──►│  Endpoints      │
+│   Frontend      │    │ NEAR Wallet      │    │ NEAR Blockchain │
+│   Components    │◄──►│ Selector         │◄──►│ (Testnet/Mainnet)│
 └─────────────────┘    └──────────────────┘    └─────────────────┘
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│ useNearWallet   │    │ Wallet Connection│    │ Authentication  │
-│ Hook            │    │ State Management │    │ & Verification  │
+│ useNearWallet   │    │ Wallet Providers │    │ Real Account    │
+│ Hook            │    │ (MyNearWallet,   │    │ Data & Balances │
+│                 │    │  Sender, Ledger) │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
@@ -74,14 +90,13 @@ A REST API endpoint for handling authentication events:
 ```
 src/
 ├── hooks/
-│   └── useNearWallet.ts          # Wallet connection hook
+│   └── useNearWallet.ts          # NEAR Wallet Selector integration hook
+├── lib/
+│   └── wallet-selector-config.ts # Wallet Selector configuration
 ├── components/
-│   ├── NearLoginButton.tsx       # Login button component
+│   ├── NearLoginButton.tsx       # Login button with wallet selector
 │   └── UserDashboard.tsx         # User dashboard after login
 ├── app/
-│   ├── api/
-│   │   └── near-auth/
-│   │       └── route.ts          # Authentication API
 │   └── page.tsx                  # Updated main page with login
 └── NEAR_INTENT_LOGIN.md          # This documentation
 ```
@@ -92,9 +107,11 @@ src/
 
 1. User visits the application
 2. Clicks "Login with NEAR" button
-3. Wallet connection is established (currently mocked)
-4. User signs in to their account
-5. Dashboard is displayed with yield opportunities
+3. NEAR Wallet Selector modal opens with available wallets
+4. User selects their preferred wallet (MyNearWallet, Sender, Ledger)
+5. User authenticates with their wallet
+6. Real account data and balance are fetched from NEAR blockchain
+7. Dashboard is displayed with yield opportunities and real balance
 
 ### 2. Yield Opportunity Selection
 

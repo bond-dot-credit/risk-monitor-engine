@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { createWalletSelector, createWalletSelectorModal } from '@/lib/wallet-selector-config';
 
 export interface NearAccount {
   accountId: string;
@@ -13,6 +14,8 @@ export interface NearWalletState {
   isLoading: boolean;
   error: string | null;
   isConnected: boolean;
+  selector: any;
+  modal: any;
 }
 
 export interface NearWalletActions {
@@ -20,6 +23,7 @@ export interface NearWalletActions {
   disconnect: () => Promise<void>;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  signMessage: (message: string) => Promise<string | null>;
 }
 
 export function useNearWallet(): NearWalletState & NearWalletActions {
@@ -27,51 +31,125 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [selector, setSelector] = useState<any>(null);
+  const [modal, setModal] = useState<any>(null);
+  
+  const selectorRef = useRef<any>(null);
+  const modalRef = useRef<any>(null);
 
-  // Initialize wallet connection on component mount
+  // Initialize wallet selector on component mount
   useEffect(() => {
-    initializeWallet();
+    initializeWalletSelector();
   }, []);
 
-  const initializeWallet = useCallback(async () => {
+  const initializeWalletSelector = useCallback(async () => {
     if (typeof window === 'undefined') return;
     
     try {
-      // Check if wallet is already connected
-      const walletData = localStorage.getItem('near-wallet-account');
-      if (walletData) {
-        const parsedAccount = JSON.parse(walletData);
-        setAccount(parsedAccount);
-        setIsConnected(true);
+      setIsLoading(true);
+      
+      // Create wallet selector
+      const walletSelector = await createWalletSelector();
+      selectorRef.current = walletSelector;
+      setSelector(walletSelector);
+      
+      // Create modal
+      const walletModal = await createWalletSelectorModal(walletSelector);
+      modalRef.current = walletModal;
+      setModal(walletModal);
+      
+      // Check if already signed in
+      const signedInAccount = walletSelector.store.getState().accounts[0];
+      if (signedInAccount) {
+        await handleAccountChange(signedInAccount);
       }
+      
+      // Listen for account changes
+      walletSelector.on('accountsChanged', handleAccountChange);
+      
     } catch (err) {
-      console.error('Error initializing wallet:', err);
+      console.error('Error initializing wallet selector:', err);
       setError('Failed to initialize wallet connection');
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
+  const handleAccountChange = useCallback(async (account: any) => {
+    if (!account) {
+      setAccount(null);
+      setIsConnected(false);
+      return;
+    }
+
+    try {
+      // Get account balance
+      const balance = await getAccountBalance(account.accountId);
+      
+      const nearAccount: NearAccount = {
+        accountId: account.accountId,
+        balance: balance,
+        isSignedIn: true,
+      };
+      
+      setAccount(nearAccount);
+      setIsConnected(true);
+      setError(null);
+      
+      // Store in localStorage for persistence
+      localStorage.setItem('near-wallet-account', JSON.stringify(nearAccount));
+      
+    } catch (err) {
+      console.error('Error handling account change:', err);
+      setError('Failed to load account information');
+    }
+  }, []);
+
+  const getAccountBalance = async (accountId: string): Promise<string> => {
+    try {
+      const selector = selectorRef.current;
+      if (!selector) return '0';
+      
+      const { network } = selector.options;
+      const response = await fetch(`${network.nodeUrl}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 'dontcare',
+          method: 'query',
+          params: {
+            request_type: 'view_account',
+            finality: 'final',
+            account_id: accountId,
+          },
+        }),
+      });
+      
+      const data = await response.json();
+      const balance = data.result?.amount || '0';
+      return (parseFloat(balance) / 1e24).toFixed(4);
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      return '0';
+    }
+  };
+
   const connect = useCallback(async () => {
+    const modal = modalRef.current;
+    if (!modal) {
+      setError('Wallet selector not initialized');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      // For development, we'll simulate a wallet connection
-      // In production, this would integrate with NEAR Wallet Selector
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate connection delay
-      
-      // Mock account data for development
-      const mockAccount: NearAccount = {
-        accountId: 'user.near',
-        balance: '1.2345',
-        isSignedIn: true,
-      };
-
-      setAccount(mockAccount);
-      setIsConnected(true);
-      
-      // Store in localStorage for persistence
-      localStorage.setItem('near-wallet-account', JSON.stringify(mockAccount));
-      
+      // Show wallet selector modal
+      modal.show();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to connect wallet';
       setError(errorMessage);
@@ -82,55 +160,75 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
   }, []);
 
   const disconnect = useCallback(async () => {
+    const selector = selectorRef.current;
+    if (!selector) return;
+
     setIsLoading(true);
     
     try {
+      // Sign out from wallet
+      const wallet = await selector.wallet();
+      await wallet.signOut();
+      
       setAccount(null);
       setIsConnected(false);
       localStorage.removeItem('near-wallet-account');
     } catch (err) {
       console.error('Error disconnecting wallet:', err);
+      setError('Failed to disconnect wallet');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   const signIn = useCallback(async () => {
+    // With real wallet selector, sign in happens automatically when connecting
+    // This method is kept for compatibility but doesn't need to do anything
+    console.log('Sign in is handled automatically by wallet selector');
+  }, []);
+
+  const signOut = useCallback(async () => {
+    const selector = selectorRef.current;
+    if (!selector) return;
+
     setIsLoading(true);
     setError(null);
-
+    
     try {
-      // Simulate NEAR Wallet authentication flow
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate wallet interaction
+      const wallet = await selector.wallet();
+      await wallet.signOut();
       
-      if (account) {
-        const updatedAccount = { ...account, isSignedIn: true };
-        setAccount(updatedAccount);
-        localStorage.setItem('near-wallet-account', JSON.stringify(updatedAccount));
-      }
-      
+      setAccount(null);
+      setIsConnected(false);
+      localStorage.removeItem('near-wallet-account');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sign in';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sign out';
       setError(errorMessage);
-      console.error('Sign in error:', err);
+      console.error('Sign out error:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [account]);
+  }, []);
 
-  const signOut = useCallback(async () => {
-    setIsLoading(true);
-    
+  const signMessage = useCallback(async (message: string): Promise<string | null> => {
+    const selector = selectorRef.current;
+    if (!selector) {
+      setError('Wallet selector not initialized');
+      return null;
+    }
+
     try {
-      if (account) {
-        const updatedAccount = { ...account, isSignedIn: false };
-        setAccount(updatedAccount);
-        localStorage.setItem('near-wallet-account', JSON.stringify(updatedAccount));
-      }
+      const wallet = await selector.wallet();
+      const signature = await wallet.signMessage({
+        message,
+        recipient: account?.accountId || '',
+      });
+      
+      return signature.signature;
     } catch (err) {
-      console.error('Error signing out:', err);
-    } finally {
-      setIsLoading(false);
+      console.error('Error signing message:', err);
+      setError('Failed to sign message');
+      return null;
     }
   }, [account]);
 
@@ -139,9 +237,12 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
     isLoading,
     error,
     isConnected,
+    selector,
+    modal,
     connect,
     disconnect,
     signIn,
     signOut,
+    signMessage,
   };
 }
