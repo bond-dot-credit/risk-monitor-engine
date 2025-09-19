@@ -264,7 +264,14 @@ const NearIntentsDashboard = () => {
                 <div>
                   <h3 className="font-medium">Connected Account</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {accountInfo?.accountId} ({accountInfo?.networkId})
+                    {accountInfo?.accountId} 
+                    <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                      accountInfo?.networkId === 'testnet' 
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                        : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    }`}>
+                      {accountInfo?.networkId === 'testnet' ? '🧪 TESTNET' : '🌐 MAINNET'}
+                    </span>
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">

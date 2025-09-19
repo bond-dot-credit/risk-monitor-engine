@@ -116,6 +116,13 @@ export function UserDashboard({ account, onLogout }: UserDashboardProps) {
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mt-1">
               Manage your yield opportunities and track your earnings
+              <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                account.accountId.includes('.testnet') || account.accountId.includes('testnet')
+                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                  : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+              }`}>
+                {account.accountId.includes('.testnet') || account.accountId.includes('testnet') ? '🧪 TESTNET' : '🌐 MAINNET'}
+              </span>
             </p>
           </div>
           <button

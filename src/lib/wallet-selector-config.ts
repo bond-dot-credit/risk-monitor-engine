@@ -15,12 +15,33 @@ export interface WalletSelectorConfig {
   explorerUrl: string;
 }
 
+// Network configuration - change this to switch between testnet and mainnet
+const NETWORK_CONFIG = {
+  testnet: {
+    networkId: 'testnet' as const,
+    nodeUrl: 'https://rpc.testnet.near.org',
+    walletUrl: 'https://testnet.mynearwallet.com',
+    helperUrl: 'https://helper.testnet.near.org',
+    explorerUrl: 'https://testnet.nearblocks.io',
+  },
+  mainnet: {
+    networkId: 'mainnet' as const,
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    walletUrl: 'https://wallet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://nearblocks.io',
+  },
+};
+
+// Choose network: 'testnet' for development, 'mainnet' for production
+const CURRENT_NETWORK = (process.env.NEXT_PUBLIC_NEAR_NETWORK_ID as 'testnet' | 'mainnet') || 'testnet';
+
 export const defaultConfig: WalletSelectorConfig = {
-  networkId: (process.env.NEXT_PUBLIC_NEAR_NETWORK_ID as 'testnet' | 'mainnet') || 'testnet',
-  nodeUrl: process.env.NEXT_PUBLIC_NEAR_NODE_URL || 'https://rpc.testnet.near.org',
-  walletUrl: process.env.NEXT_PUBLIC_NEAR_WALLET_URL || 'https://testnet.mynearwallet.com',
-  helperUrl: 'https://helper.testnet.near.org',
-  explorerUrl: 'https://testnet.nearblocks.io',
+  networkId: NETWORK_CONFIG[CURRENT_NETWORK].networkId,
+  nodeUrl: process.env.NEXT_PUBLIC_NEAR_NODE_URL || NETWORK_CONFIG[CURRENT_NETWORK].nodeUrl,
+  walletUrl: process.env.NEXT_PUBLIC_NEAR_WALLET_URL || NETWORK_CONFIG[CURRENT_NETWORK].walletUrl,
+  helperUrl: NETWORK_CONFIG[CURRENT_NETWORK].helperUrl,
+  explorerUrl: NETWORK_CONFIG[CURRENT_NETWORK].explorerUrl,
 };
 
 export async function createWalletSelector(config: WalletSelectorConfig = defaultConfig) {
