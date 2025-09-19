@@ -136,21 +136,61 @@ export function UserDashboard({ account, onLogout }: UserDashboardProps) {
 
       {/* Account Balance */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 mb-8">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Account Balance</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center">
-            <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">{account.balance}</p>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Real Blockchain Balance</h2>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+          >
+            🔄 Refresh Data
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{account.balance}</p>
             <p className="text-slate-600 dark:text-slate-400">NEAR</p>
           </div>
-          <div className="text-center">
-            <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">0.00</p>
-            <p className="text-slate-600 dark:text-slate-400">USDC</p>
-          </div>
-          <div className="text-center">
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">$0.00</p>
-            <p className="text-slate-600 dark:text-slate-400">Total Value</p>
+          
+          {/* Show real token balances */}
+          {account.tokens && account.tokens.length > 0 ? (
+            account.tokens.map((token, index) => (
+              <div key={index} className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  {token.balance}
+                </p>
+                <p className="text-slate-600 dark:text-slate-400">{token.token}</p>
+              </div>
+            ))
+          ) : (
+            <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">0.00</p>
+              <p className="text-slate-600 dark:text-slate-400">Tokens</p>
+            </div>
+          )}
+          
+          <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+              {account.tokens && account.tokens.length > 0 ? 'Active' : 'No Tokens'}
+            </p>
+            <p className="text-slate-600 dark:text-slate-400">Status</p>
           </div>
         </div>
+        
+        {/* Token Details */}
+        {account.tokens && account.tokens.length > 0 && (
+          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Token Details</h3>
+            <div className="space-y-2">
+              {account.tokens.map((token, index) => (
+                <div key={index} className="flex justify-between items-center text-sm">
+                  <span className="font-medium">{token.token}</span>
+                  <span className="font-mono">{token.balance}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{token.contract}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Yield Opportunities */}

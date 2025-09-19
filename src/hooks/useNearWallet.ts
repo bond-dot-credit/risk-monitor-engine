@@ -7,6 +7,7 @@ export interface NearAccount {
   accountId: string;
   balance: string;
   isSignedIn: boolean;
+  tokens?: Array<{token: string, balance: string, contract: string}>;
 }
 
 export interface NearWalletState {
@@ -91,13 +92,21 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
     }
 
     try {
-      // Get account balance
-      const balance = await getAccountBalance(account.accountId);
+      console.log('Fetching real blockchain data for:', account.accountId);
+      
+      // Get account balance and tokens
+      const [balance, tokens] = await Promise.all([
+        getAccountBalance(account.accountId),
+        getAccountTokens(account.accountId)
+      ]);
+      
+      console.log('Real balance:', balance, 'Tokens:', tokens);
       
       const nearAccount: NearAccount = {
         accountId: account.accountId,
         balance: balance,
         isSignedIn: true,
+        tokens: tokens,
       };
       
       setAccount(nearAccount);
@@ -142,6 +151,67 @@ export function useNearWallet(): NearWalletState & NearWalletActions {
     } catch (error) {
       console.error('Error fetching balance:', error);
       return '0';
+    }
+  };
+
+  const getAccountTokens = async (accountId: string): Promise<Array<{token: string, balance: string, contract: string}>> => {
+    try {
+      const selector = selectorRef.current;
+      if (!selector) return [];
+      
+      const { network } = selector.options;
+      
+      // Common token contracts on NEAR
+      const tokenContracts = [
+        { token: 'wNEAR', contract: 'wrap.testnet' },
+        { token: 'USDC', contract: 'usdc.testnet' },
+        { token: 'USDT', contract: 'usdt.testnet' },
+        { token: 'DAI', contract: 'dai.testnet' },
+      ];
+
+      const tokenBalances = [];
+      
+      for (const tokenInfo of tokenContracts) {
+        try {
+          const response = await fetch(`${network.nodeUrl}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 'dontcare',
+              method: 'query',
+              params: {
+                request_type: 'call_function',
+                finality: 'final',
+                account_id: tokenInfo.contract,
+                method_name: 'ft_balance_of',
+                args_base64: Buffer.from(JSON.stringify({ account_id: accountId })).toString('base64'),
+              },
+            }),
+          });
+          
+          const data = await response.json();
+          if (data.result?.result) {
+            const balance = JSON.parse(Buffer.from(data.result.result, 'base64').toString());
+            if (balance && balance !== '0') {
+              tokenBalances.push({
+                token: tokenInfo.token,
+                balance: balance,
+                contract: tokenInfo.contract,
+              });
+            }
+          }
+        } catch (tokenError) {
+          console.log(`Token ${tokenInfo.token} not found or error:`, tokenError);
+        }
+      }
+      
+      return tokenBalances;
+    } catch (error) {
+      console.error('Error fetching token balances:', error);
+      return [];
     }
   };
 
