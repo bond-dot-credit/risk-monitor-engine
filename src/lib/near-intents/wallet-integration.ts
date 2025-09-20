@@ -156,7 +156,8 @@ export async function transferNear(
   amount: number // Amount in NEAR
 ): Promise<any> {
   try {
-    const yoctoAmount = (amount * 1e24).toString();
+    // Convert to yoctoNEAR using BigInt to avoid precision issues
+    const yoctoAmount = BigInt(Math.round(amount * 1e24)).toString();
     
     const result = await (account as any).sendMoney(
       receiverId,

@@ -32,8 +32,6 @@ interface Agent {
   status: string;
 }
 
-import { Header } from '@/components/Header';
-
 interface PerformanceMetric {
   agentId: string;
   timestamp: Date;

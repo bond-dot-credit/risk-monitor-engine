@@ -149,6 +149,27 @@ Health Factor = Collateral Value / Debt Value
 - **High Risk**: Health Factor 1.2-1.5
 - **Critical Risk**: Health Factor < 1.2
 
+## NEAR Protocol Rewards
+
+This project includes specialized tools to help users earn NEAR Protocol Rewards by meeting the three key requirements:
+
+### Requirements for NEAR Protocol Rewards:
+1. **Transaction Volume** ($10,000+)
+2. **Smart Contract Calls** (500+ calls)
+3. **Unique Wallets** (100+ distinct wallets)
+
+### Implementation Approach:
+
+Our solution uses specialized executors to meet each requirement. See the documentation in `PROTOCOL_REWARDS_README.md` for detailed instructions.
+
+### Additional Tools:
+
+This project also includes tools for:
+
+1. **New Wallet Creation and Transfer** - Create new wallets and make transfers (see `NEW-WALLET-TRANSFER.md`)
+2. **Wrap/Unwrap Operations** - Convert between NEAR and wNEAR tokens (see `WRAP-UNWRAP-DEMO.md`)
+3. **Local Wallet Wrap and Transfer** - Wrap tokens from your local wallet and send to bctemp.near (see `LOCAL-WALLET-WRAP-TRANSFER.md`)
+
 ## Roadmap
 
 ### Phase 1 - MVP (Current)

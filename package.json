@@ -15,7 +15,12 @@
     "clean": "rm -rf .next out dist",
     "preview": "npm run build && npm run start",
     "verify-config": "npm run build && npx tsx verify-configuration.ts",
-    "execute-rewards": "npm run build && npx tsx real-transaction-executor.ts"
+    "execute-rewards": "npm run build && npx tsx real-transaction-executor.ts",
+    "parallel-account-transfers": "npm run build && npx tsx parallel-account-transfers.ts",
+    "test-parallel-config": "npm run build && npx tsx test-parallel-account-config.ts",
+    "new-wallet-demo": "npm run build && npx tsx new-wallet-transfer.ts",
+    "wrap-unwrap-demo": "npm run build && npx tsx wrap-unwrap-demo.ts",
+    "local-wrap-transfer": "npm run build && npx tsx local-wallet-wrap-unwrap.ts"
   },
   "dependencies": {
     "@near-js/accounts": "^2.2.6",
@@ -29,11 +34,14 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cross-fetch": "^4.0.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.1",
+    "lucide-react": "^0.542.0",
     "near-api-js": "^6.2.6",
     "near-seed-phrase": "^0.2.1",
     "next": "15.4.6",
     "react": "19.1.0",
+    "react-day-picker": "^9.9.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.3.1"
   },
@@ -50,6 +58,7 @@
     "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.5",
     "typescript": "^5",
     "vitest": "^2.1.9"
   }
