@@ -1,9 +1,11 @@
 'use client';
 
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+
 
 interface Opportunity {
   id: number;
@@ -16,6 +18,7 @@ interface Opportunity {
   safety: number;
   totalScore: number;
   riskLevel: string;
+
   contractAddress?: string;
   tokenAddress?: string;
   category?: string;
@@ -27,6 +30,7 @@ interface Opportunity {
 interface OpportunityCardProps {
   opportunity: Opportunity;
   isConnected: boolean;
+
   onDeposit?: (opportunityId: number) => void;
   onAllocate?: (opportunityId: number) => void;
   onWithdraw?: (opportunityId: number) => void;
