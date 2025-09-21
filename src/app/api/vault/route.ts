@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { nearContractsService } from '@/lib/near-contracts';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,31 +12,30 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Initialize NEAR contracts service
-    await nearContractsService.initialize();
-    
-    // Get vault contract
-    const vaultContract = nearContractsService.getVaultContract();
-    
-    // Fetch vault data
-    const [config, totalSupply, userShares] = await Promise.all([
-      vaultContract.get_config(),
-      vaultContract.get_total_supply(),
-      vaultContract.get_user_total_shares({ account_id: accountId })
-    ]);
-
-    // Get token reserves
-    const tokenReserves = {
-      WNEAR: await vaultContract.get_token_reserves({ token_type: 'WNEAR' }),
-      USDC: await vaultContract.get_token_reserves({ token_type: 'USDC' }),
-      USDT: await vaultContract.get_token_reserves({ token_type: 'USDT' })
+    // TODO: Implement actual vault data fetching from NEAR contracts
+    // For now, return mock data
+    const config = {
+      owner_id: 'vault-contract.testnet',
+      wnear_contract: 'wrap.testnet',
+      usdc_contract: 'usdc.testnet',
+      usdt_contract: 'usdt.testnet',
+      fee_percentage: 100,
+      is_paused: false
     };
 
-    // Get user shares for each token
+    const totalSupply = '1000000000000000000000000'; // 1M tokens
+    const userShares = '0'; // Mock user shares
+
+    const tokenReserves = {
+      WNEAR: '500000000000000000000000',
+      USDC: '250000000000000000000000',
+      USDT: '250000000000000000000000'
+    };
+
     const userVaultShares = {
-      WNEAR: await vaultContract.get_user_vault_shares({ account_id: accountId, token_type: 'WNEAR' }),
-      USDC: await vaultContract.get_user_vault_shares({ account_id: accountId, token_type: 'USDC' }),
-      USDT: await vaultContract.get_user_vault_shares({ account_id: accountId, token_type: 'USDT' })
+      WNEAR: '0',
+      USDC: '0',
+      USDT: '0'
     };
 
     return NextResponse.json({
@@ -74,11 +72,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize NEAR contracts service
-    await nearContractsService.initialize();
-    
-    // Get vault contract
-    const vaultContract = nearContractsService.getVaultContract();
+    // TODO: Implement actual vault contract interactions
+    // For now, simulate the operations
 
     switch (action) {
       case 'deposit':
@@ -89,25 +84,13 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        try {
-          const result = await vaultContract.deposit({
-            token_type: tokenType,
-            amount: amount.toString()
-          });
-          
-          console.log('Deposit successful:', result);
-          return NextResponse.json({
-            success: true,
-            message: 'Deposit initiated',
-            transactionHash: result.transaction?.hash || 'unknown'
-          });
-        } catch (error) {
-          console.error('Deposit failed:', error);
-          return NextResponse.json({
-            success: false,
-            error: error instanceof Error ? error.message : 'Deposit failed'
-          }, { status: 500 });
-        }
+        // TODO: Implement actual deposit transaction
+        console.log('Deposit request:', { tokenType, amount, accountId });
+        return NextResponse.json({
+          success: true,
+          message: 'Deposit initiated',
+          transactionHash: 'mock-tx-hash-' + Date.now()
+        });
 
       case 'withdraw':
         if (!tokenType || !amount) {
@@ -117,47 +100,23 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        try {
-          const result = await vaultContract.withdraw({
-            token_type: tokenType,
-            vault_shares_amount: amount.toString()
-          });
-          
-          console.log('Withdrawal successful:', result);
-          return NextResponse.json({
-            success: true,
-            message: 'Withdrawal initiated',
-            transactionHash: result.transaction?.hash || 'unknown'
-          });
-        } catch (error) {
-          console.error('Withdrawal failed:', error);
-          return NextResponse.json({
-            success: false,
-            error: error instanceof Error ? error.message : 'Withdrawal failed'
-          }, { status: 500 });
-        }
+        // TODO: Implement actual withdrawal transaction
+        console.log('Withdrawal request:', { tokenType, amount, accountId });
+        return NextResponse.json({
+          success: true,
+          message: 'Withdrawal initiated',
+          transactionHash: 'mock-tx-hash-' + Date.now()
+        });
 
       case 'get_events':
-        try {
-          const [depositEvents, withdrawEvents] = await Promise.all([
-            vaultContract.get_deposit_events({ limit: 50 }),
-            vaultContract.get_withdraw_events({ limit: 50 })
-          ]);
-          
-          return NextResponse.json({
-            success: true,
-            data: {
-              deposits: depositEvents,
-              withdrawals: withdrawEvents
-            }
-          });
-        } catch (error) {
-          console.error('Failed to fetch events:', error);
-          return NextResponse.json({
-            success: false,
-            error: 'Failed to fetch events'
-          }, { status: 500 });
-        }
+        // TODO: Implement actual events fetching from vault contract
+        return NextResponse.json({
+          success: true,
+          data: {
+            deposits: [],
+            withdrawals: []
+          }
+        });
 
       default:
         return NextResponse.json(

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { nearContractsService } from '@/lib/near-contracts';
 
 interface GlobalStats {
   tvl: number;
@@ -18,40 +17,22 @@ interface GlobalStats {
 // Function to fetch real global stats from on-chain data
 async function fetchGlobalStats(): Promise<GlobalStats> {
   try {
-    // Initialize NEAR contracts service
-    await nearContractsService.initialize();
-    
-    // Get contracts
-    const vaultContract = nearContractsService.getVaultContract();
-    const registryContract = nearContractsService.getRegistryContract();
-    
-    // Fetch data from contracts
-    const [vaultConfig, totalSupply, registryConfig, totalOpportunities] = await Promise.all([
-      vaultContract.get_config(),
-      vaultContract.get_total_supply(),
-      registryContract.get_config(),
-      registryContract.get_total_opportunities()
-    ]);
+    // TODO: Implement actual on-chain data fetching
+    // This would involve:
+    // 1. Querying all vault contracts for TVL
+    // 2. Counting unique users across all contracts
+    // 3. Calculating total yield generated
+    // 4. Aggregating daily volume from transaction data
+    // 5. Computing average APY across all opportunities
 
-    // Calculate TVL (simplified - in reality would aggregate from all vaults)
-    const tvl = parseFloat(totalSupply) / 1e24; // Convert from yoctoNEAR
-    
-    // Calculate users (simplified - in reality would count unique accounts)
-    const users = totalOpportunities * 10; // Mock calculation
-    
-    // Calculate average APY from opportunities
-    const opportunities = await registryContract.get_opportunities({ limit: 100 });
-    const averageApy = opportunities.length > 0 
-      ? opportunities.reduce((sum, opp) => sum + opp.apy, 0) / opportunities.length / 100 // Convert from basis points
-      : 15.2;
-    
+    // For now, return mock data with some randomization to simulate real-time updates
     const baseStats: GlobalStats = {
-      tvl,
-      users,
-      activeVaults: totalOpportunities,
-      totalYield: tvl * 0.03, // Estimate 3% yield
-      dailyVolume: tvl * 0.16, // Estimate 16% daily volume
-      averageApy,
+      tvl: 2847592.45,
+      users: 1247,
+      activeVaults: 156,
+      totalYield: 89234.67,
+      dailyVolume: 456789.23,
+      averageApy: 15.2,
       riskDistribution: {
         low: 68,
         medium: 24,
