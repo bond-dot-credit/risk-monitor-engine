@@ -196,6 +196,8 @@ export function UserDashboard({ account, onLogout }: UserDashboardProps) {
                   } else if (num >= 1e3) {
                     return `${(num / 1e3).toFixed(2)}K`;
                   } else if (num >= 1) {
+                    return num.toFixed(2);
+                  } else if (num >= 0.01) {
                     return num.toFixed(4);
                   } else {
                     return num.toFixed(6);
@@ -272,21 +274,23 @@ export function UserDashboard({ account, onLogout }: UserDashboardProps) {
                     
                     const num = parseFloat(result);
                     
-                    if (num >= 1e15) {
-                      return `${num.toExponential(2)}`;
-                    } else if (num >= 1e12) {
-                      return `${(num / 1e12).toFixed(2)}T`;
-                    } else if (num >= 1e9) {
-                      return `${(num / 1e9).toFixed(2)}B`;
-                    } else if (num >= 1e6) {
-                      return `${(num / 1e6).toFixed(2)}M`;
-                    } else if (num >= 1e3) {
-                      return `${(num / 1e3).toFixed(2)}K`;
-                    } else if (num >= 1) {
-                      return num.toFixed(4);
-                    } else {
-                      return num.toFixed(6);
-                    }
+                  if (num >= 1e15) {
+                    return `${num.toExponential(2)}`;
+                  } else if (num >= 1e12) {
+                    return `${(num / 1e12).toFixed(2)}T`;
+                  } else if (num >= 1e9) {
+                    return `${(num / 1e9).toFixed(2)}B`;
+                  } else if (num >= 1e6) {
+                    return `${(num / 1e6).toFixed(2)}M`;
+                  } else if (num >= 1e3) {
+                    return `${(num / 1e3).toFixed(2)}K`;
+                  } else if (num >= 1) {
+                    return num.toFixed(2);
+                  } else if (num >= 0.01) {
+                    return num.toFixed(4);
+                  } else {
+                    return num.toFixed(6);
+                  }
                   } catch (error) {
                     const num = Number(balanceStr);
                     if (num > Number.MAX_SAFE_INTEGER) {

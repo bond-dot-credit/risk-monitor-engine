@@ -511,6 +511,8 @@ const RealContractDashboardContent: React.FC = () => {
                       } else if (num >= 1e3) {
                         return `${(num / 1e3).toFixed(2)}K`;
                       } else if (num >= 1) {
+                        return num.toFixed(2);
+                      } else if (num >= 0.01) {
                         return num.toFixed(4);
                       } else {
                         return num.toFixed(6);
@@ -624,8 +626,8 @@ const RealContractDashboardContent: React.FC = () => {
               </div>
               
               <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 truncate" title={formatNumber(vaultData.userShares)}>
-                  {formatNumber(vaultData.userShares)}
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 truncate" title={formatNumber(vaultData.userShares.toString())}>
+                  {formatNumber(vaultData.userShares.toString())}
                 </div>
                 <div className="text-sm text-purple-700 dark:text-purple-300 mt-1">Vault Shares</div>
                 <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">📊 LP Tokens</div>
@@ -678,8 +680,8 @@ const RealContractDashboardContent: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Vault Shares:</span>
-                    <span className="font-medium text-purple-600 dark:text-purple-400 truncate ml-2" title={formatNumber(vaultData.userShares)}>
-                      {formatNumber(vaultData.userShares)}
+                    <span className="font-medium text-purple-600 dark:text-purple-400 truncate ml-2" title={formatNumber(vaultData.userShares.toString())}>
+                      {formatNumber(vaultData.userShares.toString())}
                     </span>
                   </div>
                 </CardContent>
