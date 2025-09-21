@@ -12,6 +12,8 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
+import { RealTimeActivityFeed } from '@/components/RealTimeActivityFeed';
+import { RealTimePriceTicker } from '@/components/RealTimePriceTicker';
 
 export const RealContractDashboard: React.FC = () => {
   return (
@@ -213,6 +215,12 @@ const RealContractDashboardContent: React.FC = () => {
   if (!isConnected) {
     return (
       <div className="container mx-auto px-4 py-8">
+        {/* Real-time Components */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <RealTimePriceTicker />
+          <RealTimeActivityFeed />
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4">
@@ -393,6 +401,12 @@ const RealContractDashboardContent: React.FC = () => {
   // Connected state - Show user dashboard
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Real-time Components */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <RealTimePriceTicker />
+        <RealTimeActivityFeed />
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
