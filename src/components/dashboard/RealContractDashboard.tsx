@@ -454,34 +454,145 @@ const RealContractDashboardContent: React.FC = () => {
       {vaultData && !isLoadingVaultData && (
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>My Vault</CardTitle>
-            <CardDescription>Your deposits, shares, and yield from Vault contract</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              🏦 My Vault Portfolio
+              <StatusBadge status="success" text="Active" />
+            </CardTitle>
+            <CardDescription>Your complete vault holdings, performance, and transaction history</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            {/* Main Portfolio Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 truncate" title={`${vaultData.userDeposits} NEAR`}>
                   {vaultData.userDeposits} NEAR
-                </p>
-                <p className="text-slate-800 dark:text-slate-400">Total Deposits</p>
+                </div>
+                <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">Total Deposits</div>
+                <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">💰 Principal</div>
               </div>
-              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              
+              <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 truncate" title={formatNumber(vaultData.userShares)}>
                   {formatNumber(vaultData.userShares)}
-                </p>
-                <p className="text-slate-800 dark:text-slate-400">Vault Shares</p>
+                </div>
+                <div className="text-sm text-purple-700 dark:text-purple-300 mt-1">Vault Shares</div>
+                <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">📊 LP Tokens</div>
               </div>
-              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              
+              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400 truncate" title={`${vaultData.totalValue} NEAR`}>
                   {vaultData.totalValue} NEAR
-                </p>
-                <p className="text-slate-800 dark:text-slate-400">Total Value</p>
+                </div>
+                <div className="text-sm text-green-700 dark:text-green-300 mt-1">Total Value</div>
+                <div className="text-xs text-green-600 dark:text-green-400 mt-1">💎 Current Worth</div>
               </div>
-              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+              
+              <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 truncate" title={`+${vaultData.yield} NEAR`}>
                   +{vaultData.yield} NEAR
-                </p>
-                <p className="text-slate-800 dark:text-slate-400">Yield Generated</p>
+                </div>
+                <div className="text-sm text-orange-700 dark:text-orange-300 mt-1">Yield Generated</div>
+                <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">📈 Earnings</div>
+              </div>
+            </div>
+
+            {/* Additional Portfolio Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Portfolio Breakdown */}
+              <Card className="bg-gray-50 dark:bg-gray-800">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    📊 Portfolio Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Principal Amount:</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100 truncate ml-2" title={`${vaultData.userDeposits} NEAR`}>
+                      {vaultData.userDeposits} NEAR
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Yield Earned:</span>
+                    <span className="font-medium text-green-600 dark:text-green-400 truncate ml-2" title={`+${vaultData.yield} NEAR`}>
+                      +{vaultData.yield} NEAR
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Total Value:</span>
+                    <span className="font-medium text-blue-600 dark:text-blue-400 truncate ml-2" title={`${vaultData.totalValue} NEAR`}>
+                      {vaultData.totalValue} NEAR
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Vault Shares:</span>
+                    <span className="font-medium text-purple-600 dark:text-purple-400 truncate ml-2" title={formatNumber(vaultData.userShares)}>
+                      {formatNumber(vaultData.userShares)}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Performance Metrics */}
+              <Card className="bg-gray-50 dark:bg-gray-800">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    📈 Performance Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">ROI:</span>
+                    <span className="font-medium text-green-600 dark:text-green-400">
+                      {vaultData.userDeposits > 0 ? ((parseFloat(vaultData.yield) / parseFloat(vaultData.userDeposits)) * 100).toFixed(2) : '0.00'}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Yield Rate:</span>
+                    <span className="font-medium text-orange-600 dark:text-orange-400">
+                      {vaultData.userDeposits > 0 ? ((parseFloat(vaultData.yield) / parseFloat(vaultData.userDeposits)) * 365).toFixed(2) : '0.00'}% APY
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Share Ratio:</span>
+                    <span className="font-medium text-purple-600 dark:text-purple-400">
+                      {vaultData.userDeposits > 0 ? (parseFloat(vaultData.userShares) / parseFloat(vaultData.userDeposits)).toFixed(4) : '0.0000'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Value Growth:</span>
+                    <span className="font-medium text-blue-600 dark:text-blue-400">
+                      {vaultData.userDeposits > 0 ? (((parseFloat(vaultData.totalValue) - parseFloat(vaultData.userDeposits)) / parseFloat(vaultData.userDeposits)) * 100).toFixed(2) : '0.00'}%
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-wrap gap-3">
+                <Button 
+                  onClick={() => {/* Add deposit functionality */}} 
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={depositState.loading}
+                >
+                  {depositState.loading ? 'Processing...' : '💰 Deposit More'}
+                </Button>
+                <Button 
+                  onClick={() => {/* Add withdraw functionality */}} 
+                  variant="outline"
+                  disabled={withdrawState.loading}
+                >
+                  {withdrawState.loading ? 'Processing...' : '📤 Withdraw'}
+                </Button>
+                <Button 
+                  onClick={() => refreshVaultData(account?.accountId || '')} 
+                  variant="outline"
+                  disabled={isRefreshing}
+                >
+                  {isRefreshing ? 'Refreshing...' : '🔄 Refresh Data'}
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -629,39 +740,103 @@ const RealContractDashboardContent: React.FC = () => {
         )}
       </div>
 
-      {/* Transaction History */}
+      {/* Enhanced Transaction History */}
       {vaultData?.events && vaultData.events.length > 0 && (
-        <Card>
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Transaction History</CardTitle>
-            <CardDescription>Your recent deposits, withdrawals, and allocations</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              📋 Transaction History
+              <Badge variant="outline">{vaultData.events.length} transactions</Badge>
+            </CardTitle>
+            <CardDescription>Complete history of your vault interactions and blockchain transactions</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {vaultData.events.map((event, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <Badge variant={
-                      event.type === 'deposit' ? 'default' : 
-                      event.type === 'allocation' ? 'secondary' : 'destructive'
-                    }>
+                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <Badge 
+                      variant={
+                        event.type === 'deposit' ? 'default' : 
+                        event.type === 'allocation' ? 'secondary' : 'destructive'
+                      }
+                      className="flex-shrink-0"
+                    >
                       {event.type === 'deposit' ? '📥' : 
                        event.type === 'allocation' ? '🔄' : '📤'} {event.type}
                     </Badge>
-                    <div>
-                      <p className="font-bold">{event.amount} NEAR</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {new Date(event.timestamp).toLocaleDateString()}
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                          {event.amount} NEAR
+                        </p>
+                        {event.opportunity && (
+                          <Badge variant="outline" className="text-xs truncate max-w-32">
+                            {event.opportunity}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                        <span className="flex items-center gap-1">
+                          🕒 {new Date(event.timestamp).toLocaleDateString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          ⏰ {new Date(event.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  {event.txHash && (
-                    <Button variant="outline" size="sm">
-                      View on Explorer
-                    </Button>
-                  )}
+                  <div className="text-right flex-shrink-0 ml-4">
+                    <p className={`text-sm font-medium ${
+                      event.type === 'deposit' ? 'text-green-600 dark:text-green-400' : 
+                      event.type === 'withdraw' ? 'text-red-600 dark:text-red-400' :
+                      'text-blue-600 dark:text-blue-400'
+                    }`}>
+                      {event.type === 'deposit' ? '+' : event.type === 'withdraw' ? '-' : '→'}{event.amount} NEAR
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-500 font-mono truncate max-w-24" title={event.txHash}>
+                        {event.txHash ? `${event.txHash.slice(0, 8)}...` : 'No hash'}
+                      </p>
+                      {event.txHash && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 text-slate-400 hover:text-slate-600"
+                          onClick={() => window.open(`https://explorer.near.org/transactions/${event.txHash}`, '_blank')}
+                          title="View on NEAR Explorer"
+                        >
+                          🔗
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
+            </div>
+            
+            {/* Transaction Summary */}
+            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                    {vaultData.events.filter(e => e.type === 'deposit').length}
+                  </div>
+                  <div className="text-sm text-green-700 dark:text-green-300">Deposits</div>
+                </div>
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                  <div className="text-lg font-bold text-red-600 dark:text-red-400">
+                    {vaultData.events.filter(e => e.type === 'withdraw').length}
+                  </div>
+                  <div className="text-sm text-red-700 dark:text-red-300">Withdrawals</div>
+                </div>
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    {vaultData.events.filter(e => e.type === 'allocation').length}
+                  </div>
+                  <div className="text-sm text-blue-700 dark:text-blue-300">Allocations</div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
