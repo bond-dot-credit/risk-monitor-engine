@@ -1,8 +1,10 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+
 
 interface Opportunity {
   id: number;
@@ -16,6 +18,7 @@ interface Opportunity {
   maxDeposit?: number;
   minDeposit?: number;
   status?: 'active' | 'inactive' | 'paused';
+
 }
 
 interface OpportunityCardProps {
@@ -25,6 +28,7 @@ interface OpportunityCardProps {
   onAllocate?: (opportunityId: number) => void;
   onWithdraw?: (opportunityId: number) => void;
 }
+
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreBadge = (score: number) => {
