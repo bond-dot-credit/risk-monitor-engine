@@ -73,10 +73,10 @@ export default function Home() {
               bond.credit
             </h1>
           </div>
-          <p className="text-xl text-slate-700 dark:text-slate-200 mb-2 font-medium">
+          <p className="text-xl text-slate-900 dark:text-slate-200 mb-2 font-medium">
             Credit layer for the agentic economy
           </p>
-          <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg text-slate-800 dark:text-slate-300 mb-8 max-w-3xl mx-auto">
             Discover high-yield opportunities with our v0 scoring system. Earn rewards through trusted protocols.
           </p>
 
@@ -115,7 +115,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
               Investment Opportunities
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-800 dark:text-slate-300 max-w-2xl mx-auto">
               Browse available opportunities with our v0 scoring system based on Performance, Reliability, and Safety
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function Home() {
             <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
               Ready to Start Earning?
             </h3>
-            <p className="text-lg text-slate-600 dark:text-slate-300 mb-6 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-800 dark:text-slate-300 mb-6 max-w-2xl mx-auto">
               Connect your NEAR wallet to deposit funds, allocate to strategies, and start earning yield on your assets.
             </p>
             <NearLoginButton 

@@ -39,7 +39,7 @@ export function OpportunityCard({ opportunity, isConnected }: OpportunityCardPro
           <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
             {opportunity.name}
           </h3>
-          <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+          <p className="text-slate-800 dark:text-slate-300 text-sm leading-relaxed">
             {opportunity.description}
           </p>
         </div>
@@ -51,7 +51,7 @@ export function OpportunityCard({ opportunity, isConnected }: OpportunityCardPro
       {/* APY */}
       <div className="mb-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">APY</span>
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-400">APY</span>
           <span className="text-2xl font-bold text-green-600 dark:text-green-400">
             {opportunity.apy}%
           </span>
@@ -61,7 +61,7 @@ export function OpportunityCard({ opportunity, isConnected }: OpportunityCardPro
       {/* Trust Score */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Trust Score</span>
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-400">Trust Score</span>
           <span className={`text-lg font-bold ${getScoreColor(opportunity.totalScore)}`}>
             {opportunity.totalScore}/100
           </span>
@@ -80,19 +80,19 @@ export function OpportunityCard({ opportunity, isConnected }: OpportunityCardPro
       {/* Scoring Breakdown */}
       <div className="mb-6 space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-600 dark:text-slate-400">Performance</span>
+          <span className="text-slate-800 dark:text-slate-400">Performance</span>
           <span className="font-medium text-slate-900 dark:text-slate-100">
             {opportunity.performance}/40
           </span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-600 dark:text-slate-400">Reliability</span>
+          <span className="text-slate-800 dark:text-slate-400">Reliability</span>
           <span className="font-medium text-slate-900 dark:text-slate-100">
             {opportunity.reliability}/40
           </span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-600 dark:text-slate-400">Safety</span>
+          <span className="text-slate-800 dark:text-slate-400">Safety</span>
           <span className="font-medium text-slate-900 dark:text-slate-100">
             {opportunity.safety}/20
           </span>
