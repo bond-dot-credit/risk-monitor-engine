@@ -156,8 +156,8 @@ const RealContractDashboardContent: React.FC = () => {
     }).format(amount);
   };
 
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('en-US').format(num);
+  const formatNumber = (num: number | string) => {
+    return new Intl.NumberFormat('en-US').format(typeof num === 'string' ? parseFloat(num) : num);
   };
 
   // Loading state
@@ -469,15 +469,42 @@ const RealContractDashboardContent: React.FC = () => {
                 {account.tokens.map((token, index) => {
                   // Format token balance (convert from yoctoNEAR/wei to human readable)
                   const formatTokenBalance = (balance: string, tokenName: string) => {
-                    const num = parseFloat(balance);
+                    // Handle very large numbers by using BigInt for precision
+                    const balanceStr = balance.toString();
+                    let decimals = 24; // Default for wNEAR
+                    
                     if (tokenName === 'wNEAR') {
-                      return (num / 1e24).toFixed(4); // wNEAR has 24 decimals
+                      decimals = 24;
                     } else if (tokenName === 'USDC' || tokenName === 'USDT') {
-                      return (num / 1e6).toFixed(2); // USDC/USDT have 6 decimals
+                      decimals = 6;
                     } else if (tokenName === 'DAI') {
-                      return (num / 1e18).toFixed(4); // DAI has 18 decimals
+                      decimals = 18;
                     }
-                    return num.toFixed(4);
+                    
+                    // Use BigInt to handle large numbers precisely
+                    try {
+                      const bigIntBalance = BigInt(balanceStr);
+                      const divisor = BigInt(10 ** decimals);
+                      const quotient = bigIntBalance / divisor;
+                      const remainder = bigIntBalance % divisor;
+                      
+                      // Convert to decimal representation
+                      const decimalPart = remainder.toString().padStart(decimals, '0');
+                      const trimmedDecimal = decimalPart.replace(/0+$/, '');
+                      
+                      if (trimmedDecimal === '') {
+                        return quotient.toString();
+                      } else {
+                        return `${quotient}.${trimmedDecimal}`;
+                      }
+                    } catch (error) {
+                      // Fallback for very large numbers - show scientific notation
+                      const num = Number(balanceStr);
+                      if (num > Number.MAX_SAFE_INTEGER) {
+                        return (num / (10 ** decimals)).toExponential(4);
+                      }
+                      return (num / (10 ** decimals)).toFixed(4);
+                    }
                   };
 
                   const formattedBalance = formatTokenBalance(token.balance, token.token);
