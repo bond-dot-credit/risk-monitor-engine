@@ -1,25 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { nearContractsService, Opportunity } from '@/lib/near-contracts';
 
-interface Opportunity {
-  id: number;
-  name: string;
-  description: string;
-  apy: number;
-  trustScore: number;
-  performance: number;
-  reliability: number;
-  safety: number;
-  totalScore: number;
-  riskLevel: string;
-  contractAddress?: string;
-  tokenAddress?: string;
-  category?: string;
-  minDeposit?: number;
-  maxDeposit?: number;
-  tvl?: number;
-}
-
-// Mock data - in production this would fetch from NEAR Registry contract
+// Mock data as fallback
 const mockOpportunities: Opportunity[] = [
   {
     id: 1,
@@ -98,15 +80,20 @@ const mockOpportunities: Opportunity[] = [
 // Function to fetch opportunities from NEAR Registry contract
 async function fetchOpportunitiesFromRegistry(): Promise<Opportunity[]> {
   try {
-    // TODO: Implement actual NEAR Registry contract integration
-    // This would involve:
-    // 1. Connecting to NEAR network
-    // 2. Calling the registry contract to get available opportunities
-    // 3. Fetching APY and risk data from each opportunity contract
-    // 4. Calculating trust scores based on on-chain metrics
+    // Initialize NEAR contracts service
+    await nearContractsService.initialize();
     
-    // For now, return mock data
-    return mockOpportunities;
+    // Get registry contract
+    const registryContract = nearContractsService.getRegistryContract();
+    
+    // Fetch opportunities from the registry
+    const opportunities = await registryContract.get_opportunities({
+      limit: 50,
+      offset: 0
+    });
+    
+    console.log('Fetched opportunities from NEAR Registry:', opportunities);
+    return opportunities;
   } catch (error) {
     console.error('Error fetching opportunities from registry:', error);
     // Return mock data as fallback
@@ -179,7 +166,7 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'deposit':
-        // TODO: Implement deposit to opportunity
+        // TODO: Implement deposit to vault first, then allocate to opportunity
         console.log('Deposit request:', { opportunityId, amount, accountId });
         return NextResponse.json({
           success: true,
@@ -188,22 +175,58 @@ export async function POST(request: NextRequest) {
         });
 
       case 'allocate':
-        // TODO: Implement allocation to opportunity
-        console.log('Allocate request:', { opportunityId, amount, accountId });
-        return NextResponse.json({
-          success: true,
-          message: 'Allocation initiated',
-          transactionHash: 'mock-tx-hash-' + Date.now()
-        });
+        try {
+          // Initialize NEAR contracts service
+          await nearContractsService.initialize();
+          
+          // Get opportunity contract
+          const opportunityContract = nearContractsService.getOpportunityContract(opportunityId);
+          
+          // Call allocate method
+          const result = await opportunityContract.allocate({
+            amount: amount.toString()
+          });
+          
+          console.log('Allocation successful:', result);
+          return NextResponse.json({
+            success: true,
+            message: 'Allocation successful',
+            transactionHash: result.transaction?.hash || 'unknown'
+          });
+        } catch (error) {
+          console.error('Allocation failed:', error);
+          return NextResponse.json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Allocation failed'
+          }, { status: 500 });
+        }
 
       case 'withdraw':
-        // TODO: Implement withdrawal from opportunity
-        console.log('Withdraw request:', { opportunityId, amount, accountId });
-        return NextResponse.json({
-          success: true,
-          message: 'Withdrawal initiated',
-          transactionHash: 'mock-tx-hash-' + Date.now()
-        });
+        try {
+          // Initialize NEAR contracts service
+          await nearContractsService.initialize();
+          
+          // Get opportunity contract
+          const opportunityContract = nearContractsService.getOpportunityContract(opportunityId);
+          
+          // Call withdraw method
+          const result = await opportunityContract.withdraw({
+            amount: amount.toString()
+          });
+          
+          console.log('Withdrawal successful:', result);
+          return NextResponse.json({
+            success: true,
+            message: 'Withdrawal successful',
+            transactionHash: result.transaction?.hash || 'unknown'
+          });
+        } catch (error) {
+          console.error('Withdrawal failed:', error);
+          return NextResponse.json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Withdrawal failed'
+          }, { status: 500 });
+        }
 
       default:
         return NextResponse.json(
