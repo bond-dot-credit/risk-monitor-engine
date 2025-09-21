@@ -97,7 +97,7 @@ export function TransactionHistory({ account }: TransactionHistoryProps) {
         <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
           Transaction History
         </h2>
-        <p className="text-lg text-slate-600 dark:text-slate-300">
+        <p className="text-lg text-slate-800 dark:text-slate-300">
           Complete on-chain transaction log for your account
         </p>
       </div>
@@ -130,7 +130,7 @@ export function TransactionHistory({ account }: TransactionHistoryProps) {
             <tbody>
               {transactions.map((tx) => (
                 <tr key={tx.id} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                  <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">
+                  <td className="py-3 px-4 text-sm text-slate-800 dark:text-slate-400">
                     {tx.date}
                   </td>
                   <td className="py-3 px-4">
@@ -176,7 +176,7 @@ export function TransactionHistory({ account }: TransactionHistoryProps) {
 
         {/* Load More Button */}
         <div className="text-center mt-6">
-          <button className="px-6 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+          <button className="px-6 py-2 text-slate-800 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
             Load More Transactions
           </button>
         </div>

@@ -22,7 +22,7 @@ export function UserVaultSection({ account }: UserVaultSectionProps) {
         <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">
           My Vault
         </h2>
-        <p className="text-lg text-slate-600 dark:text-slate-300">
+        <p className="text-lg text-slate-800 dark:text-slate-300">
           Manage your deposits and track your earnings
         </p>
       </div>
@@ -39,7 +39,7 @@ export function UserVaultSection({ account }: UserVaultSectionProps) {
               <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">
                 ${vaultData.totalDeposits.toLocaleString()}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-slate-800 dark:text-slate-400">
                 Total Deposits
               </div>
             </div>
@@ -47,7 +47,7 @@ export function UserVaultSection({ account }: UserVaultSectionProps) {
               <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
                 +${vaultData.totalYield.toFixed(2)}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-slate-800 dark:text-slate-400">
                 Yield Earned
               </div>
             </div>
@@ -65,7 +65,7 @@ export function UserVaultSection({ account }: UserVaultSectionProps) {
                     <div className="font-medium text-slate-900 dark:text-slate-100">
                       {strategy.name}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-slate-800 dark:text-slate-400">
                       ${strategy.amount.toLocaleString()} • {strategy.apy}% APY
                     </div>
                   </div>
