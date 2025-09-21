@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+
 
 interface Opportunity {
   id: number;
@@ -9,6 +11,7 @@ interface Opportunity {
   description: string;
   apy: number;
   trustScore: number;
+
   contractAddress?: string;
   category?: string;
   tvl?: number;
@@ -24,6 +27,7 @@ interface OpportunityCardProps {
   onAllocate?: (opportunityId: number) => void;
   onWithdraw?: (opportunityId: number) => void;
 }
+
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreBadge = (score: number) => {

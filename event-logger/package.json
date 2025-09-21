@@ -1,0 +1,23 @@
+{
+  "name": "bond-credit-event-logger",
+  "version": "1.0.0",
+  "description": "Bond.Credit v0 Event Logger - Complete event tracking system",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "monitor": "node src/monitor.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": ["near", "defi", "events", "logging"],
+  "author": "Bond.Credit Team",
+  "license": "MIT",
+  "dependencies": {
+    "near-api-js": "^4.0.2",
+    "ws": "^8.14.2",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "node-cron": "^3.0.3",
+    "sqlite3": "^5.1.6"
+  }
+}
