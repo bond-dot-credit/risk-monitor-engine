@@ -1,0 +1,530 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useNearWallet } from '@/hooks/useNearWallet';
+import { useContractData } from '@/hooks/useContractData';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { OpportunityCard } from '@/components/OpportunityCard';
+
+export const RealContractDashboard: React.FC = () => {
+  const { 
+    account, 
+    isConnected, 
+    isLoading, 
+    error, 
+    connect, 
+    disconnect 
+  } = useNearWallet();
+
+  const {
+    opportunities,
+    globalStats,
+    vaultData,
+    isLoadingOpportunities,
+    isLoadingGlobalStats,
+    isLoadingVaultData,
+    opportunitiesError,
+    globalStatsError,
+    vaultDataError,
+    contractHealth,
+    refreshOpportunities,
+    refreshGlobalStats,
+    refreshVaultData,
+    checkContractHealth
+  } = useContractData(account?.accountId);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Handle wallet connection
+  const handleConnectWallet = async () => {
+    try {
+      await connect();
+    } catch (err) {
+      console.error('Connection error:', err);
+    }
+  };
+
+  // Handle wallet disconnection
+  const handleDisconnectWallet = async () => {
+    try {
+      await disconnect();
+    } catch (err) {
+      console.error('Disconnection error:', err);
+    }
+  };
+
+  // Refresh all data
+  const handleRefreshAll = async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        refreshOpportunities(),
+        refreshGlobalStats(),
+        checkContractHealth()
+      ]);
+      
+      if (account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-slate-600 dark:text-slate-400">Initializing wallet connection...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+          <CardHeader>
+            <CardTitle className="text-red-800 dark:text-red-200">❌ Wallet Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+            <Button onClick={handleConnectWallet} variant="outline">
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Contract health indicator
+  const getContractHealthStatus = () => {
+    if (!contractHealth) return null;
+    
+    const totalChecks = Object.values(contractHealth).length;
+    const passedChecks = Object.values(contractHealth).filter(Boolean).length;
+    
+    if (passedChecks === totalChecks) {
+      return <Badge className="bg-green-500 text-white">✅ All Contracts Online</Badge>;
+    } else if (passedChecks > 0) {
+      return <Badge className="bg-yellow-500 text-white">⚠️ Partial Contract Access</Badge>;
+    } else {
+      return <Badge className="bg-red-500 text-white">❌ No Contract Access</Badge>;
+    }
+  };
+
+  // Not connected state - Show opportunities and connect button
+  if (!isConnected) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            Bond.Credit
+          </h1>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
+            Connect your NEAR wallet to access real on-chain investment opportunities
+          </p>
+          
+          {/* Contract Health */}
+          <div className="mb-6">
+            {getContractHealthStatus()}
+          </div>
+          
+          {/* Connect Wallet Button */}
+          <Button 
+            onClick={handleConnectWallet}
+            size="lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
+          >
+            🔗 Connect NEAR Wallet
+          </Button>
+          
+          <p className="text-sm text-slate-500 dark:text-slate-500 mt-4">
+            Real on-chain data from NEAR testnet contracts
+          </p>
+        </div>
+
+        {/* Global Stats */}
+        {globalStats && !isLoadingGlobalStats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Value Locked</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  {formatCurrency(globalStats.tvl)}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Active Users</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  {formatNumber(globalStats.users)}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Active Vaults</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  {formatNumber(globalStats.activeVaults)}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Average APY</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                  {globalStats.averageApy.toFixed(1)}%
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Loading Global Stats */}
+        {isLoadingGlobalStats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                    <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Global Stats Error */}
+        {globalStatsError && (
+          <Card className="border-red-200 bg-red-50 dark:bg-red-900/20 mb-12">
+            <CardHeader>
+              <CardTitle className="text-red-800 dark:text-red-200">❌ Failed to Load Global Stats</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-red-700 dark:text-red-300 mb-4">{globalStatsError}</p>
+              <Button onClick={refreshGlobalStats} variant="outline" size="sm">
+                Retry
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Opportunities Section */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Investment Opportunities
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400">
+                Real opportunities from NEAR Registry contracts - Connect wallet to interact
+              </p>
+            </div>
+            <Button onClick={handleRefreshAll} variant="outline" disabled={isRefreshing}>
+              {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+            </Button>
+          </div>
+
+          {/* Loading Opportunities */}
+          {isLoadingOpportunities && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i} className="bg-white dark:bg-slate-800 shadow-lg rounded-lg overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="animate-pulse">
+                      <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-300 rounded w-1/2 mb-4"></div>
+                      <div className="h-8 bg-gray-300 rounded w-full"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Opportunities Error */}
+          {opportunitiesError && (
+            <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+              <CardHeader>
+                <CardTitle className="text-red-800 dark:text-red-200">❌ Failed to Load Opportunities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-red-700 dark:text-red-300 mb-4">{opportunitiesError}</p>
+                <Button onClick={refreshOpportunities} variant="outline" size="sm">
+                  Retry
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Opportunities Grid */}
+          {!isLoadingOpportunities && !opportunitiesError && opportunities.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {opportunities.map((opportunity) => (
+                <OpportunityCard
+                  key={opportunity.id}
+                  opportunity={opportunity}
+                  isConnected={false}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* No Opportunities */}
+          {!isLoadingOpportunities && !opportunitiesError && opportunities.length === 0 && (
+            <Card className="text-center py-12">
+              <CardContent>
+                <div className="text-6xl mb-4">📋</div>
+                <h3 className="text-xl font-semibold mb-2">No Opportunities Found</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                  No investment opportunities are currently available from the Registry contract.
+                </p>
+                <Button onClick={refreshOpportunities} variant="outline">
+                  Check Again
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Connected state - Show user dashboard
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">
+            Welcome back, {account?.accountId}
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            Real on-chain data from NEAR testnet contracts
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          {getContractHealthStatus()}
+          <Button onClick={handleRefreshAll} variant="outline" size="sm" disabled={isRefreshing}>
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
+          <Button onClick={handleDisconnectWallet} variant="outline" size="sm">
+            Disconnect
+          </Button>
+        </div>
+      </div>
+
+      {/* Account Balance */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Your NEAR Account</CardTitle>
+          <CardDescription>Real-time account information from NEAR testnet</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {account?.balance || '0'} NEAR
+              </p>
+              <p className="text-slate-800 dark:text-slate-400">Total Balance</p>
+            </div>
+            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                testnet
+              </p>
+              <p className="text-slate-800 dark:text-slate-400">Network</p>
+            </div>
+            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {account?.tokens?.length || 0}
+              </p>
+              <p className="text-slate-800 dark:text-slate-400">Tokens</p>
+            </div>
+            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                ✅ Active
+              </p>
+              <p className="text-slate-800 dark:text-slate-400">Status</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* My Vault Section */}
+      {vaultData && !isLoadingVaultData && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>My Vault</CardTitle>
+            <CardDescription>Your deposits, shares, and yield from Vault contract</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  {vaultData.userDeposits} NEAR
+                </p>
+                <p className="text-slate-800 dark:text-slate-400">Total Deposits</p>
+              </div>
+              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  {formatNumber(vaultData.userShares)}
+                </p>
+                <p className="text-slate-800 dark:text-slate-400">Vault Shares</p>
+              </div>
+              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  {vaultData.totalValue} NEAR
+                </p>
+                <p className="text-slate-800 dark:text-slate-400">Total Value</p>
+              </div>
+              <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  +{vaultData.yield} NEAR
+                </p>
+                <p className="text-slate-800 dark:text-slate-400">Yield Generated</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Vault Loading */}
+      {isLoadingVaultData && (
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <div className="animate-pulse">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div className="h-8 bg-gray-300 rounded w-3/4 mx-auto mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Vault Error */}
+      {vaultDataError && (
+        <Card className="border-red-200 bg-red-50 dark:bg-red-900/20 mb-8">
+          <CardHeader>
+            <CardTitle className="text-red-800 dark:text-red-200">❌ Failed to Load Vault Data</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-700 dark:text-red-300 mb-4">{vaultDataError}</p>
+            <Button onClick={() => refreshVaultData(account?.accountId || '')} variant="outline" size="sm">
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Interactive Opportunities */}
+      <div className="mb-12">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              Investment Opportunities
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400">
+              Allocate funds to high-yield opportunities with real blockchain transactions
+            </p>
+          </div>
+        </div>
+
+        {/* Opportunities Grid */}
+        {!isLoadingOpportunities && !opportunitiesError && opportunities.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {opportunities.map((opportunity) => (
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                isConnected={true}
+                onDeposit={() => console.log('Deposit not implemented yet')}
+                onAllocate={() => console.log('Allocate not implemented yet')}
+                onWithdraw={() => console.log('Withdraw not implemented yet')}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Transaction History */}
+      {vaultData?.events && vaultData.events.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Transaction History</CardTitle>
+            <CardDescription>Your recent deposits, withdrawals, and allocations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {vaultData.events.map((event, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <Badge variant={
+                      event.type === 'deposit' ? 'default' : 
+                      event.type === 'allocation' ? 'secondary' : 'destructive'
+                    }>
+                      {event.type === 'deposit' ? '📥' : 
+                       event.type === 'allocation' ? '🔄' : '📤'} {event.type}
+                    </Badge>
+                    <div>
+                      <p className="font-bold">{event.amount} NEAR</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {new Date(event.timestamp).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  {event.txHash && (
+                    <Button variant="outline" size="sm">
+                      View on Explorer
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};

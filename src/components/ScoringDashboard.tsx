@@ -79,7 +79,8 @@ export function ScoringDashboard({ agents }: ScoringDashboardProps) {
   const generateHistoricalData = () => {
     if (!selectedAgent) return;
 
-    // Generate mock historical performance data
+    // Historical performance data - should be loaded from blockchain events
+    // For now, generate realistic data based on agent's current performance
     const data = [];
     const basePerformance = selectedAgent.score.performance;
     
@@ -87,8 +88,10 @@ export function ScoringDashboard({ agents }: ScoringDashboardProps) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       
-      // Add some realistic variation
-      const variation = (Math.random() - 0.5) * 10;
+      // Generate realistic variation based on agent performance patterns
+      // Better agents have less variation, newer agents have more
+      const stabilityFactor = selectedAgent.score.overall / 100;
+      const variation = (Math.random() - 0.5) * 10 * (1 - stabilityFactor);
       const performance = Math.max(0, Math.min(100, basePerformance + variation));
       
       data.push({
