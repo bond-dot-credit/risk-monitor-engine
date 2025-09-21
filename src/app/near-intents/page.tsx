@@ -11,8 +11,8 @@ export default function NearIntentsPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">NEAR Intents Integration</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">NEAR Intents Integration</h1>
+          <p className="text-slate-800 dark:text-slate-300 mt-2">
             Execute cross-chain transactions using the NEAR Intents protocol
           </p>
         </div>

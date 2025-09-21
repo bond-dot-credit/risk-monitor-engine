@@ -244,7 +244,7 @@ const NearIntentsDashboard = () => {
         <CardContent className="space-y-4">
           {!isConnected ? (
             <div className="flex flex-col items-center justify-center space-y-4 py-8">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-slate-800 dark:text-slate-300">
                 Connect to your NEAR wallet to start using NEAR Intents
               </p>
               <Button onClick={handleConnect} disabled={isLoading}>
@@ -263,7 +263,7 @@ const NearIntentsDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Connected Account</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-slate-800 dark:text-slate-400">
                     {accountInfo?.accountId} 
                     <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
                       accountInfo?.networkId === 'testnet' 
@@ -292,19 +292,19 @@ const NearIntentsDashboard = () => {
               {/* Account Details */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div>
-                  <p className="text-xs text-gray-500">Total Balance</p>
+                  <p className="text-xs text-slate-800 dark:text-slate-400">Total Balance</p>
                   <p className="font-medium">{accountInfo?.balance?.total}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Available</p>
+                  <p className="text-xs text-slate-800 dark:text-slate-400">Available</p>
                   <p className="font-medium">{accountInfo?.balance?.available}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Staked</p>
+                  <p className="text-xs text-slate-800 dark:text-slate-400">Staked</p>
                   <p className="font-medium">{accountInfo?.balance?.staked}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Locked</p>
+                  <p className="text-xs text-slate-800 dark:text-slate-400">Locked</p>
                   <p className="font-medium">{accountInfo?.balance?.locked}</p>
                 </div>
               </div>
@@ -325,7 +325,7 @@ const NearIntentsDashboard = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">From</label>
+                      <label className="text-sm font-medium text-slate-800 dark:text-slate-300">From</label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="text"
@@ -344,7 +344,7 @@ const NearIntentsDashboard = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">To</label>
+                      <label className="text-sm font-medium text-slate-800 dark:text-slate-300">To</label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="text"
@@ -379,7 +379,7 @@ const NearIntentsDashboard = () => {
                     {swapResult ? (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">Status</span>
+                          <span className="text-sm font-medium text-slate-800 dark:text-slate-300">Status</span>
                           <Badge variant={swapResult.success ? 'default' : 'destructive'}>
                             {swapResult.success ? 'Success' : 'Failed'}
                           </Badge>
@@ -387,17 +387,17 @@ const NearIntentsDashboard = () => {
                         {swapResult.success ? (
                           <>
                             <div className="flex items-center justify-between">
-                              <span className="text-sm">Transaction Hash</span>
-                              <span className="text-sm font-mono text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+                              <span className="text-sm text-slate-800 dark:text-slate-400">Transaction Hash</span>
+                              <span className="text-sm font-mono text-slate-800 dark:text-slate-400 truncate max-w-[120px]">
                                 {swapResult.transactionHash}
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-sm">Amount In</span>
+                              <span className="text-sm text-slate-800 dark:text-slate-400">Amount In</span>
                               <span className="text-sm">{swapResult.amountIn}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-sm">Amount Out</span>
+                              <span className="text-sm text-slate-800 dark:text-slate-400">Amount Out</span>
                               <span className="text-sm">{swapResult.amountOut}</span>
                             </div>
                           </>
@@ -406,7 +406,7 @@ const NearIntentsDashboard = () => {
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-slate-800 dark:text-slate-400">
                         No transactions yet. Execute a swap to see the status here.
                       </p>
                     )}
@@ -463,17 +463,17 @@ const NearIntentsDashboard = () => {
               <h3 className="font-medium mb-3">Bulk Operation Results</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Transactions</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Total Transactions</p>
                   <p className="text-xl font-bold">{bulkOperationResult.totalTransactions.toLocaleString()}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Successful</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Successful</p>
                   <p className="text-xl font-bold text-green-600 dark:text-green-400">
                     {bulkOperationResult.successfulTransactions.toLocaleString()}
                   </p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Failed</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Failed</p>
                   <p className="text-xl font-bold text-red-600 dark:text-red-400">
                     {bulkOperationResult.failedTransactions.toLocaleString()}
                   </p>
@@ -490,7 +490,7 @@ const NearIntentsDashboard = () => {
                       </div>
                     ))}
                     {bulkOperationResult.errors.length > 5 && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-slate-800 dark:text-slate-400">
                         ... and {bulkOperationResult.errors.length - 5} more errors
                       </p>
                     )}
@@ -534,7 +534,7 @@ const NearIntentsDashboard = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="text-sm font-medium">Start Date</label>
+              <label className="text-sm font-medium text-slate-800 dark:text-slate-300">Start Date</label>
               <input
                 type="date"
                 value={dateRange.startDate}
@@ -543,7 +543,7 @@ const NearIntentsDashboard = () => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">End Date</label>
+              <label className="text-sm font-medium text-slate-800 dark:text-slate-300">End Date</label>
               <input
                 type="date"
                 value={dateRange.endDate}
@@ -569,15 +569,15 @@ const NearIntentsDashboard = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Transaction Volume</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Transaction Volume</p>
                   <p className="text-xl font-bold">${((protocolRewardsData as unknown) as Record<string, unknown>).transactionVolume?.toLocaleString() || '0'}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Smart Contract Calls</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Smart Contract Calls</p>
                   <p className="text-xl font-bold">{String(((protocolRewardsData as unknown) as Record<string, unknown>).smartContractCalls || '0')}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Unique Wallets</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Unique Wallets</p>
                   <p className="text-xl font-bold">{String(((protocolRewardsData as unknown) as Record<string, unknown>).uniqueWallets || '0')}</p>
                 </div>
               </div>
@@ -593,7 +593,7 @@ const NearIntentsDashboard = () => {
                 </div>
               </div>
               
-              <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="mt-4 text-sm text-slate-800 dark:text-slate-400">
                 <p>Period: {String((((protocolRewardsData as unknown) as Record<string, unknown>).period as Record<string, unknown>)?.startDate || 'N/A')} to {String((((protocolRewardsData as unknown) as Record<string, unknown>).period as Record<string, unknown>)?.endDate || 'N/A')}</p>
               </div>
             </div>
@@ -610,7 +610,7 @@ const NearIntentsDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-slate-800 dark:text-slate-400">
               NEAR Intents is a system for executing multichain transactions. An intent represents a user&apos;s desired state change (e.g., &quot;I want to swap X NEAR for Y USDC&quot;) rather than a specific execution path. This allows for more flexible and efficient execution of financial operations.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

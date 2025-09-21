@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Vault Contract Deployment Script
+# Registry Contract Deployment Script
 set -e
 
-echo "🚀 Deploying Vault Contract to NEAR Testnet..."
+echo "🚀 Deploying Registry Contract to NEAR Testnet..."
 
 # Configuration
-ACCOUNT_ID="vault-contract.testnet"
-CONTRACT_PATH="./target/wasm32-unknown-unknown/release/vault_contract.wasm"
+ACCOUNT_ID="registry-contract.testnet"
+CONTRACT_PATH="./target/wasm32-unknown-unknown/release/registry_contract.wasm"
 
 # Check if contract is built
 if [ ! -f "$CONTRACT_PATH" ]; then
@@ -23,18 +23,15 @@ near create-account $ACCOUNT_ID --masterAccount testnet --initialBalance 10
 echo "📦 Deploying contract..."
 near deploy $ACCOUNT_ID $CONTRACT_PATH
 
-# Initialize contract with testnet token contracts
+# Initialize contract
 echo "🔧 Initializing contract..."
 near call $ACCOUNT_ID new \
     '{
         "owner_id": "'$ACCOUNT_ID'",
-        "wnear_contract": "wrap.testnet",
-        "usdc_contract": "usdc.testnet",
-        "usdt_contract": "usdt.testnet",
-        "fee_percentage": 100
+        "fee_percentage": 50
     }' \
     --accountId $ACCOUNT_ID
 
-echo "✅ Vault Contract deployed successfully!"
+echo "✅ Registry Contract deployed successfully!"
 echo "📋 Contract ID: $ACCOUNT_ID"
 echo "🌐 View on NEAR Explorer: https://explorer.testnet.near.org/accounts/$ACCOUNT_ID"
