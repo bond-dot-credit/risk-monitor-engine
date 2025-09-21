@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useNearWallet } from '@/hooks/useNearWallet';
 import { useContractData } from '@/hooks/useContractData';
+import { useTransactions } from '@/hooks/useTransactions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -35,6 +36,18 @@ export const RealContractDashboard: React.FC = () => {
     checkContractHealth
   } = useContractData(account?.accountId);
 
+  const {
+    depositState,
+    withdrawState,
+    allocateState,
+    deposit,
+    withdraw,
+    allocate,
+    withdrawFromOpportunity,
+    clearError,
+    clearAllErrors
+  } = useTransactions(account?.accountId);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Handle wallet connection
@@ -58,6 +71,7 @@ export const RealContractDashboard: React.FC = () => {
   // Refresh all data
   const handleRefreshAll = async () => {
     setIsRefreshing(true);
+    clearAllErrors();
     try {
       await Promise.all([
         refreshOpportunities(),
@@ -70,6 +84,53 @@ export const RealContractDashboard: React.FC = () => {
       }
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  // Transaction handlers
+  const handleDeposit = async (opportunityId: number) => {
+    try {
+      await deposit('WNEAR', '1.0');
+      // Refresh vault data after successful deposit
+      if (depositState.result?.success && account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } catch (error) {
+      console.error('Deposit error:', error);
+    }
+  };
+
+  const handleAllocate = async (opportunityId: number) => {
+    const opportunity = opportunities.find(opp => opp.id === opportunityId);
+    if (!opportunity?.contractAddress) {
+      return;
+    }
+    
+    try {
+      await allocate(opportunity.contractAddress, '1.0');
+      // Refresh vault data after successful allocation
+      if (allocateState.result?.success && account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } catch (error) {
+      console.error('Allocation error:', error);
+    }
+  };
+
+  const handleWithdraw = async (opportunityId: number) => {
+    const opportunity = opportunities.find(opp => opp.id === opportunityId);
+    if (!opportunity?.contractAddress) {
+      return;
+    }
+    
+    try {
+      await withdrawFromOpportunity(opportunity.contractAddress, '1.0');
+      // Refresh vault data after successful withdrawal
+      if (allocateState.result?.success && account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } catch (error) {
+      console.error('Withdrawal error:', error);
     }
   };
 
@@ -471,6 +532,84 @@ export const RealContractDashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Transaction Errors */}
+        {(depositState.error || withdrawState.error || allocateState.error) && (
+          <div className="mb-6 space-y-2">
+            {depositState.error && (
+              <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-red-700 dark:text-red-300">❌ Deposit Error: {depositState.error}</p>
+                    <Button onClick={() => clearError('deposit')} variant="outline" size="sm">Dismiss</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {withdrawState.error && (
+              <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-red-700 dark:text-red-300">❌ Withdrawal Error: {withdrawState.error}</p>
+                    <Button onClick={() => clearError('withdraw')} variant="outline" size="sm">Dismiss</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {allocateState.error && (
+              <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-red-700 dark:text-red-300">❌ Allocation Error: {allocateState.error}</p>
+                    <Button onClick={() => clearError('allocate')} variant="outline" size="sm">Dismiss</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Transaction Success Messages */}
+        {(depositState.result?.success || withdrawState.result?.success || allocateState.result?.success) && (
+          <div className="mb-6 space-y-2">
+            {depositState.result?.success && (
+              <Card className="border-green-200 bg-green-50 dark:bg-green-900/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-green-700 dark:text-green-300">
+                      ✅ Deposit successful! TX: {depositState.result.txHash?.slice(0, 10)}...
+                    </p>
+                    <Button onClick={() => clearError('deposit')} variant="outline" size="sm">Dismiss</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {withdrawState.result?.success && (
+              <Card className="border-green-200 bg-green-50 dark:bg-green-900/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-green-700 dark:text-green-300">
+                      ✅ Withdrawal successful! TX: {withdrawState.result.txHash?.slice(0, 10)}...
+                    </p>
+                    <Button onClick={() => clearError('withdraw')} variant="outline" size="sm">Dismiss</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {allocateState.result?.success && (
+              <Card className="border-green-200 bg-green-50 dark:bg-green-900/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-green-700 dark:text-green-300">
+                      ✅ Allocation successful! TX: {allocateState.result.txHash?.slice(0, 10)}...
+                    </p>
+                    <Button onClick={() => clearError('allocate')} variant="outline" size="sm">Dismiss</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
         {/* Opportunities Grid */}
         {!isLoadingOpportunities && !opportunitiesError && opportunities.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -479,9 +618,9 @@ export const RealContractDashboard: React.FC = () => {
                 key={opportunity.id}
                 opportunity={opportunity}
                 isConnected={true}
-                onDeposit={() => console.log('Deposit not implemented yet')}
-                onAllocate={() => console.log('Allocate not implemented yet')}
-                onWithdraw={() => console.log('Withdraw not implemented yet')}
+                onDeposit={handleDeposit}
+                onAllocate={handleAllocate}
+                onWithdraw={handleWithdraw}
               />
             ))}
           </div>
