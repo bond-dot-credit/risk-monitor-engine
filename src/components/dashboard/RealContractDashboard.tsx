@@ -12,6 +12,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
+import { GlobalStatsDashboard } from '@/components/GlobalStatsDashboard';
 
 export const RealContractDashboard: React.FC = () => {
   return (
@@ -317,6 +318,9 @@ const RealContractDashboardContent: React.FC = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Global Stats Dashboard */}
+        <GlobalStatsDashboard />
 
         {/* Opportunities Section */}
         <div className="mb-12">
