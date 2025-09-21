@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useNearWallet } from '@/hooks/useNearWallet';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { isMobile, isTablet, isDesktop } = useResponsive();
+  const { account, isConnected, connect, disconnect } = useNearWallet();
 
   useEffect(() => {
     // Check for saved dark mode preference
@@ -51,6 +53,22 @@ export function Header() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleConnectWallet = async () => {
+    try {
+      await connect();
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
+  };
+
+  const handleDisconnectWallet = async () => {
+    try {
+      await disconnect();
+    } catch (error) {
+      console.error('Failed to disconnect wallet:', error);
+    }
   };
 
   return (
@@ -118,19 +136,59 @@ export function Header() {
             </button>
 
             {/* Connect Wallet Button - Desktop */}
-            <button className={`hidden md:block bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              isTablet ? 'px-4 py-2 rounded-lg text-sm' : 'px-6 py-2.5 rounded-lg text-base'
-            }`}>
-              <span className="hidden lg:inline">Connect Wallet</span>
-              <span className="lg:hidden">Connect</span>
-            </button>
+            {!isConnected ? (
+              <button 
+                onClick={handleConnectWallet}
+                className={`hidden md:block bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  isTablet ? 'px-4 py-2 rounded-lg text-sm' : 'px-6 py-2.5 rounded-lg text-base'
+                }`}
+              >
+                <span className="hidden lg:inline">Connect Wallet</span>
+                <span className="lg:hidden">Connect</span>
+              </button>
+            ) : (
+              <div className="hidden md:flex items-center space-x-2">
+                <div className="flex items-center space-x-2 px-3 py-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-green-700 dark:text-green-300 text-sm font-medium">
+                    {account?.slice(0, 8)}...
+                  </span>
+                </div>
+                <button 
+                  onClick={handleDisconnectWallet}
+                  className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 text-sm transition-colors"
+                >
+                  Disconnect
+                </button>
+              </div>
+            )}
 
             {/* Connect Wallet Button - Mobile */}
-            <button className={`md:hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              isMobile ? 'px-2 py-1.5 rounded-lg text-xs' : 'px-3 py-2 rounded-lg text-sm'
-            }`}>
-              Connect
-            </button>
+            {!isConnected ? (
+              <button 
+                onClick={handleConnectWallet}
+                className={`md:hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  isMobile ? 'px-2 py-1.5 rounded-lg text-xs' : 'px-3 py-2 rounded-lg text-sm'
+                }`}
+              >
+                Connect
+              </button>
+            ) : (
+              <div className="md:hidden flex items-center space-x-1">
+                <div className="flex items-center space-x-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <span className="text-green-700 dark:text-green-300 text-xs font-medium">
+                    {account?.slice(0, 6)}...
+                  </span>
+                </div>
+                <button 
+                  onClick={handleDisconnectWallet}
+                  className="px-2 py-1 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 text-xs transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button
