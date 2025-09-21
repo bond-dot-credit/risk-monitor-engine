@@ -30,16 +30,63 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
     feePercentage: 100, // 1%
   };
 
-  const {
-    config,
-    state,
-    isLoading,
-    error: vaultError,
-    events,
-    deposit,
-    withdraw,
-    refreshData,
-  } = useVaultContract(vaultConfig, account?.accountId || null);
+  const [vaultData, setVaultData] = useState<any>(null);
+  const [vaultEvents, setVaultEvents] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [vaultError, setVaultError] = useState<string | null>(null);
+
+  // Fetch vault data
+  const fetchVaultData = async () => {
+    if (!account?.accountId) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/vault?accountId=${account.accountId}`);
+      const result = await response.json();
+      
+      if (result.success) {
+        setVaultData(result.data);
+      } else {
+        setVaultError(result.error);
+      }
+    } catch (error) {
+      console.error('Error fetching vault data:', error);
+      setVaultError('Failed to fetch vault data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch vault events
+  const fetchVaultEvents = async () => {
+    if (!account?.accountId) return;
+    
+    try {
+      const response = await fetch('/api/vault', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'get_events',
+          accountId: account.accountId
+        })
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        setVaultEvents(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching vault events:', error);
+    }
+  };
+
+  // Load data when account changes
+  useEffect(() => {
+    if (account?.accountId) {
+      fetchVaultData();
+      fetchVaultEvents();
+    }
+  }, [account?.accountId]);
 
   const handleDeposit = async () => {
     if (!depositAmount || parseFloat(depositAmount) <= 0) {
@@ -57,27 +104,36 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
     setTransactionResult(null);
 
     try {
-      // For now, simulate the deposit with message signing
-      const depositMessage = `Deposit ${depositAmount} ${selectedToken} to Bond.Credit Vault`;
-      const signature = await signMessage(depositMessage);
+      const response = await fetch('/api/vault', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'deposit',
+          tokenType: selectedToken,
+          amount: depositAmount,
+          accountId: account.accountId
+        })
+      });
 
-      if (signature) {
+      const result = await response.json();
+
+      if (result.success) {
         setTransactionResult({
           success: true,
           type: 'deposit',
           amount: depositAmount,
           token: selectedToken,
-          signature: signature,
+          signature: result.transactionHash,
           timestamp: new Date().toISOString(),
         });
 
         // Refresh vault data
-        await refreshData();
+        await fetchVaultData();
         
         // Clear form
         setDepositAmount('');
       } else {
-        setError('Failed to sign deposit transaction');
+        setError(result.error || 'Deposit failed');
       }
     } catch (err) {
       console.error('Deposit error:', err);
@@ -103,27 +159,36 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
     setTransactionResult(null);
 
     try {
-      // For now, simulate the withdrawal with message signing
-      const withdrawMessage = `Withdraw ${withdrawAmount} vault shares (${selectedToken}) from Bond.Credit Vault`;
-      const signature = await signMessage(withdrawMessage);
+      const response = await fetch('/api/vault', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'withdraw',
+          tokenType: selectedToken,
+          amount: withdrawAmount,
+          accountId: account.accountId
+        })
+      });
 
-      if (signature) {
+      const result = await response.json();
+
+      if (result.success) {
         setTransactionResult({
           success: true,
           type: 'withdraw',
           amount: withdrawAmount,
           token: selectedToken,
-          signature: signature,
+          signature: result.transactionHash,
           timestamp: new Date().toISOString(),
         });
 
         // Refresh vault data
-        await refreshData();
+        await fetchVaultData();
         
         // Clear form
         setWithdrawAmount('');
       } else {
-        setError('Failed to sign withdrawal transaction');
+        setError(result.error || 'Withdrawal failed');
       }
     } catch (err) {
       console.error('Withdrawal error:', err);
@@ -194,7 +259,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
               </CardDescription>
             </div>
             <Button
-              onClick={refreshData}
+              onClick={fetchVaultData}
               variant="outline"
               size="sm"
               disabled={isLoading}
@@ -207,22 +272,22 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {state?.total_supply || '0'}
+                {vaultData?.totalSupply ? (parseFloat(vaultData.totalSupply) / 1e24).toFixed(2) : '0'}
               </p>
               <p className="text-slate-800 dark:text-slate-400">Total Vault Shares</p>
             </div>
             <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {config?.fee_percentage ? `${config.fee_percentage / 100}%` : '1%'}
+                {vaultData?.config?.fee_percentage ? `${vaultData.config.fee_percentage / 100}%` : '1%'}
               </p>
               <p className="text-slate-800 dark:text-slate-400">Management Fee</p>
             </div>
             <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {config?.is_paused ? '⏸️' : '▶️'}
+                {vaultData?.config?.is_paused ? '⏸️' : '▶️'}
               </p>
               <p className="text-slate-800 dark:text-slate-400">
-                {config?.is_paused ? 'Paused' : 'Active'}
+                {vaultData?.config?.is_paused ? 'Paused' : 'Active'}
               </p>
             </div>
           </div>
@@ -249,7 +314,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
                   </Badge>
                 </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                  {state?.token_reserves?.[token] || '0'}
+                  {vaultData?.tokenReserves?.[token] ? (parseFloat(vaultData.tokenReserves[token]) / 1e24).toFixed(4) : '0'}
                 </p>
                 <p className="text-sm text-slate-800 dark:text-slate-400">
                   Available in vault
@@ -278,7 +343,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
                     <span className="font-semibold">{token} Shares</span>
                   </div>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                    {state?.user_shares?.[token] || '0'}
+                    {vaultData?.userVaultShares?.[token] ? (parseFloat(vaultData.userVaultShares[token]) / 1e24).toFixed(4) : '0'}
                   </p>
                   <p className="text-sm text-slate-800 dark:text-slate-400">
                     Your shares
@@ -417,7 +482,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
       )}
 
       {/* Recent Events */}
-      {events.deposits.length > 0 || events.withdrawals.length > 0 ? (
+      {vaultEvents?.deposits?.length > 0 || vaultEvents?.withdrawals?.length > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Recent Vault Activity</CardTitle>
@@ -425,7 +490,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {[...events.deposits.slice(0, 3), ...events.withdrawals.slice(0, 3)]
+              {[...(vaultEvents?.deposits?.slice(0, 3) || []), ...(vaultEvents?.withdrawals?.slice(0, 3) || [])]
                 .sort((a, b) => b.timestamp - a.timestamp)
                 .map((event, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
@@ -443,9 +508,9 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">{event.amount}</p>
+                      <p className="font-bold">{(parseFloat(event.amount) / 1e24).toFixed(4)}</p>
                       <p className="text-sm text-slate-800 dark:text-slate-400">
-                        {new Date(event.timestamp).toLocaleDateString()}
+                        {new Date(event.timestamp / 1000000).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

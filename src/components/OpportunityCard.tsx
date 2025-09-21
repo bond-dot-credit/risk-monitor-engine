@@ -38,20 +38,12 @@ interface OpportunityCardProps {
   onWithdraw?: (opportunityId: number) => void;
 }
 
-export function OpportunityCard({ 
-  opportunity, 
-  isConnected, 
-  onDeposit, 
-  onAllocate, 
-  onWithdraw 
-}: OpportunityCardProps) {
-  const getRiskColor = (riskLevel: string) => {
-    switch (riskLevel.toLowerCase()) {
-      case 'low': return 'text-green-600 bg-green-100 dark:bg-green-900/20';
-      case 'medium': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
-      case 'high': return 'text-red-600 bg-red-100 dark:bg-red-900/20';
-      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-900/20';
-    }
+
+export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600 dark:text-green-400';
+    if (score >= 50) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
   };
 
   const formatCurrency = (amount: number) => {
@@ -160,50 +152,40 @@ export function OpportunityCard({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        {isConnected ? (
-          <div className="space-y-3">
-            <Button 
-              onClick={() => onDeposit?.(opportunity.id)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              size="sm"
-            >
-              📥 Deposit to Vault
-            </Button>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                onClick={() => onAllocate?.(opportunity.id)}
-                className="bg-green-600 hover:bg-green-700 text-white"
-                size="sm"
-              >
-                🔄 Allocate
-              </Button>
-              <Button 
-                onClick={() => onWithdraw?.(opportunity.id)}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-                size="sm"
-              >
-                📤 Withdraw
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <Button 
-            className="w-full bg-slate-600 hover:bg-slate-700 text-white"
-            disabled
-            size="sm"
-          >
-            🔗 Connect Wallet to Allocate
-          </Button>
-        )}
+      </div>
 
-        {/* Deposit Limits */}
-        {opportunity.minDeposit && opportunity.maxDeposit && (
-          <div className="text-xs text-slate-500 dark:text-slate-500 text-center">
-            Min: {opportunity.minDeposit} NEAR • Max: {opportunity.maxDeposit} NEAR
+      {/* Action Buttons */}
+      {isConnected ? (
+        <div className="space-y-2">
+          <button 
+            onClick={() => onDeposit?.(opportunity.id)}
+            className="w-full py-2 px-4 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            📥 Deposit
+          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button 
+              onClick={() => onAllocate?.(opportunity.id)}
+              className="py-2 px-3 rounded-lg font-medium transition-all duration-300 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 text-sm"
+            >
+              🔄 Allocate
+            </button>
+            <button 
+              onClick={() => onWithdraw?.(opportunity.id)}
+              className="py-2 px-3 rounded-lg font-medium transition-all duration-300 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 text-sm"
+            >
+              📤 Withdraw
+            </button>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      ) : (
+        <button 
+          className="w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+          disabled
+        >
+          Connect Wallet to Allocate
+        </button>
+      )}
+    </div>
   );
 }
