@@ -469,7 +469,6 @@ const RealContractDashboardContent: React.FC = () => {
                 {account.tokens.map((token, index) => {
                   // Format token balance (convert from yoctoNEAR/wei to human readable)
                   const formatTokenBalance = (balance: string, tokenName: string) => {
-                    // Handle very large numbers by using BigInt for precision
                     const balanceStr = balance.toString();
                     let decimals = 24; // Default for wNEAR
                     
@@ -481,7 +480,6 @@ const RealContractDashboardContent: React.FC = () => {
                       decimals = 18;
                     }
                     
-                    // Use BigInt to handle large numbers precisely
                     try {
                       const bigIntBalance = BigInt(balanceStr);
                       const divisor = BigInt(10 ** decimals);
@@ -492,18 +490,38 @@ const RealContractDashboardContent: React.FC = () => {
                       const decimalPart = remainder.toString().padStart(decimals, '0');
                       const trimmedDecimal = decimalPart.replace(/0+$/, '');
                       
+                      let result;
                       if (trimmedDecimal === '') {
-                        return quotient.toString();
+                        result = quotient.toString();
                       } else {
-                        return `${quotient}.${trimmedDecimal}`;
+                        result = `${quotient}.${trimmedDecimal}`;
+                      }
+                      
+                      // Format with commas and limit decimal places for display
+                      const num = parseFloat(result);
+                      if (tokenName === 'USDC' || tokenName === 'USDT') {
+                        return num.toLocaleString('en-US', { 
+                          minimumFractionDigits: 0, 
+                          maximumFractionDigits: 2 
+                        });
+                      } else if (tokenName === 'wNEAR') {
+                        return num.toLocaleString('en-US', { 
+                          minimumFractionDigits: 0, 
+                          maximumFractionDigits: 4 
+                        });
+                      } else {
+                        return num.toLocaleString('en-US', { 
+                          minimumFractionDigits: 0, 
+                          maximumFractionDigits: 4 
+                        });
                       }
                     } catch (error) {
-                      // Fallback for very large numbers - show scientific notation
+                      // Fallback for very large numbers
                       const num = Number(balanceStr);
                       if (num > Number.MAX_SAFE_INTEGER) {
-                        return (num / (10 ** decimals)).toExponential(4);
+                        return (num / (10 ** decimals)).toExponential(2);
                       }
-                      return (num / (10 ** decimals)).toFixed(4);
+                      return (num / (10 ** decimals)).toFixed(2);
                     }
                   };
 
@@ -528,30 +546,35 @@ const RealContractDashboardContent: React.FC = () => {
                           <StatusBadge status="success" text="Active" />
                         </div>
                         
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
+                        <div className="space-y-3">
+                          <div className="flex flex-col space-y-1">
                             <span className="text-sm text-slate-600 dark:text-slate-400">Balance:</span>
-                            <span className="font-bold text-lg text-slate-900 dark:text-slate-100 truncate max-w-32" title={`${formattedBalance} ${token.token}`}>
+                            <span className="font-bold text-lg text-slate-900 dark:text-slate-100 break-all" title={`${formattedBalance} ${token.token}`}>
                               {formattedBalance} {token.token}
                             </span>
                           </div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex flex-col space-y-1">
                             <span className="text-sm text-slate-600 dark:text-slate-400">Raw Balance:</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate max-w-32" title={token.balance}>
-                              {isLargeBalance ? `${token.balance.slice(0, 10)}...` : token.balance}
+                            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono break-all" title={token.balance}>
+                              {isLargeBalance ? `${token.balance.slice(0, 15)}...` : token.balance}
                             </span>
                           </div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex flex-col space-y-2">
                             <span className="text-sm text-slate-600 dark:text-slate-400">Contract:</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 px-2 text-xs text-blue-500 hover:text-blue-700"
-                              onClick={() => window.open(`https://testnet.nearblocks.io/address/${token.contract}`, '_blank')}
-                              title="View on NEAR Explorer"
-                            >
-                              🔗 Explorer
-                            </Button>
+                            <div className="flex flex-col space-y-1">
+                              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono break-all" title={token.contract}>
+                                {token.contract}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-xs text-blue-500 hover:text-blue-700 w-fit"
+                                onClick={() => window.open(`https://testnet.nearblocks.io/address/${token.contract}`, '_blank')}
+                                title="View on NEAR Explorer"
+                              >
+                                🔗 Explorer
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </CardContent>
