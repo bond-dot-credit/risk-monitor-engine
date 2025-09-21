@@ -467,7 +467,7 @@ const RealContractDashboardContent: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {account.tokens.map((token, index) => {
-                  // Format token balance (convert from yoctoNEAR/wei to human readable)
+                  // Format token balance with standard crypto notation
                   const formatTokenBalance = (balance: string, tokenName: string) => {
                     const balanceStr = balance.toString();
                     let decimals = 24; // Default for wNEAR
@@ -497,31 +497,27 @@ const RealContractDashboardContent: React.FC = () => {
                         result = `${quotient}.${trimmedDecimal}`;
                       }
                       
-                      // Format with commas and limit decimal places for display
                       const num = parseFloat(result);
-                      if (tokenName === 'USDC' || tokenName === 'USDT') {
-                        return num.toLocaleString('en-US', { 
-                          minimumFractionDigits: 0, 
-                          maximumFractionDigits: 2 
-                        });
-                      } else if (tokenName === 'wNEAR') {
-                        return num.toLocaleString('en-US', { 
-                          minimumFractionDigits: 0, 
-                          maximumFractionDigits: 4 
-                        });
+                      
+                      // Use standard crypto formatting with abbreviations
+                      if (num >= 1e9) {
+                        return `${(num / 1e9).toFixed(2)}B`;
+                      } else if (num >= 1e6) {
+                        return `${(num / 1e6).toFixed(2)}M`;
+                      } else if (num >= 1e3) {
+                        return `${(num / 1e3).toFixed(2)}K`;
+                      } else if (num >= 1) {
+                        return num.toFixed(4);
                       } else {
-                        return num.toLocaleString('en-US', { 
-                          minimumFractionDigits: 0, 
-                          maximumFractionDigits: 4 
-                        });
+                        return num.toFixed(6);
                       }
                     } catch (error) {
-                      // Fallback for very large numbers
+                      // Fallback for very large numbers - use scientific notation
                       const num = Number(balanceStr);
                       if (num > Number.MAX_SAFE_INTEGER) {
                         return (num / (10 ** decimals)).toExponential(2);
                       }
-                      return (num / (10 ** decimals)).toFixed(2);
+                      return (num / (10 ** decimals)).toFixed(6);
                     }
                   };
 
@@ -555,8 +551,10 @@ const RealContractDashboardContent: React.FC = () => {
                           </div>
                           <div className="flex flex-col space-y-1">
                             <span className="text-sm text-slate-600 dark:text-slate-400">Raw Balance:</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono break-all" title={token.balance}>
-                              {isLargeBalance ? `${token.balance.slice(0, 15)}...` : token.balance}
+                            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono" title={token.balance}>
+                              {token.balance.length > 20 
+                                ? `${token.balance.slice(0, 8)}...${token.balance.slice(-8)}` 
+                                : token.balance}
                             </span>
                           </div>
                           <div className="flex flex-col space-y-2">
