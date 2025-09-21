@@ -146,6 +146,53 @@ const RealContractDashboardContent: React.FC = () => {
     }
   };
 
+  // Transaction handlers
+  const handleDeposit = async (opportunityId: number) => {
+    try {
+      await deposit('WNEAR', '1.0');
+      // Refresh vault data after successful deposit
+      if (depositState.result?.success && account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } catch (error) {
+      console.error('Deposit error:', error);
+    }
+  };
+
+  const handleAllocate = async (opportunityId: number) => {
+    const opportunity = opportunities.find(opp => opp.id === opportunityId);
+    if (!opportunity?.contractAddress) {
+      return;
+    }
+    
+    try {
+      await allocate(opportunity.contractAddress, '1.0');
+      // Refresh vault data after successful allocation
+      if (allocateState.result?.success && account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } catch (error) {
+      console.error('Allocation error:', error);
+    }
+  };
+
+  const handleWithdraw = async (opportunityId: number) => {
+    const opportunity = opportunities.find(opp => opp.id === opportunityId);
+    if (!opportunity?.contractAddress) {
+      return;
+    }
+    
+    try {
+      await withdrawFromOpportunity(opportunity.contractAddress, '1.0');
+      // Refresh vault data after successful withdrawal
+      if (allocateState.result?.success && account?.accountId) {
+        await refreshVaultData(account.accountId);
+      }
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+    }
+  };
+
   // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
