@@ -1,0 +1,17 @@
+[package]
+name = "registry-contract"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+near-sdk = "5.0.0"
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+overflow-checks = true
+panic = "abort"
+lto = true
+
+[profile.release.package."*"]
+opt-level = 3
