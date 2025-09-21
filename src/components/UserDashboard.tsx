@@ -153,14 +153,73 @@ export function UserDashboard({ account, onLogout }: UserDashboardProps) {
           
           {/* Show real token balances */}
           {account.tokens && account.tokens.length > 0 ? (
-            account.tokens.map((token, index) => (
-              <div key={index} className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                  {token.balance}
-                </p>
-                <p className="text-slate-600 dark:text-slate-400">{token.token}</p>
-              </div>
-            ))
+            account.tokens.map((token, index) => {
+              // Format token balance with standard crypto notation
+              const formatTokenBalance = (balance: string, tokenName: string) => {
+                const balanceStr = balance.toString();
+                let decimals = 24; // Default for wNEAR
+                
+                if (tokenName === 'wNEAR') {
+                  decimals = 24;
+                } else if (tokenName === 'USDC' || tokenName === 'USDT') {
+                  decimals = 6;
+                } else if (tokenName === 'DAI') {
+                  decimals = 18;
+                }
+                
+                try {
+                  const bigIntBalance = BigInt(balanceStr);
+                  const divisor = BigInt(10 ** decimals);
+                  const quotient = bigIntBalance / divisor;
+                  const remainder = bigIntBalance % divisor;
+                  
+                  const decimalPart = remainder.toString().padStart(decimals, '0');
+                  const trimmedDecimal = decimalPart.replace(/0+$/, '');
+                  
+                  let result;
+                  if (trimmedDecimal === '') {
+                    result = quotient.toString();
+                  } else {
+                    result = `${quotient}.${trimmedDecimal}`;
+                  }
+                  
+                  const num = parseFloat(result);
+                  
+                  if (num >= 1e15) {
+                    return `${num.toExponential(2)}`;
+                  } else if (num >= 1e12) {
+                    return `${(num / 1e12).toFixed(2)}T`;
+                  } else if (num >= 1e9) {
+                    return `${(num / 1e9).toFixed(2)}B`;
+                  } else if (num >= 1e6) {
+                    return `${(num / 1e6).toFixed(2)}M`;
+                  } else if (num >= 1e3) {
+                    return `${(num / 1e3).toFixed(2)}K`;
+                  } else if (num >= 1) {
+                    return num.toFixed(4);
+                  } else {
+                    return num.toFixed(6);
+                  }
+                } catch (error) {
+                  const num = Number(balanceStr);
+                  if (num > Number.MAX_SAFE_INTEGER) {
+                    return (num / (10 ** decimals)).toExponential(2);
+                  }
+                  return (num / (10 ** decimals)).toFixed(6);
+                }
+              };
+
+              const formattedBalance = formatTokenBalance(token.balance, token.token);
+              
+              return (
+                <div key={index} className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                    {formattedBalance}
+                  </p>
+                  <p className="text-slate-600 dark:text-slate-400">{token.token}</p>
+                </div>
+              );
+            })
           ) : (
             <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">0.00</p>
