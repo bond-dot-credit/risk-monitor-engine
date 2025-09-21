@@ -16,9 +16,12 @@ interface Opportunity {
 interface OpportunityCardProps {
   opportunity: Opportunity;
   isConnected: boolean;
+  onDeposit?: (opportunityId: number) => void;
+  onAllocate?: (opportunityId: number) => void;
+  onWithdraw?: (opportunityId: number) => void;
 }
 
-export function OpportunityCard({ opportunity, isConnected }: OpportunityCardProps) {
+export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600 dark:text-green-400';
     if (score >= 50) return 'text-yellow-600 dark:text-yellow-400';
@@ -99,17 +102,38 @@ export function OpportunityCard({ opportunity, isConnected }: OpportunityCardPro
         </div>
       </div>
 
-      {/* Action Button */}
-      <button 
-        className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
-          isConnected 
-            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105' 
-            : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-        }`}
-        disabled={!isConnected}
-      >
-        {isConnected ? 'Allocate Funds' : 'Connect Wallet to Allocate'}
-      </button>
+      {/* Action Buttons */}
+      {isConnected ? (
+        <div className="space-y-2">
+          <button 
+            onClick={() => onDeposit?.(opportunity.id)}
+            className="w-full py-2 px-4 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            📥 Deposit
+          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button 
+              onClick={() => onAllocate?.(opportunity.id)}
+              className="py-2 px-3 rounded-lg font-medium transition-all duration-300 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 text-sm"
+            >
+              🔄 Allocate
+            </button>
+            <button 
+              onClick={() => onWithdraw?.(opportunity.id)}
+              className="py-2 px-3 rounded-lg font-medium transition-all duration-300 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 text-sm"
+            >
+              📤 Withdraw
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button 
+          className="w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+          disabled
+        >
+          Connect Wallet to Allocate
+        </button>
+      )}
     </div>
   );
 }
