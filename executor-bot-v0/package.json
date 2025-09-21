@@ -1,0 +1,44 @@
+{
+  "name": "bond-credit-executor-bot-v0",
+  "version": "1.0.0",
+  "description": "Bond.Credit Executor Bot v0 - Off-chain automation for NEAR intents",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "build": "echo 'No build step required for Node.js'"
+  },
+  "keywords": [
+    "near",
+    "defi",
+    "executor",
+    "bot",
+    "automation",
+    "intents"
+  ],
+  "author": "Bond.Credit Team",
+  "license": "MIT",
+  "dependencies": {
+    "near-api-js": "^4.0.2",
+    "ws": "^8.14.2",
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "axios": "^1.6.0",
+    "winston": "^3.11.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "eslint": "^8.54.0",
+    "@types/node": "^20.8.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
