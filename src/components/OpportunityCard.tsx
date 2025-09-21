@@ -19,12 +19,14 @@ interface Opportunity {
   totalScore: number;
   riskLevel: string;
 
-  contractAddress?: string;
+   contractAddress?: string;
   tokenAddress?: string;
   category?: string;
   minDeposit?: number;
   maxDeposit?: number;
-  tvl?: number;
+
+  tvl?: number; 
+
 }
 
 interface OpportunityCardProps {
