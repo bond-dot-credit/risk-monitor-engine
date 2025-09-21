@@ -7,9 +7,21 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
 
 export const RealContractDashboard: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <RealContractDashboardContent />
+    </ErrorBoundary>
+  );
+};
+
+const RealContractDashboardContent: React.FC = () => {
   const { 
     account, 
     isConnected, 
@@ -152,10 +164,12 @@ export const RealContractDashboard: React.FC = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 dark:text-slate-400">Initializing wallet connection...</p>
-        </div>
+        <LoadingSpinner 
+          size="xl" 
+          color="primary" 
+          text="Initializing wallet connection..."
+          className="py-20"
+        />
       </div>
     );
   }
@@ -187,11 +201,11 @@ export const RealContractDashboard: React.FC = () => {
     const passedChecks = Object.values(contractHealth).filter(Boolean).length;
     
     if (passedChecks === totalChecks) {
-      return <Badge className="bg-green-500 text-white">✅ All Contracts Online</Badge>;
+      return <StatusBadge status="success" text="All Contracts Online" />;
     } else if (passedChecks > 0) {
-      return <Badge className="bg-yellow-500 text-white">⚠️ Partial Contract Access</Badge>;
+      return <StatusBadge status="warning" text="Partial Contract Access" />;
     } else {
-      return <Badge className="bg-red-500 text-white">❌ No Contract Access</Badge>;
+      return <StatusBadge status="error" text="No Contract Access" />;
     }
   };
 
@@ -282,10 +296,7 @@ export const RealContractDashboard: React.FC = () => {
             {[...Array(4)].map((_, i) => (
               <Card key={i} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <div className="animate-pulse">
-                    <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                    <div className="h-8 bg-gray-300 rounded w-1/2"></div>
-                  </div>
+                  <LoadingSpinner size="sm" color="gray" />
                 </CardContent>
               </Card>
             ))}
@@ -329,11 +340,7 @@ export const RealContractDashboard: React.FC = () => {
               {[...Array(3)].map((_, i) => (
                 <Card key={i} className="bg-white dark:bg-slate-800 shadow-lg rounded-lg overflow-hidden">
                   <CardContent className="p-6">
-                    <div className="animate-pulse">
-                      <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-300 rounded w-1/2 mb-4"></div>
-                      <div className="h-8 bg-gray-300 rounded w-full"></div>
-                    </div>
+                    <LoadingSpinner size="md" color="gray" text="Loading opportunity..." />
                   </CardContent>
                 </Card>
               ))}
@@ -370,18 +377,13 @@ export const RealContractDashboard: React.FC = () => {
 
           {/* No Opportunities */}
           {!isLoadingOpportunities && !opportunitiesError && opportunities.length === 0 && (
-            <Card className="text-center py-12">
-              <CardContent>
-                <div className="text-6xl mb-4">📋</div>
-                <h3 className="text-xl font-semibold mb-2">No Opportunities Found</h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
-                  No investment opportunities are currently available from the Registry contract.
-                </p>
-                <Button onClick={refreshOpportunities} variant="outline">
-                  Check Again
-                </Button>
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon="📋"
+              title="No Opportunities Found"
+              description="No investment opportunities are currently available from the Registry contract."
+              actionText="Check Again"
+              onAction={refreshOpportunities}
+            />
           )}
         </div>
       </div>

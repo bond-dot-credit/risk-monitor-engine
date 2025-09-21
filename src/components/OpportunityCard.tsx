@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 interface Opportunity {
   id: number;
@@ -44,10 +45,10 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active': return <Badge variant="default" className="bg-green-500 text-white">Active</Badge>;
-      case 'paused': return <Badge variant="default" className="bg-yellow-500 text-white">Paused</Badge>;
-      case 'inactive': return <Badge variant="destructive">Inactive</Badge>;
-      default: return <Badge variant="secondary">Unknown</Badge>;
+      case 'active': return <StatusBadge status="success" text="Active" />;
+      case 'paused': return <StatusBadge status="warning" text="Paused" />;
+      case 'inactive': return <StatusBadge status="error" text="Inactive" />;
+      default: return <StatusBadge status="info" text="Unknown" />;
     }
   };
 
