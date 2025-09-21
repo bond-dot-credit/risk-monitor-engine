@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -11,6 +12,7 @@ interface Opportunity {
   description: string;
   apy: number;
   trustScore: number;
+
   contractAddress?: string;
   category?: string;
   tvl?: number;
@@ -22,6 +24,7 @@ interface Opportunity {
 interface OpportunityCardProps {
   opportunity: Opportunity;
   isConnected: boolean;
+
   onDeposit?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
   onAllocate?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
   onWithdraw?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
