@@ -74,22 +74,6 @@ export function Header() {
             </span>
           </div>
  
-          {/* Tablet Navigation */}
-          <nav className="hidden md:flex lg:hidden items-center space-x-1">
-            <Link href="/" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap">
-              Dashboard
-            </Link>
-            <Link href="/agents" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap">
-              Agents
-            </Link>
-            <Link href="/risk" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap">
-              Risk
-            </Link>
-            <Link href="/analytics" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap">
-              Analytics
-            </Link>
-          </nav>
-
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
             <Link href="/" className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap">
@@ -151,7 +135,7 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              className={`md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`lg:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 isMobile ? 'p-1.5' : 'p-2'
               }`}
               aria-label="Toggle mobile menu"
@@ -166,7 +150,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2 duration-200">
+          <div className="lg:hidden mt-4 pb-4 border-t border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2 duration-200">
             <nav className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 pt-4">
               <Link 
                 className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-3 rounded-lg text-sm font-medium transition-all text-center focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" 
