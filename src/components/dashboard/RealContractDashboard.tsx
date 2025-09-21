@@ -12,6 +12,10 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
+import { ErrorManager } from '@/components/ErrorManager';
+import { ErrorDisplay } from '@/components/ui/ErrorDisplay';
+import { LoadingStates } from '@/components/ui/LoadingStates';
+import { reportNetworkError, reportContractError, reportWalletError } from '@/services/error-handling-service';
 
 export const RealContractDashboard: React.FC = () => {
   return (
@@ -66,8 +70,12 @@ const RealContractDashboardContent: React.FC = () => {
   const handleConnectWallet = async () => {
     try {
       await connect();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Connection error:', err);
+      reportWalletError(
+        `Failed to connect wallet: ${err.message || 'Unknown error'}`,
+        { error: err, timestamp: Date.now() }
+      );
     }
   };
 
@@ -75,8 +83,12 @@ const RealContractDashboardContent: React.FC = () => {
   const handleDisconnectWallet = async () => {
     try {
       await disconnect();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Disconnection error:', err);
+      reportWalletError(
+        `Failed to disconnect wallet: ${err.message || 'Unknown error'}`,
+        { error: err, timestamp: Date.now() }
+      );
     }
   };
 
@@ -94,6 +106,12 @@ const RealContractDashboardContent: React.FC = () => {
       if (account?.accountId) {
         await refreshVaultData(account.accountId);
       }
+    } catch (err: any) {
+      console.error('Refresh error:', err);
+      reportNetworkError(
+        `Failed to refresh data: ${err.message || 'Unknown error'}`,
+        { error: err, timestamp: Date.now(), accountId: account?.accountId }
+      );
     } finally {
       setIsRefreshing(false);
     }
@@ -316,6 +334,11 @@ const RealContractDashboardContent: React.FC = () => {
               </Button>
             </CardContent>
           </Card>
+        )}
+
+        {/* Error Manager (for connected users) */}
+        {isConnected && (
+          <ErrorManager />
         )}
 
         {/* Opportunities Section */}
