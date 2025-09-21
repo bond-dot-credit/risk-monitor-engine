@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
+
 interface Opportunity {
   id: number;
   name: string;
@@ -17,12 +18,15 @@ interface Opportunity {
   safety: number;
   totalScore: number;
   riskLevel: string;
+
    contractAddress?: string;
   tokenAddress?: string;
   category?: string;
   minDeposit?: number;
   maxDeposit?: number;
+
   tvl?: number; 
+
 }
 
 interface OpportunityCardProps {
