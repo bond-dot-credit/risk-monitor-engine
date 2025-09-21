@@ -169,7 +169,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
               <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
                 Connect Your Wallet
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
+              <p className="text-slate-800 dark:text-slate-400 mb-4">
                 Please connect your NEAR wallet to access the vault
               </p>
             </div>
@@ -209,19 +209,19 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                 {state?.total_supply || '0'}
               </p>
-              <p className="text-slate-600 dark:text-slate-400">Total Vault Shares</p>
+              <p className="text-slate-800 dark:text-slate-400">Total Vault Shares</p>
             </div>
             <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                 {config?.fee_percentage ? `${config.fee_percentage / 100}%` : '1%'}
               </p>
-              <p className="text-slate-600 dark:text-slate-400">Management Fee</p>
+              <p className="text-slate-800 dark:text-slate-400">Management Fee</p>
             </div>
             <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {config?.is_paused ? '⏸️' : '▶️'}
               </p>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-slate-800 dark:text-slate-400">
                 {config?.is_paused ? 'Paused' : 'Active'}
               </p>
             </div>
@@ -251,7 +251,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
                 <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   {state?.token_reserves?.[token] || '0'}
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-800 dark:text-slate-400">
                   Available in vault
                 </p>
               </div>
@@ -280,7 +280,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {state?.user_shares?.[token] || '0'}
                   </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-slate-800 dark:text-slate-400">
                     Your shares
                   </p>
                 </div>
@@ -301,7 +301,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">
                 Select Token
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -325,7 +325,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">
                 Amount to Deposit
               </label>
               <div className="flex gap-2">
@@ -360,7 +360,7 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-800 dark:text-slate-300 mb-2">
                 Vault Shares to Burn
               </label>
               <div className="flex gap-2">
@@ -437,14 +437,14 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
                         <p className="font-medium">
                           {('vault_shares_minted' in event ? 'Deposit' : 'Withdrawal')} - {event.token_type}
                         </p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                        <p className="text-sm text-slate-800 dark:text-slate-400">
                           {event.account_id}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="font-bold">{event.amount}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <p className="text-sm text-slate-800 dark:text-slate-400">
                         {new Date(event.timestamp).toLocaleDateString()}
                       </p>
                     </div>

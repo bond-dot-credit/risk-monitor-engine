@@ -244,7 +244,7 @@ const NearIntentsDashboard = () => {
         <CardContent className="space-y-4">
           {!isConnected ? (
             <div className="flex flex-col items-center justify-center space-y-4 py-8">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-slate-800 dark:text-slate-300">
                 Connect to your NEAR wallet to start using NEAR Intents
               </p>
               <Button onClick={handleConnect} disabled={isLoading}>
@@ -263,7 +263,7 @@ const NearIntentsDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Connected Account</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-slate-800 dark:text-slate-400">
                     {accountInfo?.accountId} 
                     <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
                       accountInfo?.networkId === 'testnet' 
@@ -388,7 +388,7 @@ const NearIntentsDashboard = () => {
                           <>
                             <div className="flex items-center justify-between">
                               <span className="text-sm">Transaction Hash</span>
-                              <span className="text-sm font-mono text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+                              <span className="text-sm font-mono text-slate-800 dark:text-slate-400 truncate max-w-[120px]">
                                 {swapResult.transactionHash}
                               </span>
                             </div>
@@ -406,7 +406,7 @@ const NearIntentsDashboard = () => {
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-slate-800 dark:text-slate-400">
                         No transactions yet. Execute a swap to see the status here.
                       </p>
                     )}
@@ -593,7 +593,7 @@ const NearIntentsDashboard = () => {
                 </div>
               </div>
               
-              <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="mt-4 text-sm text-slate-800 dark:text-slate-400">
                 <p>Period: {String((((protocolRewardsData as unknown) as Record<string, unknown>).period as Record<string, unknown>)?.startDate || 'N/A')} to {String((((protocolRewardsData as unknown) as Record<string, unknown>).period as Record<string, unknown>)?.endDate || 'N/A')}</p>
               </div>
             </div>
@@ -610,7 +610,7 @@ const NearIntentsDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-slate-800 dark:text-slate-400">
               NEAR Intents is a system for executing multichain transactions. An intent represents a user&apos;s desired state change (e.g., &quot;I want to swap X NEAR for Y USDC&quot;) rather than a specific execution path. This allows for more flexible and efficient execution of financial operations.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
