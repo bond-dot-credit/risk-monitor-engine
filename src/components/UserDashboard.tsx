@@ -181,13 +181,72 @@ export function UserDashboard({ account, onLogout }: UserDashboardProps) {
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Token Details</h3>
             <div className="space-y-2">
-              {account.tokens.map((token, index) => (
-                <div key={index} className="flex justify-between items-center text-sm">
-                  <span className="font-medium">{token.token}</span>
-                  <span className="font-mono">{token.balance}</span>
-                  <span className="text-slate-500 dark:text-slate-400">{token.contract}</span>
-                </div>
-              ))}
+              {account.tokens.map((token, index) => {
+                // Format token balance with standard crypto notation
+                const formatTokenBalance = (balance: string, tokenName: string) => {
+                  const balanceStr = balance.toString();
+                  let decimals = 24; // Default for wNEAR
+                  
+                  if (tokenName === 'wNEAR') {
+                    decimals = 24;
+                  } else if (tokenName === 'USDC' || tokenName === 'USDT') {
+                    decimals = 6;
+                  } else if (tokenName === 'DAI') {
+                    decimals = 18;
+                  }
+                  
+                  try {
+                    const bigIntBalance = BigInt(balanceStr);
+                    const divisor = BigInt(10 ** decimals);
+                    const quotient = bigIntBalance / divisor;
+                    const remainder = bigIntBalance % divisor;
+                    
+                    const decimalPart = remainder.toString().padStart(decimals, '0');
+                    const trimmedDecimal = decimalPart.replace(/0+$/, '');
+                    
+                    let result;
+                    if (trimmedDecimal === '') {
+                      result = quotient.toString();
+                    } else {
+                      result = `${quotient}.${trimmedDecimal}`;
+                    }
+                    
+                    const num = parseFloat(result);
+                    
+                    if (num >= 1e15) {
+                      return `${num.toExponential(2)}`;
+                    } else if (num >= 1e12) {
+                      return `${(num / 1e12).toFixed(2)}T`;
+                    } else if (num >= 1e9) {
+                      return `${(num / 1e9).toFixed(2)}B`;
+                    } else if (num >= 1e6) {
+                      return `${(num / 1e6).toFixed(2)}M`;
+                    } else if (num >= 1e3) {
+                      return `${(num / 1e3).toFixed(2)}K`;
+                    } else if (num >= 1) {
+                      return num.toFixed(4);
+                    } else {
+                      return num.toFixed(6);
+                    }
+                  } catch (error) {
+                    const num = Number(balanceStr);
+                    if (num > Number.MAX_SAFE_INTEGER) {
+                      return (num / (10 ** decimals)).toExponential(2);
+                    }
+                    return (num / (10 ** decimals)).toFixed(6);
+                  }
+                };
+
+                const formattedBalance = formatTokenBalance(token.balance, token.token);
+                
+                return (
+                  <div key={index} className="flex justify-between items-center text-sm">
+                    <span className="font-medium">{token.token}</span>
+                    <span className="font-mono">{formattedBalance}</span>
+                    <span className="text-slate-500 dark:text-slate-400">{token.contract}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
