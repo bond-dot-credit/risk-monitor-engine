@@ -1,0 +1,14 @@
+{
+  "networkId": "testnet",
+  "nodeUrl": "https://rpc.testnet.near.org",
+  "walletUrl": "https://testnet.mynearwallet.com",
+  "helperUrl": "https://helper.testnet.near.org",
+  "explorerUrl": "https://testnet.nearblocks.io",
+  "contractName": "vault-contract",
+  "ownerAccount": "your-account.testnet",
+  "wnearContract": "wrap.testnet",
+  "usdcContract": "usdc.testnet",
+  "usdtContract": "usdt.testnet",
+  "feePercentage": 100
+}
+
