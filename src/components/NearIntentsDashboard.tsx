@@ -387,17 +387,17 @@ const NearIntentsDashboard = () => {
                         {swapResult.success ? (
                           <>
                             <div className="flex items-center justify-between">
-                              <span className="text-sm">Transaction Hash</span>
+                              <span className="text-sm text-slate-800 dark:text-slate-400">Transaction Hash</span>
                               <span className="text-sm font-mono text-slate-800 dark:text-slate-400 truncate max-w-[120px]">
                                 {swapResult.transactionHash}
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-sm">Amount In</span>
+                              <span className="text-sm text-slate-800 dark:text-slate-400">Amount In</span>
                               <span className="text-sm">{swapResult.amountIn}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-sm">Amount Out</span>
+                              <span className="text-sm text-slate-800 dark:text-slate-400">Amount Out</span>
                               <span className="text-sm">{swapResult.amountOut}</span>
                             </div>
                           </>
@@ -463,17 +463,17 @@ const NearIntentsDashboard = () => {
               <h3 className="font-medium mb-3">Bulk Operation Results</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">Total Transactions</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Total Transactions</p>
                   <p className="text-xl font-bold">{bulkOperationResult.totalTransactions.toLocaleString()}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">Successful</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Successful</p>
                   <p className="text-xl font-bold text-green-600 dark:text-green-400">
                     {bulkOperationResult.successfulTransactions.toLocaleString()}
                   </p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">Failed</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Failed</p>
                   <p className="text-xl font-bold text-red-600 dark:text-red-400">
                     {bulkOperationResult.failedTransactions.toLocaleString()}
                   </p>
@@ -490,7 +490,7 @@ const NearIntentsDashboard = () => {
                       </div>
                     ))}
                     {bulkOperationResult.errors.length > 5 && (
-                      <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">
+                      <p className="text-sm text-slate-800 dark:text-slate-400">
                         ... and {bulkOperationResult.errors.length - 5} more errors
                       </p>
                     )}
@@ -569,15 +569,15 @@ const NearIntentsDashboard = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">Transaction Volume</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Transaction Volume</p>
                   <p className="text-xl font-bold">${((protocolRewardsData as unknown) as Record<string, unknown>).transactionVolume?.toLocaleString() || '0'}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">Smart Contract Calls</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Smart Contract Calls</p>
                   <p className="text-xl font-bold">{String(((protocolRewardsData as unknown) as Record<string, unknown>).smartContractCalls || '0')}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-700 rounded">
-                  <p className="text-sm text-slate-800 dark:text-slate-400 dark:text-gray-400">Unique Wallets</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-400">Unique Wallets</p>
                   <p className="text-xl font-bold">{String(((protocolRewardsData as unknown) as Record<string, unknown>).uniqueWallets || '0')}</p>
                 </div>
               </div>
