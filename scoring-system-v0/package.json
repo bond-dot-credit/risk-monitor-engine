@@ -1,0 +1,28 @@
+{
+  "name": "bond-credit-scoring-system-v0",
+  "version": "1.0.0",
+  "description": "Bond.Credit v0 Scoring System - Trust score calculation",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "keywords": ["near", "defi", "scoring", "trust", "risk"],
+  "author": "Bond.Credit Team",
+  "license": "MIT",
+  "dependencies": {
+    "near-api-js": "^4.0.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "eslint": "^8.54.0"
+  }
+}
