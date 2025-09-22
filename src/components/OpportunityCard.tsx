@@ -31,8 +31,9 @@ interface OpportunityCardProps {
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreBadge = (score: number) => {
-    if (score >= 80) return <Badge variant="default" className="bg-green-500 text-white">⭐ Preferred ({score})</Badge>;
-    if (score >= 50) return <Badge variant="default" className="bg-yellow-500 text-white">✅ Moderate ({score})</Badge>;
+
+    if (score >= 80) return <Badge variant="success">⭐ Preferred ({score})</Badge>;
+    if (score >= 50) return <Badge variant="warning">✅ Moderate ({score})</Badge>;
     return <Badge variant="destructive">🚨 Caution ({score})</Badge>;
   };
 
@@ -48,10 +49,10 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active': return <StatusBadge status="success" text="Active" />;
-      case 'paused': return <StatusBadge status="warning" text="Paused" />;
-      case 'inactive': return <StatusBadge status="error" text="Inactive" />;
-      default: return <StatusBadge status="info" text="Unknown" />;
+      case 'active': return <Badge className="bg-green-500 text-white">Active</Badge>;
+      case 'paused': return <Badge className="bg-yellow-500 text-white">Paused</Badge>;
+      case 'inactive': return <Badge variant="destructive">Inactive</Badge>;
+      default: return <Badge variant="secondary">Unknown</Badge>;
     }
   };
 

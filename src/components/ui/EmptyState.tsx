@@ -12,7 +12,7 @@ interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = '📊',
+  icon = '📋',
   title,
   description,
   actionText,
@@ -21,20 +21,21 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
 
-    <Card className={`flex flex-col items-center justify-center text-center p-8 ${className}`}>
-      <CardContent className="p-0">
+    <Card className={`text-center py-12 ${className}`}>
+      <CardContent>
         <div className="text-6xl mb-4">{icon}</div>
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
+        <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-slate-100">
           {title}
         </h3>
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
+        <p className="text-slate-600 dark:text-slate-400 mb-4 max-w-md mx-auto">
           {description}
         </p>
         {actionText && onAction && (
-          <Button onClick={onAction}>
+          <Button onClick={onAction} variant="outline">
             {actionText}
           </Button>
         )}
       </CardContent>
     </Card>
   );
+};
