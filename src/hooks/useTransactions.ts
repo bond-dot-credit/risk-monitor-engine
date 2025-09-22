@@ -245,6 +245,5 @@ export function useTransactions(accountId?: string): UseTransactionsReturn {
     clearError,
     clearAllErrors,
   };
-
 }
 

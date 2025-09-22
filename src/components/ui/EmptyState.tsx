@@ -20,7 +20,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   className = ''
 }) => {
   return (
-
     <Card className={`text-center py-12 ${className}`}>
       <CardContent>
         <div className="text-6xl mb-4">{icon}</div>
