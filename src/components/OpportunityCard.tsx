@@ -18,7 +18,6 @@ interface Opportunity {
   maxDeposit?: number;
   minDeposit?: number;
   status?: 'active' | 'inactive' | 'paused';
-
 }
 
 interface OpportunityCardProps {
@@ -28,7 +27,6 @@ interface OpportunityCardProps {
   onAllocate?: (opportunityId: number) => void;
   onWithdraw?: (opportunityId: number) => void;
 }
-
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreBadge = (score: number) => {
