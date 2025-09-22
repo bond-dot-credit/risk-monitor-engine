@@ -6,7 +6,6 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TrustScoreDisplay } from '@/components/TrustScoreDisplay';
 import { scoringService, OpportunityScore } from '@/services/scoring-service';
 
-
 interface Opportunity {
   id: number;
   name: string;
