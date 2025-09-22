@@ -12,8 +12,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
-import { RealTimeActivityFeed } from '@/components/RealTimeActivityFeed';
-import { RealTimePriceTicker } from '@/components/RealTimePriceTicker';
+import { GlobalStatsDashboard } from '@/components/GlobalStatsDashboard';
 
 export const RealContractDashboard: React.FC = () => {
   return (
@@ -341,10 +340,8 @@ const RealContractDashboardContent: React.FC = () => {
           </Card>
         )}
 
-        {/* Error Manager (for connected users) */}
-        {isConnected && (
-          <ErrorManager />
-        )}
+        {/* Global Stats Dashboard */}
+        <GlobalStatsDashboard />
         {/* Opportunities Section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
