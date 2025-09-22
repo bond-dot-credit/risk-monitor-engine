@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -24,6 +23,7 @@ interface Opportunity {
 interface OpportunityCardProps {
   opportunity: Opportunity;
   isConnected: boolean;
+
 
   onDeposit?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
   onAllocate?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
@@ -54,6 +54,7 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
       case 'paused': return <StatusBadge status="warning" text="Paused" />;
       case 'inactive': return <StatusBadge status="error" text="Inactive" />;
       default: return <StatusBadge status="info" text="Unknown" />;
+
     }
   };
 
