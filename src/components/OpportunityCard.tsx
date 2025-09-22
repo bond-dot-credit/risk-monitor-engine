@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { TransactionForm } from '@/components/TransactionForm';
-
+import { TrustScoreDisplay } from '@/components/TrustScoreDisplay';
+import { scoringService, OpportunityScore } from '@/services/scoring-service';
 
 interface Opportunity {
   id: number;
@@ -31,7 +31,22 @@ interface OpportunityCardProps {
 }
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
-  const [showForm, setShowForm] = useState<'deposit' | 'allocate' | 'withdraw' | null>(null);
+  const [opportunityScore, setOpportunityScore] = useState<OpportunityScore | null>(null);
+  const [showScoreDetails, setShowScoreDetails] = useState(false);
+
+  // Initialize or update opportunity score
+  useEffect(() => {
+    const mockMetrics = scoringService.generateMockMetrics(opportunity.id);
+    const score = scoringService.updateOpportunityScore(
+      opportunity.id,
+      opportunity.name,
+      opportunity.contractAddress || '',
+      mockMetrics,
+      (opportunity.category as any) || 'defi'
+    );
+    setOpportunityScore(score);
+  }, [opportunity]);
+    
   const getScoreBadge = (score: number) => {
     if (score >= 80) return <Badge variant="default" className="bg-green-500 text-white">⭐ Preferred ({score})</Badge>;
     if (score >= 50) return <Badge variant="default" className="bg-yellow-500 text-white">✅ Moderate ({score})</Badge>;
@@ -84,7 +99,29 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
         
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Trust Score:</span>
-          {getScoreBadge(opportunity.trustScore)}
+          <div className="flex items-center gap-2">
+            {opportunityScore && (
+              <Badge 
+                variant="outline" 
+                className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                  opportunityScore.currentScore.total >= 80 ? 'border-green-500 text-green-600' :
+                  opportunityScore.currentScore.total >= 60 ? 'border-yellow-500 text-yellow-600' :
+                  'border-red-500 text-red-600'
+                }`}
+                onClick={() => setShowScoreDetails(!showScoreDetails)}
+              >
+                {opportunityScore.currentScore.total}/100
+              </Badge>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowScoreDetails(!showScoreDetails)}
+              className="h-6 px-2 text-xs"
+            >
+              {showScoreDetails ? 'Hide' : 'Details'}
+            </Button>
+          </div>
         </div>
         
         {opportunity.tvl && (
@@ -118,6 +155,18 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Category:</span>
           <Badge variant="secondary">{opportunity.category}</Badge>
         </div>
+
+        {/* Trust Score Details */}
+        {showScoreDetails && opportunityScore && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <TrustScoreDisplay
+              score={opportunityScore}
+              showBreakdown={true}
+              showMetrics={true}
+              size="sm"
+            />
+          </div>
+        )}
       </CardContent>
       
       <CardFooter className="pt-4">
