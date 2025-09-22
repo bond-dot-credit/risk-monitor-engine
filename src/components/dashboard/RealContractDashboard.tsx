@@ -146,6 +146,7 @@ const RealContractDashboardContent: React.FC = () => {
     }
   };
 
+
   // Transaction handlers
   const handleDeposit = async (opportunityId: number) => {
     try {
@@ -192,7 +193,6 @@ const RealContractDashboardContent: React.FC = () => {
       console.error('Withdrawal error:', error);
     }
   };
-
   // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
