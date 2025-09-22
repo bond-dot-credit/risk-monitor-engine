@@ -156,3 +156,4 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
     </header>
   );
 };
+

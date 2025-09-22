@@ -11,7 +11,6 @@ interface Opportunity {
   description: string;
   apy: number;
   trustScore: number;
-
   contractAddress?: string;
   category?: string;
   tvl?: number;
@@ -54,7 +53,6 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
       case 'paused': return <StatusBadge status="warning" text="Paused" />;
       case 'inactive': return <StatusBadge status="error" text="Inactive" />;
       default: return <StatusBadge status="info" text="Unknown" />;
-
     }
   };
 
