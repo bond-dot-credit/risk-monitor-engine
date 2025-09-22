@@ -12,7 +12,8 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
-import { GlobalStatsDashboard } from '@/components/GlobalStatsDashboard';
+import { TransactionHistory } from '@/components/TransactionHistory';
+
 
 export const RealContractDashboard: React.FC = () => {
   return (
@@ -1025,7 +1026,10 @@ const RealContractDashboardContent: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-      )}
-    </div>
-  );
-};
+        )}
+
+        {/* Transaction History */}
+        <TransactionHistory user={account?.accountId} />
+      </div>
+    );
+  };
