@@ -340,7 +340,6 @@ const RealContractDashboardContent: React.FC = () => {
         {isConnected && (
           <ErrorManager />
         )}
-
         {/* Opportunities Section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
