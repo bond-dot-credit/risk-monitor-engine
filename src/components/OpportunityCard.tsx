@@ -23,9 +23,11 @@ interface Opportunity {
 interface OpportunityCardProps {
   opportunity: Opportunity;
   isConnected: boolean;
-  onDeposit?: (opportunityId: number) => void;
-  onAllocate?: (opportunityId: number) => void;
-  onWithdraw?: (opportunityId: number) => void;
+
+
+  onDeposit?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
+  onAllocate?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
+  onWithdraw?: (opportunityId: number, amount: string, tokenType: string) => Promise<void>;
 }
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
@@ -44,6 +46,7 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
     );
     setOpportunityScore(score);
   }, [opportunity]);
+    
   const getScoreBadge = (score: number) => {
     if (score >= 80) return <Badge variant="default" className="bg-green-500 text-white">⭐ Preferred ({score})</Badge>;
     if (score >= 50) return <Badge variant="default" className="bg-yellow-500 text-white">✅ Moderate ({score})</Badge>;
@@ -169,29 +172,56 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
       <CardFooter className="pt-4">
         {isConnected ? (
           <div className="space-y-2 w-full">
-            <Button 
-              onClick={() => onDeposit?.(opportunity.id)} 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={opportunity.status !== 'active'}
-            >
-              📥 Deposit
-            </Button>
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                onClick={() => onAllocate?.(opportunity.id)} 
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                disabled={opportunity.status !== 'active'}
-              >
-                🔄 Allocate
-              </Button>
-              <Button 
-                onClick={() => onWithdraw?.(opportunity.id)} 
-                className="w-full bg-red-600 hover:bg-red-700 text-white"
-                disabled={opportunity.status !== 'active'}
-              >
-                📤 Withdraw
-              </Button>
-            </div>
+            {showForm ? (
+              <div className="space-y-3">
+                <TransactionForm
+                  type={showForm}
+                  onSubmit={async (data) => {
+                    if (showForm === 'deposit' && onDeposit) {
+                      await onDeposit(opportunity.id, data.amount, data.tokenType);
+                    } else if (showForm === 'allocate' && onAllocate) {
+                      await onAllocate(opportunity.id, data.amount, data.tokenType);
+                    } else if (showForm === 'withdraw' && onWithdraw) {
+                      await onWithdraw(opportunity.id, data.amount, data.tokenType);
+                    }
+                    setShowForm(null);
+                  }}
+                />
+                <Button
+                  onClick={() => setShowForm(null)}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => setShowForm('deposit')}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={opportunity.status !== 'active'}
+                >
+                  📥 Deposit
+                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    onClick={() => setShowForm('allocate')}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    disabled={opportunity.status !== 'active'}
+                  >
+                    🔄 Allocate
+                  </Button>
+                  <Button 
+                    onClick={() => setShowForm('withdraw')}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white"
+                    disabled={opportunity.status !== 'active'}
+                  >
+                    📤 Withdraw
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <Button 
