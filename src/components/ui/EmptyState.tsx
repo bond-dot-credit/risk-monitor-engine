@@ -20,6 +20,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   className = ''
 }) => {
   return (
+
     <Card className={`flex flex-col items-center justify-center text-center p-8 ${className}`}>
       <CardContent className="p-0">
         <div className="text-6xl mb-4">{icon}</div>
@@ -37,4 +38,3 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       </CardContent>
     </Card>
   );
-};

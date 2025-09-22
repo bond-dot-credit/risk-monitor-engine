@@ -24,7 +24,6 @@ interface Opportunity {
 interface OpportunityCardProps {
   opportunity: Opportunity;
   isConnected: boolean;
-
   onDeposit?: (opportunityId: number) => void;
   onAllocate?: (opportunityId: number) => void;
   onWithdraw?: (opportunityId: number) => void;
