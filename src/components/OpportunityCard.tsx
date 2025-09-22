@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TransactionForm } from '@/components/TransactionForm';
 
+
 interface Opportunity {
   id: number;
   name: string;
