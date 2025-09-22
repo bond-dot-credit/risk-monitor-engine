@@ -14,6 +14,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { OpportunityCard } from '@/components/OpportunityCard';
 import { TransactionHistory } from '@/components/TransactionHistory';
 
+
 export const RealContractDashboard: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -340,10 +341,8 @@ const RealContractDashboardContent: React.FC = () => {
           </Card>
         )}
 
-        {/* Error Manager (for connected users) */}
-        {isConnected && (
-          <ErrorManager />
-        )}
+        {/* Global Stats Dashboard */}
+        <GlobalStatsDashboard />
         {/* Opportunities Section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
