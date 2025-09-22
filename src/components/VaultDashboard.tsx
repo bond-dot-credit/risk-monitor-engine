@@ -469,6 +469,26 @@ const VaultDashboard: React.FC<VaultDashboardProps> = ({ className }) => {
         </Card>
       )}
 
+      {/* Contract Status */}
+      {vaultError && (
+        <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
+          <CardHeader>
+            <CardTitle className="text-yellow-800 dark:text-yellow-200">⚠️ Vault Contract Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-yellow-700 dark:text-yellow-300">
+                The vault contract is not deployed yet. You can still interact with the interface, 
+                but transactions will be simulated.
+              </p>
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                Contract ID: <code className="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">{vaultConfig.contractId}</code>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Error Display */}
       {error && (
         <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">

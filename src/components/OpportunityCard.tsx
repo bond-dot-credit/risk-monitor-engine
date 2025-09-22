@@ -27,7 +27,6 @@ interface OpportunityCardProps {
   onWithdraw?: (opportunityId: number) => void;
 }
 
-
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreBadge = (score: number) => {
     if (score >= 80) return <Badge variant="default" className="bg-green-500 text-white">⭐ Preferred ({score})</Badge>;
