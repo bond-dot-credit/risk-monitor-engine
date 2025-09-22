@@ -12,14 +12,12 @@ interface Opportunity {
   description: string;
   apy: number;
   trustScore: number;
-
   contractAddress?: string;
   category?: string;
   tvl?: number;
   maxDeposit?: number;
   minDeposit?: number;
   status?: 'active' | 'inactive' | 'paused';
-
 }
 
 interface OpportunityCardProps {
@@ -29,7 +27,6 @@ interface OpportunityCardProps {
   onAllocate?: (opportunityId: number) => void;
   onWithdraw?: (opportunityId: number) => void;
 }
-
 
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const getScoreBadge = (score: number) => {

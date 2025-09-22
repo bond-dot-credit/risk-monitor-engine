@@ -158,6 +158,7 @@ const RealContractDashboardContent: React.FC = () => {
 
   const formatNumber = (num: number | string) => {
     return new Intl.NumberFormat('en-US').format(typeof num === 'string' ? parseFloat(num) : num);
+
   };
 
   // Loading state
@@ -747,6 +748,7 @@ const RealContractDashboardContent: React.FC = () => {
                 >
                   {isRefreshing ? 'Refreshing...' : '🔄 Refresh Data'}
                 </Button>
+
               </div>
             </div>
           </CardContent>
