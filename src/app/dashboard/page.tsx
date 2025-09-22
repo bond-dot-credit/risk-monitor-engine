@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { RealContractDashboard } from '@/components/dashboard/RealContractDashboard';
 import { RealContractDashboard } from '@/components/dashboard/RealContractDashboard';
 
 export default function DashboardPage() {
