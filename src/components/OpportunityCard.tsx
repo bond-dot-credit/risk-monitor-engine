@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 
-
 interface Opportunity {
   id: number;
   name: string;
