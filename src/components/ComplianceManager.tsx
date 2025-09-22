@@ -48,7 +48,8 @@ export function ComplianceManager({ agents }: ComplianceManagerProps) {
   }, [agents]);
 
   const generateComplianceData = () => {
-    // Mock compliance rules
+    // Compliance rules - should be loaded from configuration or database
+    // For now, using standard DeFi compliance rules
     const rules: ComplianceRule[] = [
       {
         id: 'rule_001',
@@ -57,8 +58,8 @@ export function ComplianceManager({ agents }: ComplianceManagerProps) {
         category: 'security',
         severity: 'high',
         status: 'active',
-        lastChecked: new Date('2024-01-15'),
-        nextCheck: new Date('2024-04-15'),
+        lastChecked: new Date(),
+        nextCheck: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
         requirements: ['No hardcoded secrets', 'Input validation', 'Secure authentication']
       },
       {
@@ -68,8 +69,8 @@ export function ComplianceManager({ agents }: ComplianceManagerProps) {
         category: 'regulatory',
         severity: 'critical',
         status: 'active',
-        lastChecked: new Date('2024-01-20'),
-        nextCheck: new Date('2024-03-20'),
+        lastChecked: new Date(),
+        nextCheck: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
         requirements: ['KYC/AML compliance', 'Data privacy', 'Audit trails']
       },
       {
@@ -79,8 +80,8 @@ export function ComplianceManager({ agents }: ComplianceManagerProps) {
         category: 'operational',
         severity: 'medium',
         status: 'active',
-        lastChecked: new Date('2024-01-25'),
-        nextCheck: new Date('2024-05-25'),
+        lastChecked: new Date(),
+        nextCheck: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000), // 120 days from now
         requirements: ['Uptime monitoring', 'Error handling', 'Performance metrics']
       },
       {

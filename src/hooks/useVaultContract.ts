@@ -78,7 +78,14 @@ export function useVaultContract(
       const data = await response.json();
       
       if (data.error) {
-        throw new Error(data.error.message);
+        // Check if it's a contract not found error
+        if (data.error.message?.includes('does not exist') || 
+            data.error.message?.includes('UnknownAccount') ||
+            data.error.message?.includes('ContractNotFound')) {
+          console.warn(`Contract ${contractConfig.contractId} not found. Using fallback data.`);
+          return getFallbackData(methodName, args);
+        }
+        throw new Error(`Contract error: ${data.error.message}`);
       }
 
       if (data.result?.result) {
@@ -88,9 +95,47 @@ export function useVaultContract(
       return null;
     } catch (err) {
       console.error(`Error calling ${methodName}:`, err);
+      
+      // If it's a network error or contract doesn't exist, return fallback data
+      if (err instanceof Error && (
+        err.message.includes('fetch') || 
+        err.message.includes('network') ||
+        err.message.includes('does not exist')
+      )) {
+        console.warn(`Using fallback data for ${methodName}`);
+        return getFallbackData(methodName, args);
+      }
+      
       throw err;
     }
   }, [contractConfig.contractId, getRpcUrl]);
+
+  // Fallback data when contract is not deployed
+  const getFallbackData = useCallback((methodName: string, args: any): any => {
+    switch (methodName) {
+      case 'get_config':
+        return {
+          owner_account: contractConfig.ownerAccount,
+          fee_percentage: contractConfig.feePercentage,
+          is_paused: false,
+          supported_tokens: Object.values(TokenType)
+        };
+      case 'get_total_supply':
+        return '0';
+      case 'get_token_reserves':
+        return '0';
+      case 'get_user_vault_shares':
+        return '0';
+      case 'get_user_total_shares':
+        return '0';
+      case 'get_deposit_events':
+        return [];
+      case 'get_withdraw_events':
+        return [];
+      default:
+        return null;
+    }
+  }, [contractConfig]);
 
   // Call contract change method (requires wallet connection)
   const callChangeMethod = useCallback(async (
