@@ -32,6 +32,7 @@ export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocat
   const getScoreBadge = (score: number) => {
     if (score >= 80) return <Badge variant="default" className="bg-green-500 text-white">⭐ Preferred ({score})</Badge>;
     if (score >= 50) return <Badge variant="default" className="bg-yellow-500 text-white">✅ Moderate ({score})</Badge>;
+
     return <Badge variant="destructive">🚨 Caution ({score})</Badge>;
   };
 
