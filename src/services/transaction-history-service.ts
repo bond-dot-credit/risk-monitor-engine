@@ -303,9 +303,12 @@ export class TransactionHistoryService {
    */
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        this.transactions = JSON.parse(stored);
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (stored) {
+          this.transactions = JSON.parse(stored);
+        }
       }
     } catch (error) {
       console.error('Failed to load transaction history from storage:', error);
@@ -318,7 +321,10 @@ export class TransactionHistoryService {
    */
   private saveToStorage(): void {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.transactions));
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.transactions));
+      }
     } catch (error) {
       console.error('Failed to save transaction history to storage:', error);
     }

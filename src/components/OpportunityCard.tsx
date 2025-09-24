@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TrustScoreDisplay } from '@/components/TrustScoreDisplay';
+import { TransactionForm } from '@/components/TransactionForm';
 import { scoringService, OpportunityScore } from '@/services/scoring-service';
 
 interface Opportunity {
@@ -33,6 +34,7 @@ interface OpportunityCardProps {
 export function OpportunityCard({ opportunity, isConnected, onDeposit, onAllocate, onWithdraw }: OpportunityCardProps) {
   const [opportunityScore, setOpportunityScore] = useState<OpportunityScore | null>(null);
   const [showScoreDetails, setShowScoreDetails] = useState(false);
+  const [showForm, setShowForm] = useState<'deposit' | 'allocate' | 'withdraw' | null>(null);
 
   // Initialize or update opportunity score
   useEffect(() => {
