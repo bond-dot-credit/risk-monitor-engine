@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, tokenType, amount, accountId } = body;
+    const { action, tokenType, amount, accountId, signature } = body;
 
     if (!accountId) {
       return NextResponse.json(
@@ -71,9 +71,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // TODO: Implement actual vault contract interactions
-    // For now, simulate the operations
 
     switch (action) {
       case 'deposit':
@@ -84,12 +81,25 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // TODO: Implement actual deposit transaction
+        // For real blockchain transactions, we need to handle this differently
+        // Since we can't directly sign transactions from the API route,
+        // we'll return instructions for the frontend to handle the transaction
         console.log('Deposit request:', { tokenType, amount, accountId });
+        
+        // Return transaction instructions for the frontend to execute
         return NextResponse.json({
           success: true,
-          message: 'Deposit initiated',
-          transactionHash: 'mock-tx-hash-' + Date.now()
+          message: 'Please confirm the deposit transaction in your wallet',
+          transactionInstructions: {
+            contractId: 'vault-contract.testnet',
+            methodName: 'deposit',
+            args: {
+              token_type: tokenType,
+              amount: amount,
+            },
+            gas: '300000000000000',
+            deposit: '0'
+          }
         });
 
       case 'withdraw':
@@ -100,12 +110,22 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // TODO: Implement actual withdrawal transaction
         console.log('Withdrawal request:', { tokenType, amount, accountId });
+        
+        // Return transaction instructions for the frontend to execute
         return NextResponse.json({
           success: true,
-          message: 'Withdrawal initiated',
-          transactionHash: 'mock-tx-hash-' + Date.now()
+          message: 'Please confirm the withdrawal transaction in your wallet',
+          transactionInstructions: {
+            contractId: 'vault-contract.testnet',
+            methodName: 'withdraw',
+            args: {
+              token_type: tokenType,
+              vault_shares_amount: amount,
+            },
+            gas: '300000000000000',
+            deposit: '0'
+          }
         });
 
       case 'get_events':
