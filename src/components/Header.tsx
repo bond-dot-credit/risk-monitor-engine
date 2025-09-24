@@ -12,17 +12,19 @@ export function Header() {
   const { account, isConnected, connect, disconnect } = useNearWallet();
 
   useEffect(() => {
-    // Check for saved dark mode preference
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    const shouldUseDark = savedDarkMode || savedTheme === 'dark' || (!savedTheme && !localStorage.getItem('darkMode') && prefersDark);
-    
-    setIsDarkMode(shouldUseDark);
-     
-    if (shouldUseDark) {
-      document.documentElement.classList.add('dark');
+    // Check for saved dark mode preference (only in browser)
+    if (typeof window !== 'undefined') {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      const shouldUseDark = savedDarkMode || savedTheme === 'dark' || (!savedTheme && !localStorage.getItem('darkMode') && prefersDark);
+      
+      setIsDarkMode(shouldUseDark);
+       
+      if (shouldUseDark) {
+        document.documentElement.classList.add('dark');
+      }
     }
   }, []);
 
@@ -37,13 +39,15 @@ export function Header() {
     const newDarkMode = !isDarkMode;
     setIsDarkMode(newDarkMode);
 
-    localStorage.setItem('darkMode', newDarkMode.toString());
-    localStorage.setItem('theme', newDarkMode ? 'dark' : 'light');
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('darkMode', newDarkMode.toString());
+      localStorage.setItem('theme', newDarkMode ? 'dark' : 'light');
+      
+      if (newDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   };
 

@@ -92,7 +92,7 @@ export default function Home() {
                 <div className="flex items-center space-x-2 px-6 py-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                   <span className="text-green-700 dark:text-green-300 font-medium">
-                    Connected: {account}
+                    Connected: {account?.accountId}
                   </span>
                 </div>
                 <button 
@@ -134,8 +134,8 @@ export default function Home() {
         {/* User-specific sections when logged in */}
         {isConnected && account && (
           <>
-            <UserVaultSection account={account} />
-            <TransactionHistory account={account} />
+            <UserVaultSection account={account?.accountId || ''} />
+            <TransactionHistory user={account?.accountId} />
           </>
         )}
 
