@@ -1,10 +1,14 @@
 'use client';
 
+import { useState } from 'react';
+
 interface UserVaultSectionProps {
   account: string;
 }
 
 export function UserVaultSection({ account }: UserVaultSectionProps) {
+  const [isClaimingYield, setIsClaimingYield] = useState(false);
+  
   // Mock data - will be fetched from Vault contract
   const vaultData = {
     totalDeposits: 1250.50,
@@ -14,6 +18,26 @@ export function UserVaultSection({ account }: UserVaultSectionProps) {
       { name: "Stake wNEAR", amount: 800.00, apy: 12.5, yield: 28.50 },
       { name: "USDC Lending", amount: 450.50, apy: 8.2, yield: 16.70 }
     ]
+  };
+
+  const handleClaimYield = async () => {
+    setIsClaimingYield(true);
+    try {
+      // Simulate yield claim transaction
+      console.log('Claiming yield for account:', account);
+      
+      // In a real implementation, this would call the vault contract
+      // For now, we'll simulate the transaction
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      console.log('Yield claimed successfully!');
+      // You could add a success notification here
+    } catch (error) {
+      console.error('Failed to claim yield:', error);
+      // You could add an error notification here
+    } finally {
+      setIsClaimingYield(false);
+    }
   };
 
   return (
@@ -99,10 +123,14 @@ export function UserVaultSection({ account }: UserVaultSectionProps) {
             </div>
           </button>
 
-          <button className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+          <button 
+            onClick={handleClaimYield}
+            disabled={isClaimingYield}
+            className={`w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${isClaimingYield ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
             <div className="flex items-center justify-center space-x-2">
               <span>🎯</span>
-              <span>Claim Yield</span>
+              <span>{isClaimingYield ? 'Claiming...' : 'Claim Yield'}</span>
             </div>
           </button>
         </div>
