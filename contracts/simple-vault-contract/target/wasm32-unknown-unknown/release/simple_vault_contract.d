@@ -1,0 +1,1 @@
+/Users/faisalrehman/projects/Onur_Workspace/new-repo/risk-monitor-engine/contracts/simple-vault-contract/target/wasm32-unknown-unknown/release/simple_vault_contract.wasm: /Users/faisalrehman/projects/Onur_Workspace/new-repo/risk-monitor-engine/contracts/simple-vault-contract/src/lib.rs
