@@ -1,7 +1,7 @@
 'use client';
 
 import { Header } from '@/components/Header';
-import VaultDashboard from '@/components/VaultDashboard';
+import RealVaultDashboard from '@/components/RealVaultDashboard';
 
 export default function VaultPage() {
   return (
@@ -19,7 +19,7 @@ export default function VaultPage() {
           </div>
         </div>
 
-        <VaultDashboard />
+        <RealVaultDashboard />
       </main>
     </div>
   );

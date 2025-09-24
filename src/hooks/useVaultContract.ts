@@ -32,7 +32,8 @@ export interface VaultContractMethods {
 
 export function useVaultContract(
   contractConfig: VaultContractConfig,
-  accountId: string | null
+  accountId: string | null,
+  walletSelector?: any
 ): VaultContractState & VaultContractMethods {
   const [config, setConfig] = useState<VaultConfig | null>(null);
   const [state, setState] = useState<VaultState | null>(null);
@@ -148,22 +149,52 @@ export function useVaultContract(
       throw new Error('Wallet not connected');
     }
 
-    // This would typically use the wallet to sign and send the transaction
-    // For now, we'll simulate the call structure
+    if (!walletSelector) {
+      throw new Error('Wallet selector not available');
+    }
+
     console.log(`Calling ${methodName} with args:`, args);
     
-    // In a real implementation, this would:
-    // 1. Create a transaction using the wallet
-    // 2. Sign the transaction
-    // 3. Send it to the network
-    // 4. Wait for completion
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true, transactionHash: `0x${Math.random().toString(16).substr(2, 64)}` });
-      }, 2000);
-    });
-  }, [accountId]);
+    try {
+      // Get the current wallet from the selector
+      const wallet = await walletSelector.wallet();
+      
+      // Use the wallet to sign and send the transaction
+      const result = await wallet.signAndSendTransaction({
+        signerId: accountId,
+        receiverId: contractConfig.contractId,
+        actions: [
+          {
+            type: 'FunctionCall',
+            params: {
+              methodName: methodName,
+              args: args,
+              gas: gas,
+              deposit: deposit,
+            },
+          },
+        ],
+      });
+
+      console.log(`Transaction ${methodName} successful:`, result);
+      
+      return {
+        success: true,
+        transactionHash: result.transaction.hash,
+        receipt: result.receipt,
+      };
+      
+    } catch (error) {
+      console.error(`Error calling ${methodName}:`, error);
+      
+      // If the contract doesn't exist, provide a more informative error
+      if (error instanceof Error && error.message.includes('does not exist')) {
+        throw new Error(`Vault contract ${contractConfig.contractId} is not deployed. Please deploy the contract first.`);
+      }
+      
+      throw error;
+    }
+  }, [accountId, contractConfig, walletSelector]);
 
   // Load vault configuration
   const loadConfig = useCallback(async () => {
