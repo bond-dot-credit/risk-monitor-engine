@@ -151,7 +151,7 @@ export function Header() {
                 <div className="flex items-center space-x-2 px-3 py-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-green-700 dark:text-green-300 text-sm font-medium">
-                    {account?.slice(0, 8)}...
+                    {account?.accountId?.slice(0, 8)}...
                   </span>
                 </div>
                 <button 
@@ -178,7 +178,7 @@ export function Header() {
                 <div className="flex items-center space-x-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                   <span className="text-green-700 dark:text-green-300 text-xs font-medium">
-                    {account?.slice(0, 6)}...
+                    {account?.accountId?.slice(0, 6)}...
                   </span>
                 </div>
                 <button 
