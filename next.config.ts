@@ -18,10 +18,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-          // Ensure CSS is properly handled in production
-          // experimental: {
-          //   optimizeCss: true,
-          // },
+  // Optimize for Vercel deployment
+  output: 'standalone',
+  // Ensure proper CSS handling
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 };
 
 export default nextConfig;
