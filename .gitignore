@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# Rust build artifacts
+/target/
+**/target/
+
 # production
 /build
 

@@ -10,8 +10,6 @@ const nextConfig: NextConfig = {
   env: {
     // Environment variables will be set in Vercel dashboard
   },
-  // Enable standalone build for Vercel
-  output: 'standalone',
   // Disable ESLint during build for deployment
   eslint: {
     ignoreDuringBuilds: true,
@@ -20,6 +18,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+          // Ensure CSS is properly handled in production
+          // experimental: {
+          //   optimizeCss: true,
+          // },
 };
 
 export default nextConfig;
