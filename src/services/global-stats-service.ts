@@ -332,14 +332,17 @@ export class GlobalStatsService {
    */
   private loadFromStorage(): void {
     try {
-      const storedStats = localStorage.getItem(this.STORAGE_KEY);
-      if (storedStats) {
-        this.stats = JSON.parse(storedStats);
-      }
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const storedStats = localStorage.getItem(this.STORAGE_KEY);
+        if (storedStats) {
+          this.stats = JSON.parse(storedStats);
+        }
 
-      const storedHistory = localStorage.getItem(this.HISTORY_KEY);
-      if (storedHistory) {
-        this.statsHistory = JSON.parse(storedHistory);
+        const storedHistory = localStorage.getItem(this.HISTORY_KEY);
+        if (storedHistory) {
+          this.statsHistory = JSON.parse(storedHistory);
+        }
       }
     } catch (error) {
       console.error('Failed to load global stats from storage:', error);
@@ -353,10 +356,13 @@ export class GlobalStatsService {
    */
   private saveToStorage(): void {
     try {
-      if (this.stats) {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.stats));
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        if (this.stats) {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.stats));
+        }
+        localStorage.setItem(this.HISTORY_KEY, JSON.stringify(this.statsHistory));
       }
-      localStorage.setItem(this.HISTORY_KEY, JSON.stringify(this.statsHistory));
     } catch (error) {
       console.error('Failed to save global stats to storage:', error);
     }
