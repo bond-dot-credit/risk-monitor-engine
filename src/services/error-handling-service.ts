@@ -250,10 +250,13 @@ export class ErrorHandlingService {
    */
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        const errors = JSON.parse(stored);
-        this.errors = new Map(errors);
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (stored) {
+          const errors = JSON.parse(stored);
+          this.errors = new Map(errors);
+        }
       }
     } catch (error) {
       console.error('Failed to load errors from storage:', error);
@@ -266,14 +269,17 @@ export class ErrorHandlingService {
    */
   private saveToStorage(): void {
     try {
-      // Keep only the most recent errors
-      const errors = Array.from(this.errors.entries());
-      if (errors.length > this.MAX_ERRORS) {
-        const sortedErrors = errors.sort((a, b) => b[1].timestamp - a[1].timestamp);
-        this.errors = new Map(sortedErrors.slice(0, this.MAX_ERRORS));
-      }
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        // Keep only the most recent errors
+        const errors = Array.from(this.errors.entries());
+        if (errors.length > this.MAX_ERRORS) {
+          const sortedErrors = errors.sort((a, b) => b[1].timestamp - a[1].timestamp);
+          this.errors = new Map(sortedErrors.slice(0, this.MAX_ERRORS));
+        }
 
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(Array.from(this.errors.entries())));
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(Array.from(this.errors.entries())));
+      }
     } catch (error) {
       console.error('Failed to save errors to storage:', error);
     }

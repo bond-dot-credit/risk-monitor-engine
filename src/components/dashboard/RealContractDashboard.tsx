@@ -758,18 +758,36 @@ const RealContractDashboardContent: React.FC = () => {
             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex flex-wrap gap-3">
                 <Button 
-                  onClick={() => {/* Add deposit functionality */}} 
+                  onClick={async () => {
+                    try {
+                      await deposit('WNEAR', '1.0');
+                      if (account?.accountId) {
+                        await refreshVaultData(account.accountId);
+                      }
+                    } catch (error) {
+                      console.error('Deposit error:', error);
+                    }
+                  }}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
-                  disabled={depositState.loading}
+                  disabled={depositState.isLoading}
                 >
-                  {depositState.loading ? 'Processing...' : '💰 Deposit More'}
+                  {depositState.isLoading ? 'Processing...' : '💰 Deposit More'}
                 </Button>
                 <Button 
-                  onClick={() => {/* Add withdraw functionality */}} 
+                  onClick={async () => {
+                    try {
+                      await withdraw('WNEAR', '1.0');
+                      if (account?.accountId) {
+                        await refreshVaultData(account.accountId);
+                      }
+                    } catch (error) {
+                      console.error('Withdraw error:', error);
+                    }
+                  }}
                   variant="outline"
-                  disabled={withdrawState.loading}
+                  disabled={withdrawState.isLoading}
                 >
-                  {withdrawState.loading ? 'Processing...' : '📤 Withdraw'}
+                  {withdrawState.isLoading ? 'Processing...' : '📤 Withdraw'}
                 </Button>
                 <Button 
                   onClick={() => refreshVaultData(account?.accountId || '')} 

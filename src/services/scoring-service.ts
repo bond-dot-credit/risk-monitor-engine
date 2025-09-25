@@ -396,11 +396,14 @@ export class ScoringService {
    */
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        const data = JSON.parse(stored);
-        this.scores = new Map(data.scores || []);
-        this.scoreHistory = new Map(data.scoreHistory || []);
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (stored) {
+          const data = JSON.parse(stored);
+          this.scores = new Map(data.scores || []);
+          this.scoreHistory = new Map(data.scoreHistory || []);
+        }
       }
     } catch (error) {
       console.error('Failed to load scores from storage:', error);
@@ -414,11 +417,14 @@ export class ScoringService {
    */
   private saveToStorage(): void {
     try {
-      const data = {
-        scores: Array.from(this.scores.entries()),
-        scoreHistory: Array.from(this.scoreHistory.entries())
-      };
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const data = {
+          scores: Array.from(this.scores.entries()),
+          scoreHistory: Array.from(this.scoreHistory.entries())
+        };
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+      }
     } catch (error) {
       console.error('Failed to save scores to storage:', error);
     }

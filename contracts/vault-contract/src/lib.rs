@@ -1,16 +1,16 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{UnorderedMap, UnorderedSet};
-use near_sdk::json_types::{U128, U64};
+use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
-    env, ext_contract, near_bindgen, AccountId, Balance, Gas, Promise, PromiseResult, 
+    env, ext_contract, near_bindgen, AccountId, Gas, Promise, 
     Timestamp, PanicOnDefault, require, log
 };
 
 // Constants
-const GAS_FOR_FT_TRANSFER: Gas = Gas(10_000_000_000_000);
-const GAS_FOR_FT_TRANSFER_CALL: Gas = Gas(20_000_000_000_000);
-const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(10_000_000_000_000);
+const GAS_FOR_FT_TRANSFER: Gas = Gas::from_gas(10_000_000_000_000);
+const GAS_FOR_FT_TRANSFER_CALL: Gas = Gas::from_gas(20_000_000_000_000);
+const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas::from_gas(10_000_000_000_000);
 const INITIAL_SUPPLY: u128 = 1_000_000_000_000_000_000_000_000; // 1M tokens with 24 decimals
 
 // External contract interfaces
@@ -34,7 +34,7 @@ trait ExtSelf {
 }
 
 // Data structures
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub struct VaultShare {
     pub account_id: AccountId,
@@ -43,7 +43,7 @@ pub struct VaultShare {
     pub deposited_at: Timestamp,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone, PartialEq, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub enum TokenType {
     WNEAR,
@@ -51,7 +51,7 @@ pub enum TokenType {
     USDT,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct VaultConfig {
     pub owner_id: AccountId,
@@ -63,7 +63,7 @@ pub struct VaultConfig {
 }
 
 // Events
-#[derive(Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct DepositEvent {
     pub account_id: AccountId,
@@ -73,7 +73,7 @@ pub struct DepositEvent {
     pub timestamp: Timestamp,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct WithdrawEvent {
     pub account_id: AccountId,
@@ -179,7 +179,7 @@ impl VaultContract {
         log!("Depositing {} {:?} from {}", amount.0, token_type, sender_id);
 
         // Transfer tokens from user to vault
-        ext_fungible_token::ext(token_contract)
+        ext_fungible_token::ext(token_contract.clone())
             .ft_transfer_call(
                 env::current_account_id(),
                 amount,
