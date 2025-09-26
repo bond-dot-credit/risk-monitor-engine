@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "preview": "next start",
+    "export": "next build && next export -o out",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
@@ -13,7 +14,6 @@
     "test:ci": "vitest run --reporter=verbose --coverage",
     "test:watch": "vitest",
     "clean": "rm -rf .next out dist",
-    "preview": "npm run build && npm run start",
     "verify-config": "npm run build && npx tsx verify-configuration.ts",
     "execute-rewards": "npm run build && npx tsx real-transaction-executor.ts"
   },
