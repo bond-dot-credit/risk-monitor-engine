@@ -1,11 +1,15 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "out"
 
 [build.environment]
   NETLIFY = "true"
   NODE_VERSION = "20.0.0"
   NPM_VERSION = "10.0.0"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[build.processing]
+  skip_processing = true
 
 [[redirects]]
   from = "/*"

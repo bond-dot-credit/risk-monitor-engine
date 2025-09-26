@@ -7,6 +7,9 @@ const isNetlify = process.env.NETLIFY === 'true';
 const basePath = isNetlify ? '' : (isGithubActions ? '/risk-monitor-engine' : '');
 const assetPrefix = isNetlify ? '' : (isGithubActions ? '/risk-monitor-engine' : '');
 
+// Disable image optimization for static export
+const withExportImages = require('next-export-optimize-images');
+
 const nextConfig: NextConfig = {
   // Core settings
   reactStrictMode: true,
