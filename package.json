@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm install --legacy-peer-deps && next build && next export -o out && npm run copy-files",
+    "build": "npm install --legacy-peer-deps && next build && next export && npm run copy-files",
     "preview": "next start",
-    "export": "npm install --legacy-peer-deps && next build && next export -o out && npm run copy-files",
-    "copy-files": "cp public/_redirects out/_redirects || echo 'Copy failed, continuing...'",
+    "export": "npm install --legacy-peer-deps && next build && next export && npm run copy-files",
+    "copy-files": "copy public\\_redirects out\\_redirects >nul 2>&1 || cp public/_redirects out/_redirects 2>/dev/null || echo 'Copy failed, continuing...'",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",

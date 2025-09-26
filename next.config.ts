@@ -51,26 +51,13 @@ const nextConfig: NextConfig = {
         fs: false,
         net: false,
         tls: false,
-        dns: false,
       };
     }
     return config;
   },
   
-  // Disable server components for static export
-  experimental: {
-    serverComponentsExternalPackages: [],
-  },
-  
-  // Static export settings
-  generateBuildId: () => 'build',
-  distDir: 'out',
-  
-  // Disable ETag generation
-  generateEtags: false,
-  
   // Disable X-Powered-By header
-  poweredByHeader: false,
+  poweredByHeader: false
 };
 
 export default nextConfig;
