@@ -1,0 +1,21 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NETLIFY = "true"
+  NODE_VERSION = "20.0.0"
+  NPM_VERSION = "10.0.0"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"

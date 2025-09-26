@@ -1,13 +1,18 @@
 import type { NextConfig } from "next";
 
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
+const isNetlify = process.env.NETLIFY === 'true';
+
+// For Netlify, we don't need basePath
+const basePath = isNetlify ? '' : (isGithubActions ? '/risk-monitor-engine' : '');
+const assetPrefix = isNetlify ? '' : (isGithubActions ? '/risk-monitor-engine' : '');
 
 const nextConfig: NextConfig = {
   // Core settings
   reactStrictMode: true,
   output: 'export',
-  basePath: isGithubActions ? '/risk-monitor-engine' : '',
-  assetPrefix: isGithubActions ? '/risk-monitor-engine/' : '',
+  basePath: basePath,
+  assetPrefix: assetPrefix,
   trailingSlash: true,
   
   // Image optimization
