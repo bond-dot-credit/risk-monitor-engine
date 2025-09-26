@@ -1,27 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { store } from '@/lib/store';
-import { calculateRiskMetrics } from '@/lib/scoring';
-import { ensureSeeded } from '@/lib/seed';
+import { staticResponses } from '@/app/_utils/static-export';
 
-export async function GET(request: NextRequest) {
-  try {
-    ensureSeeded();
-    const { searchParams } = new URL(request.url);
-    const agentId = searchParams.get('agentId');
-    if (!agentId) {
-      return NextResponse.json({ success: false, error: 'agentId is required' }, { status: 400 });
-    }
-    const agent = store.getAgent(agentId);
-    if (!agent) {
-      return NextResponse.json({ success: false, error: 'Agent not found' }, { status: 404 });
-    }
+export const dynamic = 'force-static';
+export const revalidate = 3600; // 1 hour
 
-    const risk = calculateRiskMetrics(agent);
-    return NextResponse.json({ success: true, data: risk });
-  } catch (error) {
-    console.error('Error calculating risk:', error);
-    return NextResponse.json({ success: false, error: 'Failed to calculate risk' }, { status: 500 });
-  }
+// Mock data for static export
+const mockData = {
+  message: 'This is a static API response',
+  timestamp: new Date().toISOString(),
+};
+
+export async function GET() {
+  return staticResponses.mockData(mockData);
 }
 
-
+export async function POST() {
+  return staticResponses.notAllowed();
+}
